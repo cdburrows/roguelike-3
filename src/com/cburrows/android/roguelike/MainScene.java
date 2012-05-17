@@ -215,13 +215,7 @@ public class MainScene extends GameScene {
     }
     
     public void openStatus() {
-        //mContext.gameToast("STATUS", 50);
-        //mContext.startCombat();
-        Animation slash = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY()-48,
-                mCamera.getCenterX()-48, mCamera.getCenterY()+48);
-        AnimatedSprite animation = slash.loadAnimation(mContext);
-        attachChild(animation);
-        slash.start();
+        mContext.openStatus();
     }
     
     public void openMiniMap() {

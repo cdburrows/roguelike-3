@@ -31,7 +31,6 @@ public class SceneManager {
         } else {
             mScenes.add(scene);
             mScenes.get(getSize()-2).fadeOut(FADE_DURATION, transition);
-            
         }
     }
     
@@ -47,9 +46,7 @@ public class SceneManager {
     }
     
     public void load() { getTopScene().loadResources(); }
-    
-    public void initialize() { }
-    
+        
     public int getSize() {
         return mScenes.size();
     }
@@ -70,7 +67,6 @@ public class SceneManager {
             scene.initialize();
             scene.fadeIn(FADE_DURATION, listener);
             mBase.getEngine().setScene(scene);
-            
         }
     }   
     

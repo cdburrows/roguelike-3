@@ -28,6 +28,7 @@ public class RoguelikeActivity extends BaseGameActivity implements
     
     public GameScene mMainScene;
     public GameScene mBattleScene;
+    public GameScene mStatusScene;
     
     private Random rand;
         
@@ -51,8 +52,10 @@ public class RoguelikeActivity extends BaseGameActivity implements
     public void onLoadResources() {
         mMainScene = new MainScene(this);
         mBattleScene = new BattleScene(this);
+        mStatusScene = new StatusScene(this);
         mMainScene.loadResources();
         mBattleScene.loadResources();
+        mStatusScene.loadResources();
     }
 
     public Scene onLoadScene() {
@@ -106,7 +109,6 @@ public class RoguelikeActivity extends BaseGameActivity implements
     }
     
     public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-        // TODO Auto-generated method stub
         return false;
     }
     
@@ -114,13 +116,19 @@ public class RoguelikeActivity extends BaseGameActivity implements
     
     public BoundCamera getCamera() { return mCamera; }
     
-    //public void setScene(GameScene scene) { mSceneManager.pushScene(scene);  getEngine().setScene(scene); }
-    
     public void startCombat() {
         mSceneManager.pushScene(mBattleScene);
     }
     
     public void endCombat() {
+        mSceneManager.popScene();
+    }
+    
+    public void openStatus() {
+        mSceneManager.pushScene(mStatusScene);
+    }
+    
+    public void closeStatus() {
         mSceneManager.popScene();
     }
     

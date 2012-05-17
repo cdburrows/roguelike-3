@@ -195,7 +195,7 @@ public class BattleScene extends GameScene  {
         mInitialized = true;
     }
     
-public void pause() {
+    public void pause() {
         
     }
     
