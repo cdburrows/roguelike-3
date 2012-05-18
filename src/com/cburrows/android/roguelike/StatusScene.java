@@ -10,6 +10,7 @@ import org.anddev.andengine.opengl.texture.TextureOptions;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
+import org.anddev.andengine.util.HorizontalAlign;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -20,10 +21,18 @@ import android.view.MotionEvent;
 public class StatusScene extends GameScene {
     private static final int TEXTURE_ATLAS_WIDTH = 512;
     private static final int TEXTURE_ATLAS_HEIGHT = 256;
+    private static final int TITLE_Y = 8;
     private static final int FONT_LARGE_SIZE = 20;
     private static final int FONT_SIZE = 16;
-    private static final float ATTACK_TEXT_X = 76;
-    private static final float ATTACK_TEXT_Y = 80;
+    
+    private static final float ATTACK_TEXT_X = 56;
+    private static final float ATTACK_TEXT_Y = 121;
+    private static final float DEFENSE_TEXT_X = 56;
+    private static final float DEFENSE_TEXT_Y = 160;
+    private static final float MAGIC_TEXT_X = 56;
+    private static final float MAGIC_TEXT_Y = 199;
+    private static final float POTION_TEXT_X = 253;
+    private static final float POTIOn_TEXT_Y = 199;
 
     private HUD mHud;
     
@@ -35,7 +44,12 @@ public class StatusScene extends GameScene {
     
     private Font mFont;
     private Font mLargeFont;
+    
+    private Text mStatusText;
     private Text mAttackText;
+    private Text mDefenseText;
+    private Text mMagicText;
+    private Text mPotionText;
     
     private float mTouchX;
     private float mTouchY;
@@ -70,11 +84,19 @@ public class StatusScene extends GameScene {
         mLargeFont = FontFactory.create( mFontLargeTexture, t, FONT_LARGE_SIZE * mContext.getGameScaleX(), true, Color.WHITE);
         mContext.getEngine().getFontManager().loadFonts(mFont, mLargeFont);
         
+        mStatusText = new Text (0, 0, mLargeFont, "Status");
+        mStatusText.setPosition((mCameraWidth / 2) - (mStatusText.getWidth() / 2), TITLE_Y * mContext.getGameScaleY());
         mAttackText = new Text(ATTACK_TEXT_X * mContext.getGameScaleX(), ATTACK_TEXT_Y * mContext.getGameScaleY(), mFont, "888");
+        mDefenseText = new Text(DEFENSE_TEXT_X * mContext.getGameScaleX(), DEFENSE_TEXT_Y * mContext.getGameScaleY(), mFont, "888");
+        mMagicText = new Text(MAGIC_TEXT_X * mContext.getGameScaleX(), MAGIC_TEXT_Y * mContext.getGameScaleY(), mFont, "888");
+        mPotionText = new Text(POTION_TEXT_X * mContext.getGameScaleX(), MAGIC_TEXT_Y * mContext.getGameScaleY(), mFont, "x8");
         
         attachChild(mBackgroundSprite);
+        attachChild(mStatusText);
         attachChild(mAttackText);
-        attachChild( new Text(12 * mContext.getGameScaleX(), 24 * mContext.getGameScaleY(), mLargeFont, "Status"));
+        attachChild(mDefenseText);
+        attachChild(mMagicText);
+        attachChild(mPotionText);
         
         mLoaded = true;
         
