@@ -90,6 +90,7 @@ public class BattleScene extends GameScene  {
         mMonsterSprite = new Sprite(
                 (mCameraWidth / 2) - (mMonsterTextureRegion.getWidth() / 2),
                 (mCameraHeight / 2) - (mMonsterTextureRegion.getHeight() / 2), mMonsterTextureRegion);
+        mMonsterSprite.setScale(mContext.getGameScaleX(), mContext.getGameScaleY());
         mMonsterSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         
         mMonster = new Monster();
@@ -103,12 +104,14 @@ public class BattleScene extends GameScene  {
                 case SWIPE_DOWN_LEFT:
                     mSlash[SWIPE_DOWN_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY()-48,
                             mCamera.getCenterX()-48, mCamera.getCenterY()+48);
-                     mSlash[SWIPE_DOWN_LEFT].loadAnimation(mContext);
-                     mSlash[SWIPE_DOWN_LEFT].attachOnFinishListener(onAnimationDone);
+                    mSlash[SWIPE_DOWN_LEFT].setScale(mContext.getGameScaleX());
+                    mSlash[SWIPE_DOWN_LEFT].loadAnimation(mContext);
+                    mSlash[SWIPE_DOWN_LEFT].attachOnFinishListener(onAnimationDone);
                     break;
                 case SWIPE_DOWN_RIGHT:
                     mSlash[SWIPE_DOWN_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY()-48,
                             mCamera.getCenterX()+48, mCamera.getCenterY()+48);
+                    mSlash[SWIPE_DOWN_RIGHT].setScale(mContext.getGameScaleX());
                     mSlash[SWIPE_DOWN_RIGHT].setFlippedHorizontal(true);
                     mSlash[SWIPE_DOWN_RIGHT].loadAnimation(mContext);
                     mSlash[SWIPE_DOWN_RIGHT].attachOnFinishListener(onAnimationDone);
@@ -116,6 +119,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_UP_RIGHT:
                     mSlash[SWIPE_UP_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY()+48,
                             mCamera.getCenterX()+48, mCamera.getCenterY()-48);
+                    mSlash[SWIPE_UP_RIGHT].setScale(mContext.getGameScaleX());
                     mSlash[SWIPE_UP_RIGHT].setFlippedHorizontal(true);
                     mSlash[SWIPE_UP_RIGHT].setFlippedVertical(true);
                     mSlash[SWIPE_UP_RIGHT].loadAnimation(mContext);
@@ -124,6 +128,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_UP_LEFT:
                     mSlash[SWIPE_UP_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY()+48,
                             mCamera.getCenterX()-48, mCamera.getCenterY()-48);
+                    mSlash[SWIPE_UP_LEFT].setScale(mContext.getGameScaleX());
                     mSlash[SWIPE_UP_LEFT].setFlippedVertical(true);
                     mSlash[SWIPE_UP_LEFT].loadAnimation(mContext);
                     mSlash[SWIPE_UP_LEFT].attachOnFinishListener(onAnimationDone);
@@ -131,6 +136,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_LEFT:
                     mSlash[SWIPE_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY(),
                             mCamera.getCenterX()-48, mCamera.getCenterY());
+                    mSlash[SWIPE_LEFT].setScale(mContext.getGameScaleX());
                     mSlash[SWIPE_LEFT].setRotation(45.0f);
                     mSlash[SWIPE_LEFT].loadAnimation(mContext);
                     mSlash[SWIPE_LEFT].attachOnFinishListener(onAnimationDone);
@@ -138,6 +144,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_RIGHT:
                     mSlash[SWIPE_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY(),
                             mCamera.getCenterX()+48, mCamera.getCenterY());
+                    mSlash[SWIPE_RIGHT].setScale(mContext.getGameScaleX());
                     mSlash[SWIPE_RIGHT].setRotation(-135.0f);
                     //mSlash[SWIPE_RIGHT].setFlippedHorizontal(true);
                     mSlash[SWIPE_RIGHT].loadAnimation(mContext);
@@ -146,6 +153,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_UP:
                     mSlash[SWIPE_UP] = new Animation(mCamera.getCenterX(), mCamera.getCenterY()+48,
                             mCamera.getCenterX(), mCamera.getCenterY()-48);
+                    mSlash[SWIPE_UP].setScale(mContext.getGameScaleX());
                     mSlash[SWIPE_UP].setRotation(135.0f);
                     mSlash[SWIPE_UP].loadAnimation(mContext);
                     mSlash[SWIPE_UP].attachOnFinishListener(onAnimationDone);
@@ -153,6 +161,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_DOWN:
                     mSlash[SWIPE_DOWN] = new Animation(mCamera.getCenterX(), mCamera.getCenterY()-48,
                             mCamera.getCenterX(), mCamera.getCenterY()+48);
+                    mSlash[SWIPE_DOWN].setScale(mContext.getGameScaleX());
                     mSlash[SWIPE_DOWN].setRotation(-45.0f);
                     mSlash[SWIPE_DOWN].loadAnimation(mContext);
                     mSlash[SWIPE_DOWN].attachOnFinishListener(onAnimationDone);

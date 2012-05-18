@@ -27,6 +27,8 @@ public class Player {
     private float mPosY = 0;
     private int mTileWidth = 32;
     private int mTileHeight = 32;
+    private float mScaleX = 1.0f;
+    private float mScaleY = 1.0f;
     private boolean mMoving = false;
     private Direction mDirection;
     private float mMoveDistance = 0;
@@ -34,10 +36,13 @@ public class Player {
     private int mRoomX = 0;
     private int mRoomY = 0;
 
-    public Player(TiledTextureRegion textureRegion) {
+    public Player(TiledTextureRegion textureRegion, float scaleX, float scaleY) {
+        mScaleX = scaleX;
+        mScaleY = scaleY;
         mPlayerState = PlayerState.IDLE;
         mPlayerTextureRegion = textureRegion;
         mSprite = new AnimatedSprite(mPosX, mPosY, textureRegion);
+        mSprite.setScale(scaleX, scaleY);
         mDirection = Direction.DIRECTION_DOWN;
         mSprite.setCurrentTileIndex(Direction.DIRECTION_DOWN.getValue() * 4 + 1);
     }
@@ -85,7 +90,7 @@ public class Player {
                 mPlayerState = PlayerState.MOVING;
                 mMoving = true;
                 mDirection = direction;
-                mMoveDistance = distance;
+                mMoveDistance = distance * mScaleX;
                 
                 switch (direction) {
                     case DIRECTION_UP:
@@ -110,9 +115,11 @@ public class Player {
     }
     
     public void updatePositionFromRoom() {
-        mPosX = ((mRoomX * mParentMap.ROOM_WIDTH) + (mParentMap.ROOM_WIDTH / 2)) * mTileWidth;
-        mPosY = ((mRoomY * mParentMap.ROOM_HEIGHT) + (mParentMap.ROOM_HEIGHT / 2)) * mTileHeight;
+        mPosX = ((mRoomX * mParentMap.ROOM_WIDTH) + (mParentMap.ROOM_WIDTH / 2)) * (mTileWidth); // / (mScaleX * 4));
+        mPosY = ((mRoomY * mParentMap.ROOM_HEIGHT) + (mParentMap.ROOM_HEIGHT / 2)) * (mTileHeight); // / (mScaleY * 4));
         mSprite.setPosition(mPosX, mPosY);
+        Log.d("SPRITE", "X: " + mPosX);
+        Log.d("SPRITE", "Y: " + mPosY);
     }
     
     public void face(Direction direction) {

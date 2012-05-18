@@ -3,6 +3,7 @@ package com.cburrows.android.roguelike;
 import java.util.Random;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
 
@@ -25,6 +26,8 @@ public class RoguelikeActivity extends BaseGameActivity implements
     
     private int mCameraWidth;
     private int mCameraHeight;
+    private float mGameScaleX;
+    private float mGameScaleY;
     
     public GameScene mMainScene;
     public GameScene mBattleScene;
@@ -40,13 +43,14 @@ public class RoguelikeActivity extends BaseGameActivity implements
         final Display display = getWindowManager().getDefaultDisplay();
         mCameraWidth = display.getWidth();
         mCameraHeight = display.getHeight();
+        mGameScaleX = mCameraWidth / 320.0f; 
+        mGameScaleY = mCameraHeight / 240.0f;
         
         mCamera = new BoundCamera(0, 0, mCameraWidth, mCameraHeight);
                
         // Engine with various options 
         return new Engine(new EngineOptions(true, ScreenOrientation.LANDSCAPE,
                 new RatioResolutionPolicy(mCameraWidth, mCameraHeight), mCamera));
-
     }
 
     public void onLoadResources() {
@@ -61,6 +65,7 @@ public class RoguelikeActivity extends BaseGameActivity implements
     public Scene onLoadScene() {
         
         mSceneManager.pushScene(mMainScene);
+        gameToast(mGameScaleX + ", " + mGameScaleY, Toast.LENGTH_SHORT);
         return mSceneManager.getTopScene();
     }
         
@@ -115,6 +120,10 @@ public class RoguelikeActivity extends BaseGameActivity implements
     public Context getContext() { return this; }
     
     public BoundCamera getCamera() { return mCamera; }
+    
+    public float getGameScaleX() { return mGameScaleX; }
+    
+    public float getGameScaleY() { return mGameScaleY; }
     
     public void startCombat() {
         mSceneManager.pushScene(mBattleScene);

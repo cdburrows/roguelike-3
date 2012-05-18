@@ -66,15 +66,15 @@ public class StatusScene extends GameScene {
         
         Typeface t = Typeface.createFromAsset(mContext.getAssets(), "fonts/prstart.ttf");
         
-        mFont = FontFactory.create( mFontTexture, t, FONT_SIZE, true, Color.WHITE);
-        mLargeFont = FontFactory.create( mFontLargeTexture, t, FONT_LARGE_SIZE, true, Color.WHITE);
+        mFont = FontFactory.create( mFontTexture, t, FONT_SIZE * mContext.getGameScaleX(), true, Color.WHITE);
+        mLargeFont = FontFactory.create( mFontLargeTexture, t, FONT_LARGE_SIZE * mContext.getGameScaleX(), true, Color.WHITE);
         mContext.getEngine().getFontManager().loadFonts(mFont, mLargeFont);
         
-        mAttackText = new Text(ATTACK_TEXT_X, ATTACK_TEXT_Y, mFont, "888");
+        mAttackText = new Text(ATTACK_TEXT_X * mContext.getGameScaleX(), ATTACK_TEXT_Y * mContext.getGameScaleY(), mFont, "888");
         
         attachChild(mBackgroundSprite);
         attachChild(mAttackText);
-        attachChild( new Text(12, 24, mLargeFont, "Status"));
+        attachChild( new Text(12 * mContext.getGameScaleX(), 24 * mContext.getGameScaleY(), mLargeFont, "Status"));
         
         mLoaded = true;
         

@@ -66,25 +66,27 @@ public class MainScene extends GameScene {
         mBitmapTextureAtlas = new BitmapTextureAtlas(TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         
         mPlayer = new Player(BitmapTextureAtlasTextureRegionFactory
-                .createTiledFromAsset(mBitmapTextureAtlas, mContext, "hero.png", SPRITE_IMAGE_X, SPRITE_IMAGE_Y, 4, 4) );
+                .createTiledFromAsset(mBitmapTextureAtlas, mContext, "hero.png", SPRITE_IMAGE_X, SPRITE_IMAGE_Y, 4, 4),
+                mContext.getGameScaleX(), mContext.getGameScaleY());
         
         mIconTextureRegion = BitmapTextureAtlasTextureRegionFactory
                 .createTiledFromAsset(mBitmapTextureAtlas, mContext, "icons.png", HUD_IMAGE_X, HUD_IMAGE_Y, 2, 2);
         
-        mStatusIcon = new AnimatedSprite (8, 8, 32, 32, mIconTextureRegion);
+        mStatusIcon = new AnimatedSprite (8, 8, 32 * mContext.getGameScaleX(), 32 * mContext.getGameScaleY(), mIconTextureRegion);
+        //mStatusIcon.setScale(, mContext.getGameScaleY());
         mStatusIcon.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         mStatusIcon.setAlpha(0.50f);
         
-        mMapIcon = new AnimatedSprite(mCameraWidth - 40, 8, mIconTextureRegion.deepCopy());
+        mMapIcon = new AnimatedSprite(mCameraWidth - 8 - (32 * mContext.getGameScaleX()), 8, 
+                32 * mContext.getGameScaleX(), 32 * mContext.getGameScaleY(), mIconTextureRegion.deepCopy());
+        //mMapIcon.setScale(mContext.getGameScaleX(), mContext.getGameScaleY());
         mMapIcon.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         mMapIcon.setAlpha(0.50f);
         
         mContext.getTextureManager().loadTexture(mBitmapTextureAtlas);
         
         // TODO: Dump gameMap map data when tmx max loaded -- maybe keep the tmx data inside gameMap.
-        mMap = new GameMap(66, 55);
-        mPlayer.setParentMap(mMap);
-        mPlayer.setRoom(0, 0);
+        mMap = new GameMap(66, 45);
         
         FileOutputStream fos;
         try {
@@ -98,7 +100,14 @@ public class MainScene extends GameScene {
         }
 
         mTMXTiledMap = mMap.getTmxTiledMap(mContext, mContext.getTextureManager());
+        mTMXTiledMap.getTMXLayers().get(0).setScale(mContext.getGameScaleX(), mContext.getGameScaleY());
+        mTMXTiledMap.getTMXLayers().get(0).setScaleCenter(176, 144);
+        //mTMXTiledMap.getTMXLayers().
         attachChild(mTMXTiledMap.getTMXLayers().get(0));
+        //mTMXTiledMap.
+        
+        mPlayer.setParentMap(mMap);
+        mPlayer.setRoom(0, 0);
         
         mHud = new HUD();
         mHud.attachChild(mStatusIcon);
@@ -121,14 +130,19 @@ public class MainScene extends GameScene {
         mMapIcon.setCurrentTileIndex(2);
         
         /* Make the camera not exceed the bounds of the TMXEntity. */
+        /*
         mCamera.setBounds(0, mTMXTiledMap.getTMXLayers().get(0).getWidth(),
                 0, mTMXTiledMap.getTMXLayers().get(0).getHeight());
-        mCamera.setBoundsEnabled(false);
+        mCamera.setBoundsEnabled(true);
+        */
 
         /* Create the sprite and add it to the scene. */
         mCamera.setChaseEntity(mPlayer.getAnimatedSprite());
         mCamera.updateChaseEntity();
         mCamera.setHUD(mHud);
+        
+        Log.d("MAIN", "minx " + mCamera.getMinX() + ", "  + mCamera.getMaxX());
+        Log.d("MAIN", "miny " + mCamera.getMinY() + ", "  + mCamera.getMaxY());
         
         mPlayer.setPlayerState(PlayerState.IDLE);
         
