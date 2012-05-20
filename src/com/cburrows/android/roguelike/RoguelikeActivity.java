@@ -1,5 +1,8 @@
 package com.cburrows.android.roguelike;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Random;
 
 import android.content.Context;
@@ -7,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.Display;
+import android.view.inputmethod.BaseInputConnection;
 import android.widget.Toast;
 
 import org.anddev.andengine.engine.Engine;
@@ -26,6 +30,9 @@ import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextur
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
+
+import com.cburrows.android.roguelike.TmxMap.Map;
+import com.cburrows.android.roguelike.xml.BaseItemCollection;
 
 public class RoguelikeActivity extends BaseGameActivity implements
     IOnSceneTouchListener {
@@ -94,18 +101,13 @@ public class RoguelikeActivity extends BaseGameActivity implements
         SmallFont = FontFactory.create( mFontSmallTexture, t, FONT_SMALL_SIZE * getGameScaleX(), true, Color.WHITE);
         getEngine().getFontManager().loadFonts(Font, LargeFont, SmallFont);
         
-        Item.loadResources(this);
-        mEquipmentTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-                mBitmapTextureAtlas, this, 
-                "gfx/panels/equipment_bg.png", 0, 0);
+        ItemFactory.loadResources(this);
         
         mPlayer = new Player(BitmapTextureAtlasTextureRegionFactory
-                .createTiledFromAsset(mBitmapTextureAtlas, this, "gfx/hero.png", 0, 
-                        mEquipmentTextureRegion.getTexturePositionY() + mEquipmentTextureRegion.getHeight(), 4, 4),
+                .createTiledFromAsset(mBitmapTextureAtlas, this, "hero.png", 0, 0, 4, 4),
                 this.getGameScaleX(), this.getGameScaleY());
-        mPlayer.equipWeapon(new Item(this, "Dagger", 0, 0));
-        mPlayer.equipArmour(new Item(this, "Buckler", 50, 1));
-        
+        mPlayer.equipWeapon(ItemFactory.createRandomWeapon(this, 2)); //createItem(this, "Dagger", 0, 0, 5, 0, 0));
+        mPlayer.equipArmour(ItemFactory.createRandomArmour(this, 1)); //.createItem(this, "Buckler", 50, 1, 0, 4, 0));
         
         mMainScene = new MainScene(this);
         mBattleScene = new BattleScene(this);
@@ -198,13 +200,6 @@ public class RoguelikeActivity extends BaseGameActivity implements
     public Player getPlayer() { return mPlayer; }
     
     public void setPlayer(Player player) { mPlayer = player; }
-    
-    public Sprite getEquipmentBackgroundSprite() {
-        return new Sprite(0, 0, 
-                mEquipmentTextureRegion.getWidth() * mGameScaleX,
-                mEquipmentTextureRegion.getHeight() * mGameScaleY, 
-                mEquipmentTextureRegion.deepCopy());
-    }
 
     public void gameToast(final String msg, final int duration) {
         this.runOnUiThread(new Runnable() {

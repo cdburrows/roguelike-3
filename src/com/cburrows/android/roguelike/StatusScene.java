@@ -164,9 +164,9 @@ public class StatusScene extends GameScene {
         mLevelText.setText("Lvl " + String.format("%02d", player.getLevel()));
         mHPText.setText("HP " + String.format("%04d", player.getCurHP()) + "/" + String.format("%04d", player.getMaxHP()));
         mXPText.setText("XP "+ String.format("%04d", player.getCurXP()) + "/" + String.format("%04d", player.getNextXP()));
-        mAttackText.setText(String.format("%03d", player.getAttack()));
-        mDefenseText.setText(String.format("%03d", player.getDefense()));
-        mMagicText.setText(String.format("%03d", player.getMagic()));
+        mAttackText.setText(String.format("%03d", player.getTotalAttack()));
+        mDefenseText.setText(String.format("%03d", player.getTotalDefense()));
+        mMagicText.setText(String.format("%03d", player.getTotalMagic()));
         mPotionText.setText("x" + String.format("%02d", player.getNumPotions()));
         
         mWeaponSprite = player.getWeapon();
@@ -176,9 +176,6 @@ public class StatusScene extends GameScene {
         mArmourSprite = player.getArmour();
         mArmourSprite.getSprite().setPosition(ARMOUR_SPRITE_X * mContext.getGameScaleX(), ARMOUR_SPRITE_Y * mContext.getGameScaleY());
         if (!mArmourSprite.getSprite().hasParent()) attachChild(mArmourSprite.getSprite());
-        
-        //attachChild(mWeaponSprite.getSprite());
-        //attachChild(mArmourSprite.getSprite());
         
         mInitialized = true;
     }

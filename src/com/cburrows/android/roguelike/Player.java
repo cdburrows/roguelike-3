@@ -45,9 +45,12 @@ public class Player {
     private int mNextXP;
     private int mCurXP;
     
-    private int mAttack;
-    private int mDefense;
-    private int mMagic;
+    private int mBaseAttack;
+    private int mTotalAttack;
+    private int mBaseDefense;
+    private int mTotalDefense;
+    private int mBaseMagic;
+    private int mTotalMagic;
     
     private int mPotions;
     
@@ -71,9 +74,13 @@ public class Player {
         mNextXP = 20;
         mCurXP = 0;
         
-        mAttack = 8;
-        mDefense = 4;
-        mMagic = 4;
+        mBaseAttack = 4;
+        mBaseDefense = 4;
+        mBaseMagic = 4;
+        
+        mTotalAttack = mBaseAttack;
+        mTotalDefense = mBaseDefense;
+        mTotalMagic = mBaseMagic;
         
         mPotions = 10;
     }
@@ -153,9 +160,11 @@ public class Player {
         mMaxHP *= 1.2f;
         //mCurHP = mMaxHP;
         
-        mAttack *= 1.4;
-        mDefense *= 1.4;
-        mMagic *= 1.4;
+        mBaseAttack *= 1.4;
+        mBaseDefense *= 1.4;
+        mBaseMagic *= 1.4;
+        
+        updateStats();
     }
     
     public void usePotion() {
@@ -163,6 +172,14 @@ public class Player {
         if (mPotions > 0) {
             increaseCurHP(rand.nextInt(25) + 50);
             mPotions--;
+        }
+    }
+    
+    private void updateStats() {
+        if (mWeapon != null && mArmour != null) {
+            mTotalAttack = mBaseAttack + mWeapon.getAttack() + mArmour.getAttack();
+            mTotalDefense = mBaseDefense + mWeapon.getDefense() + mArmour.getDefense();
+            mTotalMagic = mBaseMagic + mWeapon.getMagic() + mArmour.getMagic();
         }
     }
     
@@ -178,9 +195,15 @@ public class Player {
         mSprite.setCurrentTileIndex(direction.getValue() * 4 + 1);
     }
     
-    public void equipWeapon(Item weapon) { mWeapon = weapon; }
+    public void equipWeapon(Item weapon) { 
+        mWeapon = weapon;
+        updateStats();
+    }
     
-    public void equipArmour(Item armour) { mArmour = armour; }
+    public void equipArmour(Item armour) { 
+        mArmour = armour;
+        updateStats();
+    }
     
     public PlayerState getPlayerState() { return mPlayerState; }
     public void setPlayerState(PlayerState playerState) { mPlayerState = playerState; }
@@ -226,7 +249,6 @@ public class Player {
     public String getName() {
         return mName;
     }
-
     public void setName(String mName) {
         this.mName = mName;
     }
@@ -234,7 +256,6 @@ public class Player {
     public int getLevel() {
         return mLevel;
     }
-
     public void setLevel(int mLevel) {
         this.mLevel = mLevel;
     }
@@ -242,7 +263,6 @@ public class Player {
     public int getMaxHP() {
         return mMaxHP;
     }
-
     public void setMaxHP(int mMaxHP) {
         this.mMaxHP = mMaxHP;
     }
@@ -250,12 +270,10 @@ public class Player {
     public int getCurHP() {
         return mCurHP;
     }
-
     public void setCurHP(int mCurHP) {
         this.mCurHP = mCurHP;
         if (mCurHP > mMaxHP) mCurHP = mMaxHP;
     }
-    
     public void increaseCurHP(int value) {
         mCurHP += value;
         if (mCurHP > mMaxHP) mCurHP = mMaxHP;
@@ -264,19 +282,16 @@ public class Player {
     public int getNextXP() {
         return mNextXP;
     }
-
     public void setNextXP(int mNextXP) {
         this.mNextXP = mNextXP;
     }
-
+    
     public int getCurXP() {
         return mCurXP;
     }
-
     public void setCurXP(int mCurXP) {
         this.mCurXP = mCurXP;
     }
-    
     public void increaseXP(int value) {
         mCurXP += value;
         if (mCurXP >= mNextXP) levelUp();           
@@ -295,36 +310,51 @@ public class Player {
         return (float)mCurXP / mNextXP;
     }
 
-    public int getAttack() {
-        return mAttack;
+    public int getBaseAttack() {
+        return mBaseAttack;
+    }
+    public void setBaseAttack(int mAttack) {
+        this.mBaseAttack = mAttack;
+        updateStats();
+    }
+    
+    public int getTotalAttack() {
+        return mTotalAttack;
+    }
+    
+    public int getBaseDefense() {
+        return mBaseDefense;
+    }
+    public void setBaseDefense(int mDefense) {
+        this.mBaseDefense = mDefense;
+        updateStats();
+    }
+    
+    public int getTotalDefense() {
+        return mTotalDefense;
     }
 
-    public void setAttack(int mAttack) {
-        this.mAttack = mAttack;
+    public int getBaseMagic() {
+        return mBaseMagic;
     }
-
-    public int getDefense() {
-        return mDefense;
+    public void setBaseMagic(int mMagic) {
+        this.mBaseMagic = mMagic;
+        updateStats();
     }
-
-    public void setDefense(int mDefense) {
-        this.mDefense = mDefense;
-    }
-
-    public int getMagic() {
-        return mMagic;
-    }
-
-    public void setMagic(int mMagic) {
-        this.mMagic = mMagic;
+    
+    public int getTotalMagic() {
+        return mTotalMagic;
     }
     
     public void setNumPotions(int potions) { mPotions = potions; }
     public int getNumPotions() { return mPotions; }
     
     public Item getWeapon() { return mWeapon; }
-    
+
     public Item getArmour() { return mArmour; }
 
+    public void increasePotions(int i) {
+        mPotions += i;
+    }
 }
     

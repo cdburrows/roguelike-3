@@ -46,14 +46,14 @@ public class BattleScene extends GameScene  {
     
     private static final float VICTORY_TEXT_Y = 8;
     private static final String VICTORY_TEXT = "Victory!";
-    private static final float LEVEL_TEXT_Y = 48;
+    private static final float LEVEL_TEXT_Y = 40;
     private static final float LEVEL_TEXT_X = 8;
     private static final float NO_SPOILS_TEXT_Y = 92;
     
     // All relative to spoils panel
     private static final float XP_BAR_X = 120;
-    private static final float XP_BAR_Y = 48;
-    private static final float XP_BAR_WIDTH = 104;
+    private static final float XP_BAR_Y = 40;
+    private static final float XP_BAR_WIDTH = 112;
     private static final float XP_BAR_HEIGHT = 16;
     
     private static final float POPUP_POS_X = 80;
@@ -100,6 +100,7 @@ public class BattleScene extends GameScene  {
     private ChangeableText mVictoryText;
     private ChangeableText mLevelText;
     private Text mNoSpoilsText;
+    private Text mPlusText;
 
     private ChangeableText mMonsterNameText;
     
@@ -124,6 +125,7 @@ public class BattleScene extends GameScene  {
     private int mXpGained;
     
     private Random rand;
+    private Sprite mPotionIconSprite;
     
     public BattleScene(RoguelikeActivity context) {
         super(context);
@@ -220,6 +222,11 @@ public class BattleScene extends GameScene  {
                 mXpBarFillRegion);
         mXpBarFillSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         
+        mPotionIconSprite = ItemFactory.getPotionSprite();
+        mPotionIconSprite.setPosition(
+                (mSpoilsSprite.getWidth() / 2) - (mPotionIconSprite.getWidth() / 2), NO_SPOILS_TEXT_Y * mContext.getGameScaleY());
+        mPotionIconSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        
         mVictoryText = new ChangeableText(0, VICTORY_TEXT_Y * mContext.getGameScaleY(), mContext.LargeFont, VICTORY_TEXT);
         mVictoryText.setPosition(mSpoilsSprite.getWidth() / 2 - (mVictoryText.getWidth() / 2), VICTORY_TEXT_Y * mContext.getGameScaleY());
         mVictoryText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
@@ -228,10 +235,15 @@ public class BattleScene extends GameScene  {
         mNoSpoilsText = new Text(0, NO_SPOILS_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "No spoils!");
         mNoSpoilsText.setPosition(mSpoilsSprite.getWidth() / 2 - (mNoSpoilsText.getWidth() / 2), NO_SPOILS_TEXT_Y * mContext.getGameScaleY());
         mNoSpoilsText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        mPlusText = new Text( (mSpoilsSprite.getWidth() / 2) - (mPotionIconSprite.getWidth() / 2) - (20 * mContext.getGameScaleX()), 
+                (NO_SPOILS_TEXT_Y + 4) * mContext.getGameScaleY(), mContext.LargeFont, "+");
+        mPlusText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         
         mSpoilsSprite.attachChild(mVictoryText);
         mSpoilsSprite.attachChild(mLevelText);
         mSpoilsSprite.attachChild(mNoSpoilsText);
+        mSpoilsSprite.attachChild(mPlusText);
+        mSpoilsSprite.attachChild(mPotionIconSprite);
         mSpoilsSprite.attachChild(mXpBarSprite);
         mSpoilsSprite.attachChild(mXpBarFillSprite);
         
@@ -342,6 +354,8 @@ public class BattleScene extends GameScene  {
         mVictoryText.setAlpha(0f);
         mLevelText.setAlpha(0f);
         mNoSpoilsText.setAlpha(0f);
+        mPlusText.setAlpha(0f);
+        mPotionIconSprite.setAlpha(0f);
         mXpBarSprite.setAlpha(0f);
         mXpBarFillSprite.setAlpha(0f);
         
@@ -430,7 +444,7 @@ public class BattleScene extends GameScene  {
             mAnimating = true;
             mSlash[mSwipeDirection].start();
             
-            int damage = mMonster.hit(mPlayer.getAttack());
+            int damage = mMonster.hit(mPlayer.getTotalAttack());
             //mContext.gameToast("You deal " + damage + " damage!", Toast.LENGTH_SHORT);
             if (mMonster.getCurHP() <= 0) {
                 mXpGained = 8;
@@ -450,8 +464,22 @@ public class BattleScene extends GameScene  {
     }
     
     private void endCombat() {
+        
+        int spoils = rand.nextInt(100);
+        
+        if (spoils < 25) {
+            mNoSpoilsText.setVisible(true);
+            mPotionIconSprite.setVisible(false);
+            mPlusText.setVisible(false);
+        } else {
+            mNoSpoilsText.setVisible(false);
+            mPotionIconSprite.setVisible(true);
+            mPlusText.setVisible(true);
+            mPlayer.increasePotions(1);
+        }
+        
+        
         this.registerEntityModifier(spoilsFadeInModifer);
-        //mContext.endCombat();
     }
     
     private final IUpdateHandler updateHandler = new IUpdateHandler() {
@@ -498,7 +526,9 @@ public class BattleScene extends GameScene  {
             mSpoilsSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
             mVictoryText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
             mLevelText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY)); 
-            mNoSpoilsText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY)); 
+            if (mNoSpoilsText.isVisible()) mNoSpoilsText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+            if (mPlusText.isVisible()) mPlusText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+            if (mPotionIconSprite.isVisible()) mPotionIconSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
             mXpBarSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
             mXpBarFillSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
 

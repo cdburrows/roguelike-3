@@ -130,6 +130,7 @@ public class MainScene extends GameScene {
         // TODO: Dump gameMap map data when tmx max loaded -- maybe keep the tmx data inside gameMap.
         mMap = new GameMap(66, 45);
         
+        /*
         FileOutputStream fos;
         try {
             fos = mContext.openFileOutput("TEST.tmx", Context.MODE_WORLD_READABLE);
@@ -140,13 +141,12 @@ public class MainScene extends GameScene {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
 
         mTMXTiledMap = mMap.getTmxTiledMap(mContext, mContext.getTextureManager());
         mTMXTiledMap.getTMXLayers().get(0).setScale(mContext.getGameScaleX(), mContext.getGameScaleY());
         mTMXTiledMap.getTMXLayers().get(0).setScaleCenter(176, 144);
-        //mTMXTiledMap.getTMXLayers().
         attachChild(mTMXTiledMap.getTMXLayers().get(0));
-        //mTMXTiledMap.
         
         mPlayer = mContext.getPlayer();
         mPlayer.setParentMap(mMap);
