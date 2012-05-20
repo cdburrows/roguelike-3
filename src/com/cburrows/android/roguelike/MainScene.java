@@ -12,11 +12,15 @@ import org.anddev.andengine.engine.camera.hud.HUD;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXTiledMap;
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
+import org.anddev.andengine.entity.sprite.Sprite;
+import org.anddev.andengine.entity.text.ChangeableText;
 import org.anddev.andengine.input.touch.TouchEvent;
 import org.anddev.andengine.opengl.texture.TextureOptions;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
+import org.anddev.andengine.util.HorizontalAlign;
 
 import android.content.Context;
 import android.util.Log;
@@ -25,23 +29,31 @@ import android.view.MotionEvent;
 import com.cburrows.android.roguelike.TmxMap.Map;
 
 public class MainScene extends GameScene {
+    public static final float FIGHT_CHANCE = 0.40f;
     private static final float TOUCH_SENSITIVITY = 32.0f;
-    private static final int TEXTURE_ATLAS_WIDTH = 128;
-    private static final int TEXTURE_ATLAS_HEIGHT = 256;
-    private static final int SPRITE_IMAGE_X = 0;
-    private static final int SPRITE_IMAGE_Y = 0;
+    private static final int TEXTURE_ATLAS_WIDTH = 256;
+    private static final int TEXTURE_ATLAS_HEIGHT = 512;
     private static final int HUD_IMAGE_X = 0;
     private static final int HUD_IMAGE_Y = 128;
-    public static final float FIGHT_CHANCE = 0.40f;
+    private static final int HP_IMAGE_Y = 256;
+    private static final int HP_FILL_IMAGE_Y = 272;
+    private static final float HUD_OPACITY = 0.3f;
     
-    private BitmapTextureAtlas mBitmapTextureAtlas;
     private Player mPlayer;
     private GameMap mMap;
     private TMXTiledMap mTMXTiledMap;
     
+    private BitmapTextureAtlas mBitmapTextureAtlas;
     private TiledTextureRegion mIconTextureRegion;
     private AnimatedSprite mStatusIcon;
     private AnimatedSprite mMapIcon;
+    private AnimatedSprite mPotionIcon;
+    private ChangeableText mPotionText;
+    
+    private TextureRegion mHpBarRegion;
+    private TextureRegion mHpBarFillRegion;
+    private Sprite mHPBar;
+    private Sprite mHPBarFill;
     
     private HUD mHud;
     
@@ -63,25 +75,55 @@ public class MainScene extends GameScene {
         long timeStart = System.currentTimeMillis();
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-        mBitmapTextureAtlas = new BitmapTextureAtlas(TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-        
-        mPlayer = new Player(BitmapTextureAtlasTextureRegionFactory
-                .createTiledFromAsset(mBitmapTextureAtlas, mContext, "hero.png", SPRITE_IMAGE_X, SPRITE_IMAGE_Y, 4, 4),
-                mContext.getGameScaleX(), mContext.getGameScaleY());
+        mBitmapTextureAtlas = new BitmapTextureAtlas(TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT, 
+                TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         
         mIconTextureRegion = BitmapTextureAtlasTextureRegionFactory
-                .createTiledFromAsset(mBitmapTextureAtlas, mContext, "icons.png", HUD_IMAGE_X, HUD_IMAGE_Y, 2, 2);
+                .createTiledFromAsset(mBitmapTextureAtlas, mContext, "icons.png", HUD_IMAGE_X, HUD_IMAGE_Y, 2, 4);
         
-        mStatusIcon = new AnimatedSprite (8, 8, 32 * mContext.getGameScaleX(), 32 * mContext.getGameScaleY(), mIconTextureRegion);
-        //mStatusIcon.setScale(, mContext.getGameScaleY());
+        mStatusIcon = new AnimatedSprite (mContext.getGameScaleX(), mContext.getGameScaleY(), 
+                32 * mContext.getGameScaleX(), 32 * mContext.getGameScaleY(), mIconTextureRegion);
         mStatusIcon.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mStatusIcon.setAlpha(0.50f);
+        mStatusIcon.setAlpha(HUD_OPACITY);
         
-        mMapIcon = new AnimatedSprite(mCameraWidth - 8 - (32 * mContext.getGameScaleX()), 8, 
-                32 * mContext.getGameScaleX(), 32 * mContext.getGameScaleY(), mIconTextureRegion.deepCopy());
-        //mMapIcon.setScale(mContext.getGameScaleX(), mContext.getGameScaleY());
+        mMapIcon = new AnimatedSprite(mCameraWidth - mContext.getGameScaleX() - (32 * mContext.getGameScaleX()),
+                mContext.getGameScaleY(), 32 * mContext.getGameScaleX(), 32 * mContext.getGameScaleY(),
+                mIconTextureRegion.deepCopy());
         mMapIcon.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mMapIcon.setAlpha(0.50f);
+        mMapIcon.setAlpha(HUD_OPACITY);
+        
+        mPotionIcon = new AnimatedSprite(mCameraWidth - mContext.getGameScaleX() - (32 * mContext.getGameScaleX()), 
+                mCameraHeight - (32 * mContext.getGameScaleY()), 
+                32 * mContext.getGameScaleX(), 32 * mContext.getGameScaleY(), 
+                mIconTextureRegion.deepCopy());
+        mPotionIcon.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        mPotionIcon.setAlpha(HUD_OPACITY);
+        
+        mPotionText = new ChangeableText(mPotionIcon.getX() - (28 * mContext.getGameScaleX()) , 
+                mPotionIcon.getY() + (11 * mContext.getGameScaleY()), 
+                mContext.SmallFont, "88x", HorizontalAlign.RIGHT, 3);
+        mPotionText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        mPotionText.setAlpha(HUD_OPACITY);
+        
+        mHpBarRegion = BitmapTextureAtlasTextureRegionFactory
+                .createFromAsset(mBitmapTextureAtlas, mContext, "panels/hp_bar.png", 0, HP_IMAGE_Y);
+        mHPBar = new Sprite((mCameraWidth / 2) - (mHpBarRegion.getWidth() / 2 * mContext.getGameScaleX()), 
+                mCameraHeight - (24 * mContext.getGameScaleY()), 
+                mHpBarRegion.getWidth() * mContext.getGameScaleX(),
+                mHpBarRegion.getHeight() * mContext.getGameScaleY(),
+                mHpBarRegion);
+        mHPBar.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        mHPBar.setAlpha(HUD_OPACITY);
+        
+        mHpBarFillRegion = BitmapTextureAtlasTextureRegionFactory
+                .createFromAsset(mBitmapTextureAtlas, mContext, "panels/hp_fill_bar.png", 0, HP_FILL_IMAGE_Y);
+        mHPBarFill = new Sprite((mCameraWidth / 2) - (mHpBarFillRegion.getWidth() / 2 * mContext.getGameScaleX()), 
+                mCameraHeight - (24 * mContext.getGameScaleY()),
+                mHpBarFillRegion.getWidth() * mContext.getGameScaleX(),
+                mHpBarFillRegion.getHeight() * mContext.getGameScaleY(),
+                mHpBarFillRegion);
+        mHPBarFill.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        mHPBarFill.setAlpha(HUD_OPACITY);
         
         mContext.getTextureManager().loadTexture(mBitmapTextureAtlas);
         
@@ -106,12 +148,19 @@ public class MainScene extends GameScene {
         attachChild(mTMXTiledMap.getTMXLayers().get(0));
         //mTMXTiledMap.
         
+        mPlayer = mContext.getPlayer();
         mPlayer.setParentMap(mMap);
         mPlayer.setRoom(0, 0);
+        mPlayer.setCurHP(80);
+        mContext.setPlayer(mPlayer);
         
         mHud = new HUD();
         mHud.attachChild(mStatusIcon);
         mHud.attachChild(mMapIcon);
+        mHud.attachChild(mHPBar);
+        mHud.attachChild(mHPBarFill);
+        mHud.attachChild(mPotionIcon);
+        mHud.attachChild(mPotionText);
         
         mContext.getEngine().registerUpdateHandler(new UpdateHandler());
         
@@ -128,6 +177,8 @@ public class MainScene extends GameScene {
         
         mStatusIcon.setCurrentTileIndex(0);
         mMapIcon.setCurrentTileIndex(2);
+        mPotionIcon.setCurrentTileIndex(6);
+        mPotionText.setText(String.format("%02d", mPlayer.getNumPotions()) + "x");
         
         /* Make the camera not exceed the bounds of the TMXEntity. */
         /*
@@ -140,9 +191,8 @@ public class MainScene extends GameScene {
         mCamera.setChaseEntity(mPlayer.getAnimatedSprite());
         mCamera.updateChaseEntity();
         mCamera.setHUD(mHud);
-        
-        Log.d("MAIN", "minx " + mCamera.getMinX() + ", "  + mCamera.getMaxX());
-        Log.d("MAIN", "miny " + mCamera.getMinY() + ", "  + mCamera.getMaxY());
+
+        mHPBarFill.setWidth( ((float)mHpBarFillRegion.getWidth()) * mPlayer.getHPFraction() * mContext.getGameScaleX());
         
         mPlayer.setPlayerState(PlayerState.IDLE);
         
@@ -171,6 +221,11 @@ public class MainScene extends GameScene {
             if (mMapIcon.contains(mTouchX, mTouchY)) {
                 mMapIcon.setCurrentTileIndex(3);
                 openMiniMap();
+            }
+            
+            if (mPotionIcon.contains(mTouchX, mTouchY)) {
+                mPotionIcon.setCurrentTileIndex(7);
+                usePotion();
             }
         }
         else if(pTouchEvent.getAction() == MotionEvent.ACTION_MOVE)
@@ -202,11 +257,42 @@ public class MainScene extends GameScene {
         } else if (pTouchEvent.getAction() == MotionEvent.ACTION_UP) {
             mStatusIcon.setCurrentTileIndex(0);
             mMapIcon.setCurrentTileIndex(2);
+            mPotionIcon.setCurrentTileIndex(6);
             
         }
         return true;
     }
 
+    
+    
+    private void openStatus() {
+        mContext.openStatus();
+    }
+    
+    private void openMiniMap() {
+        //shake(2.0f, 2.0f);
+        //mContext.gameToast("MINIMAP", 50);
+        /*
+        Scene minimapScene = new Scene();
+        
+        BitmapTextureAtlas minimapTextureAtlas = new BitmapTextureAtlas(
+                64, 32, TextureOptions.REPEATING_BILINEAR_PREMULTIPLYALPHA);
+        TiledTextureRegion minimapTextureRegion = 
+                BitmapTextureAtlasTextureRegionFactory
+                .createTiledFromAsset(mIconTextureAtlas, this, "minimap_icons.png", 0, 0, 4, 2);
+        mStatusIcon = new AnimatedSprite(8,8,mIconTextureRegion); 
+        
+        mMainScene.attachChild(minimapScene);
+        */
+    }
+    
+    private void usePotion() {
+        mPlayer.usePotion();
+        mPotionText.setText(String.format("%02d", mPlayer.getNumPotions()) + "x");
+        mHPBarFill.setWidth( ((float)mHpBarFillRegion.getWidth()) * mPlayer.getHPFraction() * mContext.getGameScaleX());
+        
+    }
+    
     private class UpdateHandler implements IUpdateHandler {
         public void onUpdate(float pSecondsElapsed) {
             Event event = mPlayer.update(pSecondsElapsed);
@@ -226,25 +312,5 @@ public class MainScene extends GameScene {
 
         public void reset() {               
         }
-    }
-    
-    public void openStatus() {
-        mContext.openStatus();
-    }
-    
-    public void openMiniMap() {
-        //mContext.gameToast("MINIMAP", 50);
-        /*
-        Scene minimapScene = new Scene();
-        
-        BitmapTextureAtlas minimapTextureAtlas = new BitmapTextureAtlas(
-                64, 32, TextureOptions.REPEATING_BILINEAR_PREMULTIPLYALPHA);
-        TiledTextureRegion minimapTextureRegion = 
-                BitmapTextureAtlasTextureRegionFactory
-                .createTiledFromAsset(mIconTextureAtlas, this, "minimap_icons.png", 0, 0, 4, 2);
-        mStatusIcon = new AnimatedSprite(8,8,mIconTextureRegion); 
-        
-        mMainScene.attachChild(minimapScene);
-        */
     }
 }

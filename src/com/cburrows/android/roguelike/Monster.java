@@ -5,10 +5,21 @@ import java.util.Random;
 import org.anddev.andengine.entity.IEntity;
 import org.anddev.andengine.entity.modifier.AlphaModifier;
 import org.anddev.andengine.entity.modifier.ColorModifier;
+import org.anddev.andengine.entity.modifier.DurationEntityModifier;
+import org.anddev.andengine.entity.modifier.EntityModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier;
+import org.anddev.andengine.entity.modifier.MoveModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
+import org.anddev.andengine.entity.modifier.ScaleModifier;
 import org.anddev.andengine.entity.sprite.Sprite;
+import org.anddev.andengine.util.modifier.ease.EaseBackInOut;
+import org.anddev.andengine.util.modifier.ease.EaseBounceIn;
+import org.anddev.andengine.util.modifier.ease.EaseBounceInOut;
+import org.anddev.andengine.util.modifier.ease.EaseBounceOut;
+import org.anddev.andengine.util.modifier.ease.EaseCubicIn;
+import org.anddev.andengine.util.modifier.ease.EaseCubicOut;
 import org.anddev.andengine.util.modifier.IModifier;
+import org.anddev.andengine.util.modifier.IModifier.DeepCopyNotSupportedException;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -17,6 +28,10 @@ import android.util.Log;
 @Root(name="monster")
 public class Monster {
     private static final float MONSTER_FLASH_DURATION = 0.15f;
+
+    private static final float JUMP_HEIGHT = 24;
+
+    private static final float JUMP_SCALE = 1.2f;
     
     private MonsterState mMonsterState;
     
@@ -37,12 +52,17 @@ public class Monster {
     @Element(name="speed")
     private float mSpeed;
     
+    private float mScaleX;
+    private float mScaleY;
+    
     private boolean mDead;
     
     private Random rand;
     
-    public Monster() {
+    public Monster(float scaleX, float scaleY) {
          rand = new Random(System.currentTimeMillis());
+         mScaleX = scaleX;
+         mScaleY = scaleY;
     }
     
     public boolean targetable() {
@@ -85,9 +105,50 @@ public class Monster {
                 mSprite.getRed(), 1.5f,
                 mSprite.getGreen(), 0.15f,
                 mSprite.getBlue(), 0.15f, flashModifierListener) );
-            
+    }
+    
+    public void jumpForward(final float duration) { jumpForward(duration, null); }
+    public void jumpForward(final float duration, final IEntityModifierListener listener) {
+        mSprite.registerEntityModifier(new MoveModifier(duration / 2, 
+                mSprite.getX(), mSprite.getX(), mSprite.getY(), mSprite.getY() + JUMP_HEIGHT, 
+                new IEntityModifierListener() {
+                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+                        if (listener != null) listener.onModifierStarted(pModifier, pItem);
+                    }
+                    public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+                        if (listener != null) listener.onModifierFinished(pModifier, pItem);
+                        pItem.registerEntityModifier(new MoveModifier(duration / 2, 
+                                mSprite.getX(), mSprite.getX(), 
+                                mSprite.getY(), mSprite.getY() - JUMP_HEIGHT, EaseBackInOut.getInstance()));
+                        
+                        mSprite.registerEntityModifier(new ScaleModifier(duration/2, JUMP_SCALE * mScaleX, 
+                                1.0f * mScaleX, EaseBackInOut.getInstance()));
+                    }
+                }, EaseBackInOut.getInstance()));
+        
+        mSprite.registerEntityModifier(new ScaleModifier(duration/2, (1.0f * mScaleX), 
+                JUMP_SCALE * mScaleX, EaseBackInOut.getInstance()));
     }
 
+    public void jumpBackward(final float duration) {
+        mSprite.registerEntityModifier(new MoveModifier(duration / 2, 
+                mSprite.getX(), mSprite.getX(), mSprite.getY(), mSprite.getY() - JUMP_HEIGHT, 
+                new IEntityModifierListener() {
+                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
+                    public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+                        pItem.registerEntityModifier(new MoveModifier(duration / 2, 
+                                mSprite.getX(), mSprite.getX(), 
+                                mSprite.getY(), mSprite.getY() + JUMP_HEIGHT, EaseBackInOut.getInstance()));
+                        
+                        mSprite.registerEntityModifier(new ScaleModifier(duration/2, (1 / JUMP_SCALE) * mScaleX, 
+                                1.0f * mScaleX, EaseBackInOut.getInstance()));
+                    }
+                }, EaseBackInOut.getInstance()));
+        
+        mSprite.registerEntityModifier(new ScaleModifier(duration/2, 1.0f, 
+                (1 / JUMP_SCALE) * mScaleX, EaseBackInOut.getInstance()));
+    }
+    
     final IEntityModifierListener flashModifierListener = new IEntityModifierListener() {
         
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
@@ -162,8 +223,8 @@ public class Monster {
     }
 
     public enum MonsterState {
-        MONSTER_TRANSITION_IN, MONSTER_IDLE, MONSTER_ATTACK, MONSTER_FLASH, 
-        MONSTER_DEAD, MONSTER_TRANSITION_OUT
+        MONSTER_TRANSITION_IN, MONSTER_IDLE, MONSTER_ATTACK, MONSTER_DODGE, 
+        MONSTER_FLASH, MONSTER_DEAD, MONSTER_TRANSITION_OUT
     }
 
 }

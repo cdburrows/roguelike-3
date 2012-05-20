@@ -46,6 +46,7 @@ public class Animation {
     private boolean mFlippedVertical;
     private float mRotatation = 0f;
     private float mScale = 1f;
+    private float mSpeed = 1f;
     
     private TiledTextureRegion mAnimationTextureRegion;
     private AnimatedSprite mAnimationSprite;
@@ -65,14 +66,15 @@ public class Animation {
         mPosY = startY - (mFrameHeight / 2);
         mDx = endX - startX;
         mDy = endY - startY ;
-        mDuration = 0.35f;
+        mDuration = 0.24f;
+        mSpeed = mDuration;
         
         mKeyFrames = new ArrayList<KeyFrame>();
         mKeyFrames.add(new KeyFrame(0.0f, 0));
-        mKeyFrames.add(new KeyFrame(0.05f, 1));
-        mKeyFrames.add(new KeyFrame(0.1f, 2));
-        mKeyFrames.add(new KeyFrame(0.25f, 1));
-        mKeyFrames.add(new KeyFrame(0.3f, 0));
+        mKeyFrames.add(new KeyFrame(0.04f, 1));
+        mKeyFrames.add(new KeyFrame(0.08f, 2));
+        mKeyFrames.add(new KeyFrame(0.16f, 1));
+        mKeyFrames.add(new KeyFrame(0.2f, 0));
         
         mKeyFrameIndex = 0;
         if (mKeyFrames.size() > 0) mNextKeyFrameTime = mKeyFrames.get(0).mTime;
@@ -149,7 +151,7 @@ public class Animation {
             mPosY += mDy * (pSecondsElapsed / mDuration);
             mAnimationSprite.setPosition(mPosX, mPosY);
             
-            if (mCurrentTime > mDuration) {
+            if (mCurrentTime > (mDuration)) {
                 if (mFinishListener != null) mFinishListener.onModifierFinished(
                         null, mAnimationSprite);
                 
@@ -194,6 +196,19 @@ public class Animation {
     public void setScale(float Scale) {
         this.mScale = Scale;
     }
+    
+    public float getSpeed() {
+        return mSpeed;
+    }
+
+    public void setSpeed(float Speed) {
+        this.mSpeed = Speed;
+        float multiplyer = Speed / mDuration; 
+        for (KeyFrame k : mKeyFrames) {
+            k.mTime *= multiplyer;
+        }
+    }
+
 
     public boolean isFlippedHorizontal() {
         return mFlippedHorizontal;

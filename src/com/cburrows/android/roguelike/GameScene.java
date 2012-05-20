@@ -1,5 +1,7 @@
 package com.cburrows.android.roguelike;
 
+import java.util.Random;
+
 import javax.microedition.khronos.opengles.GL10;
 
 import org.anddev.andengine.engine.Engine;
@@ -12,6 +14,8 @@ import org.anddev.andengine.engine.options.EngineOptions.ScreenOrientation;
 import org.anddev.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.anddev.andengine.entity.IEntity;
 import org.anddev.andengine.entity.modifier.AlphaModifier;
+import org.anddev.andengine.entity.modifier.DurationEntityModifier;
+import org.anddev.andengine.entity.modifier.EntityModifier;
 import org.anddev.andengine.entity.modifier.FadeInModifier;
 import org.anddev.andengine.entity.modifier.FadeOutModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier;
@@ -23,6 +27,7 @@ import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.util.modifier.IModifier;
+import org.anddev.andengine.util.modifier.IModifier.DeepCopyNotSupportedException;
 import org.anddev.andengine.util.modifier.ease.EaseLinear;
 
 import android.util.Log;
@@ -31,7 +36,6 @@ import android.view.Display;
 public abstract class GameScene extends Scene {
     protected RoguelikeActivity mContext;
     protected BoundCamera mCamera;
-    protected BoundCamera mLastCamera;
     
     protected int mCameraWidth;
     protected int mCameraHeight;
@@ -90,7 +94,49 @@ public abstract class GameScene extends Scene {
         if (!fadeSprite.hasParent()) attachChild(fadeSprite);
         fadeSprite.registerEntityModifier(prFadeOutModifier);
     }
+    
+    public void shake(final float duration, final float intensity) {
+        final float x = mCamera.getCenterX();
+        final float y = mCamera.getCenterY();
+        final Random rand = new Random(System.currentTimeMillis());
+        
+        this.registerEntityModifier(new DurationEntityModifier(duration, 
+                new IEntityModifierListener() {
+            
+                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) { }
+                    
+                    public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+                        mCamera.setCenter(x, y);
+                    }
+                }) {
 
+                        public EntityModifier deepCopy() throws DeepCopyNotSupportedException {
+                            return null;
+                        }
+                        
+                        @Override
+                        protected void onManagedUpdate(float pSecondsElapsed, IEntity pItem) {
+                            /*
+                            float i = (rand.nextFloat() * 1000);
+                            mCamera.setCenter(x + i, y);
+                            Log.d("SHAKE", "Center " + mCamera.getCenterX() + " , " + i);
+                            */
+                            
+                            int sentitX =   1;
+                            int sentitY =   1;
+                            if(Math.random() < 0.5) sentitX = -1;
+                            if(Math.random() < 0.5) sentitY = -1;
+                            mCamera.setCenter( (float)(x + Math.random()*intensity*sentitX),
+                                                            (float)(y));
+                        }
+                        
+                        @Override
+                        protected void onManagedInitialize(IEntity pItem) {
+                            
+                        }
+                    });
+    }
+    
     private void setupFade() {
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
