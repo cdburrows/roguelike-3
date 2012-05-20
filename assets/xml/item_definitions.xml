@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<base_item_collection image_path="weapon_icons.png">     
+    <base_item name="Knife" index="0">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </base_item>
+    <base_item name="Dagger" index="1">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </base_item>
+    <base_item name="Short Sword" index="2">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </base_item>
+    <base_item name="Long Sword" index="3">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </base_item>
+    <base_item name="Broad Sword" index="4">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </base_item>
+</base_item_collection>
