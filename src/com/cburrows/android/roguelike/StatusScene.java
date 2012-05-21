@@ -41,11 +41,11 @@ public class StatusScene extends GameScene {
     private static final int HP_TEXT_Y  = 41;
     private static final int XP_TEXT_X = 121;
     private static final int XP_TEXT_Y = 61;
-    private static final int ATTACK_TEXT_X = 28;
+    private static final int ATTACK_TEXT_X = 117;
     private static final int ATTACK_TEXT_Y = 90;
-    private static final int DEFENSE_TEXT_X = 28;
+    private static final int DEFENSE_TEXT_X = 117;
     private static final int DEFENSE_TEXT_Y = 116;
-    private static final int MAGIC_TEXT_X = 28;
+    private static final int MAGIC_TEXT_X = 117;
     private static final int MAGIC_TEXT_Y = 142;
     private static final int POTION_TEXT_X = 253;
     private static final int POTION_TEXT_Y = 199;

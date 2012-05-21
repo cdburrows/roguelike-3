@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<item_definitions image_path="weapon_icons.png">     
+<item_definitions image_path="weapon_icons.png" first_weapon="0" first_armour="25">
+    <item_rarity name="Broken">
+        <probability>10</probability>
+        <colour>gray</colour>
+        <num_properties>0</num_properties>
+        <stat_multiplier_min>0.4f</stat_multiplier_min>
+        <stat_multiplier_max>0.8f</stat_multiplier_max>
+    </item_rarity>     
     <item_rarity name="">
-        <probability>80</probability>
+        <probability>70</probability>
         <colour>white</colour>
         <num_properties>0</num_properties>
         <stat_multiplier_min>1.0f</stat_multiplier_min>
@@ -40,17 +47,243 @@
         <defense>0</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Short Sword" index="2">
+    <item_definition name="Blade" index="2">
         <attack>7</attack>
         <defense>0</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Long Sword" index="3">
+    <item_definition name="Deadly Knife" index="3">
         <attack>11</attack>
         <defense>0</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Broad Sword" index="4">
+    <item_definition name="Assassin's Dagger" index="4">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Short Sword" index="5">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Long Sword" index="6">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Broadsword" index="7">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Holy Sword" index="8">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Deamon Sword" index="9">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Javalin" index="10">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Spear" index="11">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Glaive" index="12">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Hunter's Spear" index="13">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Trident" index="14">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Hatchet" index="15">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Double Axe" index="16">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Butcher's Axe" index="17">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Heavy Axe" index="18">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Gladiator" index="19">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Club" index="20">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="CLudgel" index="21">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Hammer" index="22">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Mace" index="23">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Heavy Mace" index="24">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    
+    <item_definition name="Knife" index="25">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Dagger" index="26">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Short Sword" index="27">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Long Sword" index="28">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Broad Sword" index="29">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Knife" index="30">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Dagger" index="31">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Short Sword" index="32">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Long Sword" index="33">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Broad Sword" index="34">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Knife" index="35">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Dagger" index="36">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Short Sword" index="37">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Long Sword" index="38">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Broad Sword" index="39">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Knife" index="40">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Dagger" index="41">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Short Sword" index="42">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Long Sword" index="43">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Broad Sword" index="44">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Knife" index="45">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Dagger" index="46">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Short Sword" index="47">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Long Sword" index="48">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Broad Sword" index="49">
         <attack>16</attack>
         <defense>0</defense>
         <magic>0</magic>

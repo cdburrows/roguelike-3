@@ -31,7 +31,7 @@ public class ItemFactory {
     private static final int FIRST_ICON_X = 32;
     private static final int SECOND_ICON_X = 72;
     private static final int THIRD_ICON_X = 112;
-    private static final int VALUE_TEXT_Y = 19;
+    private static final int VALUE_TEXT_Y = 17;
     private static final int FIRST_VALUE_TEXT_X = 46;
     private static final int SECOND_VALUE_TEXT_X = 86;
     private static final int THIRD_VALUE_TEXT_X = 124;
@@ -95,10 +95,6 @@ public class ItemFactory {
         Text itemName = new Text(TEXT_X * context.getGameScaleX(), TEXT_Y * context.getGameScaleY(), 
                 context.SmallFont, name);
         itemName.setColor(Color.red(fontColor)/255, Color.green(fontColor)/255, Color.blue(fontColor)/255);
-        
-        attack = 88;
-        defense = 88;
-        magic = 88;
         
         int curValueIndex = -1;
         for (int i = 0; i < 3; i++) {
@@ -168,8 +164,8 @@ public class ItemFactory {
     
     public static Item createRandomItem(RoguelikeActivity context, int level, int itemType) {
         int i = 0;
-        if (itemType == ITEM_TYPE_WEAPON) i = rand.nextInt(5); //(25);
-        if (itemType == ITEM_TYPE_ARMOUR) i = rand.nextInt(5);; //rand.nextInt(25) + 25;
+        if (itemType == ITEM_TYPE_WEAPON) i = rand.nextInt(mItemDefinitions.mFirstArmour-1); 
+        if (itemType == ITEM_TYPE_ARMOUR) i = rand.nextInt(25) + mItemDefinitions.mFirstArmour;
         
         ItemRarity rarity = mItemDefinitions.getRandomRarity();
         int textColour = rarity.getColour();

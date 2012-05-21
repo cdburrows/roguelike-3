@@ -19,6 +19,7 @@ public class ItemRarity {
         colourMap.put("green", Color.GREEN);
         colourMap.put("blue", Color.BLUE);
         colourMap.put("yellow", Color.YELLOW);
+        colourMap.put("gray", Color.LTGRAY);
     }
     
     @Attribute(name="name")

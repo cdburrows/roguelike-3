@@ -20,6 +20,12 @@ public class ItemDefinitions {
     @Attribute(name="image_path")
     public String mImagePath;
     
+    @Attribute(name="first_weapon")
+    public int mFirstWeapon;
+    
+    @Attribute(name="first_armour")
+    public int mFirstArmour;
+    
     @ElementList(name="item_rarity", inline = true)
     public List<ItemRarity> mItemRarityList;
     

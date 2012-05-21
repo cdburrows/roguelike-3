@@ -65,6 +65,8 @@ public class MainScene extends GameScene {
     private float mTotalTouchOffsetY;
     
     private Random rand;
+    
+    private Sprite mItem;
 
     public MainScene(RoguelikeActivity context) {
         super(context);
@@ -270,7 +272,18 @@ public class MainScene extends GameScene {
     }
     
     private void openMiniMap() {
-        ItemFactory.createRandomItem(mContext, 0);
+        if (mItem == null || !mItem.isVisible()) {
+            Item item = ItemFactory.createRandomWeapon(mContext, 1);
+            mItem = item.getSprite();
+            mItem.setPosition(64, 96);
+            if (!mItem.hasParent()) attachChild(mItem);
+            mItem.setVisible(true);
+        } else {
+            mItem.setVisible(false);
+        }
+            
+        
+        //ItemFactory.createRandomItem(mContext, 0);
         //shake(2.0f, 2.0f);
         //mContext.gameToast("MINIMAP", 50);
         /*
