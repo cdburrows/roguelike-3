@@ -4,8 +4,8 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
-@Root(name = "base_item")
-public class BaseItemDefinition {
+@Root(name = "item_definition")
+public class ItemDefinition {
     
     @Attribute
     public String name;

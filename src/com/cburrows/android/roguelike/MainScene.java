@@ -270,6 +270,7 @@ public class MainScene extends GameScene {
     }
     
     private void openMiniMap() {
+        ItemFactory.createRandomItem(mContext, 0);
         //shake(2.0f, 2.0f);
         //mContext.gameToast("MINIMAP", 50);
         /*

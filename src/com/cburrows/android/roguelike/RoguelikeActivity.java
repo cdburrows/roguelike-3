@@ -32,7 +32,7 @@ import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
 
 import com.cburrows.android.roguelike.TmxMap.Map;
-import com.cburrows.android.roguelike.xml.BaseItemCollection;
+import com.cburrows.android.roguelike.xml.ItemDefinitions;
 
 public class RoguelikeActivity extends BaseGameActivity implements
     IOnSceneTouchListener {

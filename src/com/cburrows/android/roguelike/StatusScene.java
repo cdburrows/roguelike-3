@@ -31,28 +31,28 @@ public class StatusScene extends GameScene {
     private static final int TEXTURE_ATLAS_HEIGHT = 512;
     private static final int HUD_IMAGE_X = 0;
     private static final int HUD_IMAGE_Y = 320;
-    private static final int TITLE_Y = 8;
+    private static final int TITLE_Y = 10;
         
     private static final int NAME_TEXT_X = 16;
-    private static final int NAME_TEXT_Y = 45;
+    private static final int NAME_TEXT_Y = 41;
     private static final int LEVEL_TEXT_X = 16;
-    private static final int LEVEL_TEXT_Y = 69;
+    private static final int LEVEL_TEXT_Y = 61;
     private static final int HP_TEXT_X = 121;
-    private static final int HP_TEXT_Y  = 45;
+    private static final int HP_TEXT_Y  = 41;
     private static final int XP_TEXT_X = 121;
-    private static final int XP_TEXT_Y = 69;
-    private static final int ATTACK_TEXT_X = 56;
-    private static final int ATTACK_TEXT_Y = 121;
-    private static final int DEFENSE_TEXT_X = 56;
-    private static final int DEFENSE_TEXT_Y = 160;
-    private static final int MAGIC_TEXT_X = 56;
-    private static final int MAGIC_TEXT_Y = 199;
+    private static final int XP_TEXT_Y = 61;
+    private static final int ATTACK_TEXT_X = 28;
+    private static final int ATTACK_TEXT_Y = 90;
+    private static final int DEFENSE_TEXT_X = 28;
+    private static final int DEFENSE_TEXT_Y = 116;
+    private static final int MAGIC_TEXT_X = 28;
+    private static final int MAGIC_TEXT_Y = 142;
     private static final int POTION_TEXT_X = 253;
     private static final int POTION_TEXT_Y = 199;
-    private static final float WEAPON_SPRITE_X = 121;
-    private static final float WEAPON_SPRITE_Y = 113;
-    private static final float ARMOUR_SPRITE_X = 121;
-    private static final float ARMOUR_SPRITE_Y = 153;
+    private static final float WEAPON_SPRITE_X = 4;
+    private static final float WEAPON_SPRITE_Y = 166;
+    private static final float ARMOUR_SPRITE_X = 4;
+    private static final float ARMOUR_SPRITE_Y = 202;
 
     private HUD mHud;
     
@@ -102,7 +102,7 @@ public class StatusScene extends GameScene {
         
         mHud = new HUD();
         
-        mStatusText = new ChangeableText (0, 0, mContext.LargeFont, "Status");
+        mStatusText = new ChangeableText (0, 0, mContext.Font, "Status");
         mStatusText.setPosition((mCameraWidth / 2) - (mStatusText.getWidth() / 2), TITLE_Y * mContext.getGameScaleY());
         
         mBackIconTextureRegion = BitmapTextureAtlasTextureRegionFactory
@@ -120,14 +120,14 @@ public class StatusScene extends GameScene {
         //mWeaponSprite = new Item(mContext, "Weapon", 0);
         //mArmourSprite = new Item(mContext, "Armour", 1);
         
-        mNameText = new ChangeableText(NAME_TEXT_X * mContext.getGameScaleX(), NAME_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "XXXXXX");
-        mLevelText= new ChangeableText(LEVEL_TEXT_X * mContext.getGameScaleX(), LEVEL_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "Lvl 88");
-        mHPText = new ChangeableText(HP_TEXT_X * mContext.getGameScaleX(), HP_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "HP XXXX/XXXX");
-        mXPText = new ChangeableText(XP_TEXT_X * mContext.getGameScaleX(), XP_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "XP XXXX/XXXX");
-        mAttackText = new ChangeableText(ATTACK_TEXT_X * mContext.getGameScaleX(), ATTACK_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "888");
-        mDefenseText = new ChangeableText(DEFENSE_TEXT_X * mContext.getGameScaleX(), DEFENSE_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "888");
-        mMagicText = new ChangeableText(MAGIC_TEXT_X * mContext.getGameScaleX(), MAGIC_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "888");
-        mPotionText = new ChangeableText(POTION_TEXT_X * mContext.getGameScaleX(), MAGIC_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "x08");
+        mNameText = new ChangeableText(NAME_TEXT_X * mContext.getGameScaleX(), NAME_TEXT_Y * mContext.getGameScaleY(), mContext.SmallFont, "XXXXXX");
+        mLevelText= new ChangeableText(LEVEL_TEXT_X * mContext.getGameScaleX(), LEVEL_TEXT_Y * mContext.getGameScaleY(), mContext.SmallFont, "Lvl 88");
+        mHPText = new ChangeableText(HP_TEXT_X * mContext.getGameScaleX(), HP_TEXT_Y * mContext.getGameScaleY(), mContext.SmallFont, "HP XXXX/XXXX");
+        mXPText = new ChangeableText(XP_TEXT_X * mContext.getGameScaleX(), XP_TEXT_Y * mContext.getGameScaleY(), mContext.SmallFont, "XP XXXX/XXXX");
+        mAttackText = new ChangeableText(ATTACK_TEXT_X * mContext.getGameScaleX(), ATTACK_TEXT_Y * mContext.getGameScaleY(), mContext.SmallFont, "888");
+        mDefenseText = new ChangeableText(DEFENSE_TEXT_X * mContext.getGameScaleX(), DEFENSE_TEXT_Y * mContext.getGameScaleY(), mContext.SmallFont, "888");
+        mMagicText = new ChangeableText(MAGIC_TEXT_X * mContext.getGameScaleX(), MAGIC_TEXT_Y * mContext.getGameScaleY(), mContext.SmallFont, "888");
+        mPotionText = new ChangeableText(POTION_TEXT_X * mContext.getGameScaleX(), MAGIC_TEXT_Y * mContext.getGameScaleY(), mContext.SmallFont, "x08");
         
         attachChild(mBackgroundSprite);
         attachChild(mBackIcon);

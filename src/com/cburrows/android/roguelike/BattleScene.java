@@ -224,7 +224,8 @@ public class BattleScene extends GameScene  {
         
         mPotionIconSprite = ItemFactory.getPotionSprite();
         mPotionIconSprite.setPosition(
-                (mSpoilsSprite.getWidth() / 2) - (mPotionIconSprite.getWidth() / 2), NO_SPOILS_TEXT_Y * mContext.getGameScaleY());
+                (mSpoilsSprite.getWidth() / 2) - (mPotionIconSprite.getWidth() / 2),
+                NO_SPOILS_TEXT_Y * mContext.getGameScaleY());
         mPotionIconSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         
         mVictoryText = new ChangeableText(0, VICTORY_TEXT_Y * mContext.getGameScaleY(), mContext.LargeFont, VICTORY_TEXT);
