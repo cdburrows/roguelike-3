@@ -5,14 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
-
-
-import android.util.Log;
 
 @Root(name = "item_definitions")
 public class ItemDefinitions {

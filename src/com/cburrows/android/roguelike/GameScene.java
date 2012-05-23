@@ -1,24 +1,14 @@
 package com.cburrows.android.roguelike;
 
-import java.util.Random;
-
 import javax.microedition.khronos.opengles.GL10;
 
-import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.camera.BoundCamera;
-import org.anddev.andengine.engine.camera.Camera;
-import org.anddev.andengine.engine.handler.timer.ITimerCallback;
-import org.anddev.andengine.engine.handler.timer.TimerHandler;
-import org.anddev.andengine.engine.options.EngineOptions;
-import org.anddev.andengine.engine.options.EngineOptions.ScreenOrientation;
-import org.anddev.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.anddev.andengine.entity.IEntity;
 import org.anddev.andengine.entity.modifier.AlphaModifier;
 import org.anddev.andengine.entity.modifier.DurationEntityModifier;
 import org.anddev.andengine.entity.modifier.EntityModifier;
 import org.anddev.andengine.entity.modifier.FadeInModifier;
 import org.anddev.andengine.entity.modifier.FadeOutModifier;
-import org.anddev.andengine.entity.modifier.IEntityModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.entity.sprite.Sprite;
@@ -27,10 +17,8 @@ import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.util.modifier.IModifier;
-import org.anddev.andengine.util.modifier.IModifier.DeepCopyNotSupportedException;
 import org.anddev.andengine.util.modifier.ease.EaseLinear;
 
-import android.util.Log;
 import android.view.Display;
 
 public abstract class GameScene extends Scene {
@@ -98,7 +86,6 @@ public abstract class GameScene extends Scene {
     public void shake(final float duration, final float intensity) {
         final float x = mCamera.getCenterX();
         final float y = mCamera.getCenterY();
-        final Random rand = new Random(System.currentTimeMillis());
         
         this.registerEntityModifier(new DurationEntityModifier(duration, 
                 new IEntityModifierListener() {
@@ -116,17 +103,11 @@ public abstract class GameScene extends Scene {
                         
                         @Override
                         protected void onManagedUpdate(float pSecondsElapsed, IEntity pItem) {
-                            /*
-                            float i = (rand.nextFloat() * 1000);
-                            mCamera.setCenter(x + i, y);
-                            Log.d("SHAKE", "Center " + mCamera.getCenterX() + " , " + i);
-                            */
-                            
                             int sentitX =   1;
-                            int sentitY =   1;
+                            //int sentitY =   1;
                             if(Math.random() < 0.5) sentitX = -1;
-                            if(Math.random() < 0.5) sentitY = -1;
-                            mCamera.setCenter( (float)(x + Math.random()*intensity*sentitX),
+                            //if(Math.random() < 0.5) sentitY = -1;
+                            mCamera.setCenter( (float)(x + Math.random()*intensity*sentitX*RoguelikeActivity.sScaleX),
                                                             (float)(y));
                         }
                         

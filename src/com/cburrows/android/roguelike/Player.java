@@ -1,13 +1,13 @@
 package com.cburrows.android.roguelike;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.Random;
 
-import org.anddev.andengine.entity.IEntity;
-import org.anddev.andengine.entity.modifier.LoopEntityModifier;
-import org.anddev.andengine.entity.modifier.PathModifier;
-import org.anddev.andengine.entity.modifier.PathModifier.Path;
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
-import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
+import org.anddev.andengine.entity.sprite.Sprite;
 
 import android.util.Log;
 
@@ -20,7 +20,6 @@ public class Player {
     public static final int[] ANIMATE_FACE_DOWN = { 8, 9, 10, 9 };
     public static final int[] ANIMATE_FACE_LEFT = { 12, 13, 14, 13 };
     
-    private TiledTextureRegion mPlayerTextureRegion;
     private AnimatedSprite mSprite;
     private GameMap mParentMap;
     
@@ -46,26 +45,25 @@ public class Player {
     private int mCurXP;
     
     private int mBaseAttack;
-    private int mTotalAttack;
+    private int mAttackBonus;
     private int mBaseDefense;
-    private int mTotalDefense;
+    private int mDefenseBonus;
     private int mBaseMagic;
-    private int mTotalMagic;
+    private int mMagicBonus;
     
     private int mPotions;
-    
     private Item mWeapon;
     private Item mArmour;
+    private ArrayList<Item> mWeaponList;
+    private ArrayList<Item> mArmourList;
 
-    public Player(TiledTextureRegion textureRegion, float scaleX, float scaleY) {
-        mScaleX = scaleX;
-        mScaleY = scaleY;
+    public Player(AnimatedSprite sprite) {
+        mScaleX = RoguelikeActivity.sScaleX;
+        mScaleY = RoguelikeActivity.sScaleY;
         mPlayerState = PlayerState.IDLE;
-        mPlayerTextureRegion = textureRegion;
-        mSprite = new AnimatedSprite(mPosX, mPosY, textureRegion);
-        mSprite.setScale(scaleX, scaleY);
         mDirection = Direction.DIRECTION_DOWN;
-        mSprite.setCurrentTileIndex(Direction.DIRECTION_DOWN.getValue() * 4 + 1);
+        mSprite = sprite;
+        mSprite.setCurrentTileIndex(mDirection.getValue() * 4 + 1);
         
         mName = "Leal";
         mLevel = 1;
@@ -78,11 +76,14 @@ public class Player {
         mBaseDefense = 4;
         mBaseMagic = 4;
         
-        mTotalAttack = mBaseAttack;
-        mTotalDefense = mBaseDefense;
-        mTotalMagic = mBaseMagic;
-        
         mPotions = 10;
+        mWeaponList = new ArrayList<Item>();
+        mArmourList = new ArrayList<Item>();
+        
+        for (int i = 0; i < 3; i++)
+            mWeaponList.add(ItemFactory.createRandomItem(1));
+        
+        sortWeapons();
     }
     
     public Event update(float elapsed) {
@@ -164,7 +165,7 @@ public class Player {
         mBaseDefense *= 1.4;
         mBaseMagic *= 1.4;
         
-        updateStats();
+        //updateStats();
     }
     
     public void usePotion() {
@@ -175,6 +176,7 @@ public class Player {
         }
     }
     
+    /*
     private void updateStats() {
         if (mWeapon != null && mArmour != null) {
             mTotalAttack = mBaseAttack + mWeapon.getAttack() + mArmour.getAttack();
@@ -182,12 +184,13 @@ public class Player {
             mTotalMagic = mBaseMagic + mWeapon.getMagic() + mArmour.getMagic();
         }
     }
+    */
     
     public void updatePositionFromRoom() {
-        mPosX = ((mRoomX * mParentMap.ROOM_WIDTH) + (mParentMap.ROOM_WIDTH / 2)) * (mTileWidth); // / (mScaleX * 4));
-        mPosY = ((mRoomY * mParentMap.ROOM_HEIGHT) + (mParentMap.ROOM_HEIGHT / 2)) * (mTileHeight); // / (mScaleY * 4));
+        mPosX = ((mRoomX * GameMap.ROOM_WIDTH) + (GameMap.ROOM_WIDTH / 2)) * (mTileWidth * mScaleX); 
+        mPosY = ((mRoomY * GameMap.ROOM_HEIGHT) + (GameMap.ROOM_HEIGHT / 2)) * (mTileHeight * mScaleY);
         mSprite.setPosition(mPosX, mPosY);
-        Log.d("SPRITE", "X: " + mPosX);
+        Log.d("SPRITE", "X: " + mPosX + ", " + mTileWidth);
         Log.d("SPRITE", "Y: " + mPosY);
     }
     
@@ -195,21 +198,21 @@ public class Player {
         mSprite.setCurrentTileIndex(direction.getValue() * 4 + 1);
     }
     
-    public void equipWeapon(Item weapon) { 
-        mWeapon = weapon;
-        updateStats();
-    }
     
-    public void equipArmour(Item armour) { 
-        mArmour = armour;
-        updateStats();
+    
+    private void sortWeapons() {
+        Collections.sort(mWeaponList, new Comparator<Item>() {
+            public int compare(Item lhs, Item rhs) {
+                if (lhs.getAttack() < rhs.getAttack()) return 1;
+                if (lhs.getAttack() == rhs.getAttack()) return 0;
+                return -1;
+            }
+            
+        });
     }
     
     public PlayerState getPlayerState() { return mPlayerState; }
     public void setPlayerState(PlayerState playerState) { mPlayerState = playerState; }
-    
-    public TiledTextureRegion getPlayerTextureRegion() { return mPlayerTextureRegion; }
-    public void setPlayerTextureRegion(TiledTextureRegion playerTextureRegion) { mPlayerTextureRegion = playerTextureRegion; }
     
     public void setAnimatedSprite(AnimatedSprite sprite) { mSprite = sprite; }
     public AnimatedSprite getAnimatedSprite() { return mSprite; }
@@ -228,10 +231,10 @@ public class Player {
     public void setTileY(int tileY) { mPosY = tileY; }
     
     public int getTileWidth() { return mTileWidth; }
-    public void setTileWidth(int tileWidth) { this.mTileWidth = mTileWidth; }
+    public void setTileWidth(int tileWidth) { this.mTileWidth = tileWidth; }
 
     public int getTileHeight() { return mTileHeight; }
-    public void setTileHeight(int tileHeight) { this.mTileHeight = mTileHeight; }
+    public void setTileHeight(int tileHeight) { this.mTileHeight = tileHeight; }
 
     public void setRoom(int x, int y) {
         mRoomX = x;
@@ -241,11 +244,66 @@ public class Player {
     }
     
     public int getRoomX() { return mRoomX; }
-    public void setRoomX(int roomX) { this.mRoomX = mRoomX; updatePositionFromRoom(); }
+    public void setRoomX(int roomX) { this.mRoomX = roomX; updatePositionFromRoom(); }
 
     public int getRoomY() { return mRoomY; }
-    public void setRoomY(int roomY) { this.mRoomY = mRoomY; updatePositionFromRoom(); }
+    public void setRoomY(int roomY) { this.mRoomY = roomY; updatePositionFromRoom(); }
+    
+  //********************************
+    // Equipment accessors
+    //********************************
+    
+    public void setNumPotions(int potions) { mPotions = potions; }
+    public int getNumPotions() { return mPotions; }
+    public void increasePotions(int i) {
+        mPotions += i;
+    }
+    
+    private void unequip(Item item) {
+        mAttackBonus -= item.getAttack();
+        mDefenseBonus -= item.getDefense();
+        mMagicBonus -= item.getMagic();
+        mWeaponList.add(item);
+        sortWeapons();
+    }
+    
+    public Item getWeapon() { return mWeapon; }
+    
+    public void equipWeapon(Item weapon) {
+        if (mWeapon != null) unequip(mWeapon);
+        
+        mWeaponList.remove(weapon);
+        mWeapon = weapon;
+        mAttackBonus += weapon.getAttack();
+        mDefenseBonus += weapon.getDefense();
+        mMagicBonus += weapon.getMagic();
+    }
+    
+    public ArrayList<Item> getWeaponList() { return mWeaponList; }
+    
 
+    public Item getArmour() { return mArmour; }
+    
+    public void equipArmour(Item armour) { 
+        mArmour = armour;
+        //updateStats();
+    }
+    
+    public ArrayList<Item> getArmourList() { return mArmourList; }
+    
+    public void addItem(Item item) {
+        if (item.getItemType() == Item.ITEM_TYPE_WEAPON) {
+            mWeaponList.add(item);
+            sortWeapons();
+        } else if (item.getItemType() == Item.ITEM_TYPE_ARMOUR) {
+            mArmourList.add(item);
+        }
+    }
+
+    //********************************
+    // Stat accessors
+    //********************************
+    
     public String getName() {
         return mName;
     }
@@ -315,11 +373,9 @@ public class Player {
     }
     public void setBaseAttack(int mAttack) {
         this.mBaseAttack = mAttack;
-        updateStats();
     }
-    
     public int getTotalAttack() {
-        return mTotalAttack;
+        return mBaseAttack + mAttackBonus;
     }
     
     public int getBaseDefense() {
@@ -327,11 +383,9 @@ public class Player {
     }
     public void setBaseDefense(int mDefense) {
         this.mBaseDefense = mDefense;
-        updateStats();
     }
-    
     public int getTotalDefense() {
-        return mTotalDefense;
+        return mBaseDefense + mDefenseBonus;
     }
 
     public int getBaseMagic() {
@@ -339,22 +393,9 @@ public class Player {
     }
     public void setBaseMagic(int mMagic) {
         this.mBaseMagic = mMagic;
-        updateStats();
     }
-    
     public int getTotalMagic() {
-        return mTotalMagic;
-    }
-    
-    public void setNumPotions(int potions) { mPotions = potions; }
-    public int getNumPotions() { return mPotions; }
-    
-    public Item getWeapon() { return mWeapon; }
-
-    public Item getArmour() { return mArmour; }
-
-    public void increasePotions(int i) {
-        mPotions += i;
+        return mBaseMagic + mMagicBonus;
     }
 }
     

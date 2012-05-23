@@ -5,25 +5,14 @@ import java.util.Random;
 import org.anddev.andengine.entity.IEntity;
 import org.anddev.andengine.entity.modifier.AlphaModifier;
 import org.anddev.andengine.entity.modifier.ColorModifier;
-import org.anddev.andengine.entity.modifier.DurationEntityModifier;
-import org.anddev.andengine.entity.modifier.EntityModifier;
-import org.anddev.andengine.entity.modifier.IEntityModifier;
 import org.anddev.andengine.entity.modifier.MoveModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.anddev.andengine.entity.modifier.ScaleModifier;
-import org.anddev.andengine.entity.sprite.Sprite;
+import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.util.modifier.ease.EaseBackInOut;
-import org.anddev.andengine.util.modifier.ease.EaseBounceIn;
-import org.anddev.andengine.util.modifier.ease.EaseBounceInOut;
-import org.anddev.andengine.util.modifier.ease.EaseBounceOut;
-import org.anddev.andengine.util.modifier.ease.EaseCubicIn;
-import org.anddev.andengine.util.modifier.ease.EaseCubicOut;
 import org.anddev.andengine.util.modifier.IModifier;
-import org.anddev.andengine.util.modifier.IModifier.DeepCopyNotSupportedException;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
-
-import android.util.Log;
 
 @Root(name="monster")
 public class Monster {
@@ -35,8 +24,8 @@ public class Monster {
     
     private MonsterState mMonsterState;
     
-    @Element(name="sprite")
-    private Sprite mSprite;
+    //@Element(name="sprite")
+    private TiledSprite mSprite;
     
     @Element(name="hp")
     private int mMaxHP;
@@ -52,17 +41,13 @@ public class Monster {
     @Element(name="speed")
     private float mSpeed;
     
-    private float mScaleX;
-    private float mScaleY;
-    
     private boolean mDead;
     
     private Random rand;
     
-    public Monster(float scaleX, float scaleY) {
+    public Monster(TiledSprite sprite) {
          rand = new Random(System.currentTimeMillis());
-         mScaleX = scaleX;
-         mScaleY = scaleY;
+         mSprite = sprite;
     }
     
     public boolean targetable() {
@@ -121,13 +106,13 @@ public class Monster {
                                 mSprite.getX(), mSprite.getX(), 
                                 mSprite.getY(), mSprite.getY() - JUMP_HEIGHT, EaseBackInOut.getInstance()));
                         
-                        mSprite.registerEntityModifier(new ScaleModifier(duration/2, JUMP_SCALE * mScaleX, 
-                                1.0f * mScaleX, EaseBackInOut.getInstance()));
+                        mSprite.registerEntityModifier(new ScaleModifier(duration/2, JUMP_SCALE, 
+                                1.0f, EaseBackInOut.getInstance()));
                     }
                 }, EaseBackInOut.getInstance()));
         
-        mSprite.registerEntityModifier(new ScaleModifier(duration/2, (1.0f * mScaleX), 
-                JUMP_SCALE * mScaleX, EaseBackInOut.getInstance()));
+        mSprite.registerEntityModifier(new ScaleModifier(duration/2, 1.0f, 
+                JUMP_SCALE, EaseBackInOut.getInstance()));
     }
 
     public void jumpBackward(final float duration) {
@@ -140,13 +125,13 @@ public class Monster {
                                 mSprite.getX(), mSprite.getX(), 
                                 mSprite.getY(), mSprite.getY() + JUMP_HEIGHT, EaseBackInOut.getInstance()));
                         
-                        mSprite.registerEntityModifier(new ScaleModifier(duration/2, (1 / JUMP_SCALE) * mScaleX, 
-                                1.0f * mScaleX, EaseBackInOut.getInstance()));
+                        mSprite.registerEntityModifier(new ScaleModifier(duration / 2, 1 / JUMP_SCALE, 
+                                1.0f, EaseBackInOut.getInstance()));
                     }
                 }, EaseBackInOut.getInstance()));
         
         mSprite.registerEntityModifier(new ScaleModifier(duration/2, 1.0f, 
-                (1 / JUMP_SCALE) * mScaleX, EaseBackInOut.getInstance()));
+                1 / JUMP_SCALE, EaseBackInOut.getInstance()));
     }
     
     final IEntityModifierListener flashModifierListener = new IEntityModifierListener() {
@@ -167,11 +152,11 @@ public class Monster {
         }
     };
     
-    public Sprite getSprite() {
+    public TiledSprite getSprite() {
         return mSprite;
     }
-    public void setSprite(Sprite Sprite) {
-        this.mSprite = Sprite;
+    public void setSprite(TiledSprite mMonsterSprite) {
+        this.mSprite = mMonsterSprite;
     }
     
     public MonsterState getMonsterState() {
@@ -199,13 +184,13 @@ public class Monster {
         return mAttack;
     }
     public void setAttack(int Attack) {
-        this.mAttack = mAttack;
+        this.mAttack = Attack;
     }
     public int getDefense() {
         return mDefense;
     }
     public void setDefense(int Defense) {
-        this.mDefense = mDefense;
+        this.mDefense = Defense;
     }
 
     public float getSpeed() {

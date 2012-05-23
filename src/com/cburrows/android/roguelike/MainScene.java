@@ -1,57 +1,42 @@
 package com.cburrows.android.roguelike;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Random;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import org.anddev.andengine.engine.camera.BoundCamera;
 import org.anddev.andengine.engine.camera.hud.HUD;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
+import org.anddev.andengine.entity.layer.tiled.tmx.TMXLayer;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXTiledMap;
-import org.anddev.andengine.entity.sprite.AnimatedSprite;
 import org.anddev.andengine.entity.sprite.Sprite;
+import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.entity.text.ChangeableText;
 import org.anddev.andengine.input.touch.TouchEvent;
-import org.anddev.andengine.opengl.texture.TextureOptions;
-import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.anddev.andengine.opengl.texture.region.TextureRegion;
-import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
 import org.anddev.andengine.util.HorizontalAlign;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
-
-import com.cburrows.android.roguelike.TmxMap.Map;
 
 public class MainScene extends GameScene {
     public static final float FIGHT_CHANCE = 0.40f;
     private static final float TOUCH_SENSITIVITY = 32.0f;
-    private static final int TEXTURE_ATLAS_WIDTH = 256;
+    private static final int TEXTURE_ATLAS_WIDTH = 512;
     private static final int TEXTURE_ATLAS_HEIGHT = 512;
-    private static final int HUD_IMAGE_X = 0;
-    private static final int HUD_IMAGE_Y = 128;
-    private static final int HP_IMAGE_Y = 256;
-    private static final int HP_FILL_IMAGE_Y = 272;
+    //private static final int HUD_IMAGE_X = 0;
+    //private static final int HUD_IMAGE_Y = 128;
+    //private static final int HP_IMAGE_Y = 256;
+    //private static final int HP_FILL_IMAGE_Y = 272;
     private static final float HUD_OPACITY = 0.3f;
     
     private Player mPlayer;
     private GameMap mMap;
     private TMXTiledMap mTMXTiledMap;
     
-    private BitmapTextureAtlas mBitmapTextureAtlas;
-    private TiledTextureRegion mIconTextureRegion;
-    private AnimatedSprite mStatusIcon;
-    private AnimatedSprite mMapIcon;
-    private AnimatedSprite mPotionIcon;
+    private TiledSprite mStatusIcon;
+    private TiledSprite mMapIcon;
+    private TiledSprite mPotionIcon;
     private ChangeableText mPotionText;
     
-    private TextureRegion mHpBarRegion;
-    private TextureRegion mHpBarFillRegion;
     private Sprite mHPBar;
     private Sprite mHPBarFill;
     
@@ -75,80 +60,77 @@ public class MainScene extends GameScene {
     
     public void loadResources() {
         long timeStart = System.currentTimeMillis();
-        BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-
-        mBitmapTextureAtlas = new BitmapTextureAtlas(TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT, 
-                TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         
-        mIconTextureRegion = BitmapTextureAtlasTextureRegionFactory
-                .createTiledFromAsset(mBitmapTextureAtlas, mContext, "icons.png", HUD_IMAGE_X, HUD_IMAGE_Y, 2, 4);
+        float scaleX = RoguelikeActivity.sScaleX;
+        float scaleY = RoguelikeActivity.sScaleY;
         
-        mStatusIcon = new AnimatedSprite (mContext.getGameScaleX(), mContext.getGameScaleY(), 
-                32 * mContext.getGameScaleX(), 32 * mContext.getGameScaleY(), mIconTextureRegion);
-        mStatusIcon.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mStatusIcon.setAlpha(HUD_OPACITY);
+        Graphics.beginLoad("gfx/", TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT);
         
-        mMapIcon = new AnimatedSprite(mCameraWidth - mContext.getGameScaleX() - (32 * mContext.getGameScaleX()),
-                mContext.getGameScaleY(), 32 * mContext.getGameScaleX(), 32 * mContext.getGameScaleY(),
-                mIconTextureRegion.deepCopy());
-        mMapIcon.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mMapIcon.setAlpha(HUD_OPACITY);
+        mStatusIcon = Graphics.createTiledSprite("icons.png", 4, 4, 
+                scaleX, scaleY, HUD_OPACITY);
         
-        mPotionIcon = new AnimatedSprite(mCameraWidth - mContext.getGameScaleX() - (32 * mContext.getGameScaleX()), 
-                mCameraHeight - (32 * mContext.getGameScaleY()), 
-                32 * mContext.getGameScaleX(), 32 * mContext.getGameScaleY(), 
-                mIconTextureRegion.deepCopy());
-        mPotionIcon.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mPotionIcon.setAlpha(HUD_OPACITY);
+        mMapIcon = Graphics.createTiledSprite("icons.png", 4, 4, HUD_OPACITY);
+        mMapIcon.setPosition(
+                mCameraWidth - mMapIcon.getWidth(),
+                scaleY); 
         
-        mPotionText = new ChangeableText(mPotionIcon.getX() - (28 * mContext.getGameScaleX()) , 
-                mPotionIcon.getY() + (11 * mContext.getGameScaleY()), 
+        mPotionIcon = Graphics.createTiledSprite("icons.png", 4, 4, HUD_OPACITY);
+        mPotionIcon.setPosition(
+                mCameraWidth - mPotionIcon.getWidth() - scaleX,
+                mCameraHeight - mPotionIcon.getHeight() - scaleY);
+   
+        mPotionText = new ChangeableText(mPotionIcon.getX() - (28 * scaleX) , 
+                mPotionIcon.getY() + (11 * scaleY), 
                 mContext.SmallFont, "88x", HorizontalAlign.RIGHT, 3);
         mPotionText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         mPotionText.setAlpha(HUD_OPACITY);
         
-        mHpBarRegion = BitmapTextureAtlasTextureRegionFactory
-                .createFromAsset(mBitmapTextureAtlas, mContext, "panels/hp_bar.png", 0, HP_IMAGE_Y);
-        mHPBar = new Sprite((mCameraWidth / 2) - (mHpBarRegion.getWidth() / 2 * mContext.getGameScaleX()), 
-                mCameraHeight - (24 * mContext.getGameScaleY()), 
-                mHpBarRegion.getWidth() * mContext.getGameScaleX(),
-                mHpBarRegion.getHeight() * mContext.getGameScaleY(),
-                mHpBarRegion);
-        mHPBar.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mHPBar.setAlpha(HUD_OPACITY);
+        mHPBar = Graphics.createSprite("panels/hp_bar.png", 0, 0, HUD_OPACITY);
+        mHPBar.setPosition(
+                (mCameraWidth / 2) - (mHPBar.getWidth() / 2), 
+                mCameraHeight - (24 * scaleY));
         
-        mHpBarFillRegion = BitmapTextureAtlasTextureRegionFactory
-                .createFromAsset(mBitmapTextureAtlas, mContext, "panels/hp_fill_bar.png", 0, HP_FILL_IMAGE_Y);
-        mHPBarFill = new Sprite((mCameraWidth / 2) - (mHpBarFillRegion.getWidth() / 2 * mContext.getGameScaleX()), 
-                mCameraHeight - (24 * mContext.getGameScaleY()),
-                mHpBarFillRegion.getWidth() * mContext.getGameScaleX(),
-                mHpBarFillRegion.getHeight() * mContext.getGameScaleY(),
-                mHpBarFillRegion);
-        mHPBarFill.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mHPBarFill.setAlpha(HUD_OPACITY);
+        mHPBarFill =  Graphics.createSprite("panels/hp_fill_bar.png", 0, 0, HUD_OPACITY);
+        mHPBarFill.setPosition(
+                (mCameraWidth / 2) - (mHPBarFill.getWidth() / 2), 
+                mCameraHeight - (24 * scaleY));
         
-        mContext.getTextureManager().loadTexture(mBitmapTextureAtlas);
+        Graphics.endLoad("MAIN");
         
         // TODO: Dump gameMap map data when tmx max loaded -- maybe keep the tmx data inside gameMap.
         mMap = new GameMap(66, 45);
         
         /*
-        FileOutputStream fos;
         try {
-            fos = mContext.openFileOutput("TEST.tmx", Context.MODE_WORLD_READABLE);
-            Map.deflate(mMap, fos);
-            fos.close();
+            Map.deflate(mMap, mContext.openFileOutput("TEXT.tmx", mContext.MODE_WORLD_WRITEABLE));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         */
-
+        
         mTMXTiledMap = mMap.getTmxTiledMap(mContext, mContext.getTextureManager());
-        mTMXTiledMap.getTMXLayers().get(0).setScale(mContext.getGameScaleX(), mContext.getGameScaleY());
-        mTMXTiledMap.getTMXLayers().get(0).setScaleCenter(176, 144);
-        attachChild(mTMXTiledMap.getTMXLayers().get(0));
+        //TMXLoader loader = new TMXLoader(mContext, mContext.getTextureManager());
+
+        /*
+        try {
+            mTMXTiledMap = loader.load(mContext.openFileInput("untitled1.tmx"));
+        } catch (TMXLoadException e) {
+            // TODO Auto-generated catch block
+            Log.d("ERROR", "ERROR");
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            Log.d("ERROR", "ERROR");
+        }
+        */
+        
+        TMXLayer layer = mTMXTiledMap.getTMXLayers().get(0);
+        layer.setScaleCenter(0, 0);
+        layer.setScale(scaleX, scaleY);
+        attachChild(layer);
+       
+        
+        //Log.d("Map", "0,0:" + layer.getTMXTile(0, 0).getTileY());
         
         mPlayer = mContext.getPlayer();
         mPlayer.setParentMap(mMap);
@@ -163,11 +145,9 @@ public class MainScene extends GameScene {
         mHud.attachChild(mHPBarFill);
         mHud.attachChild(mPotionIcon);
         mHud.attachChild(mPotionText);
+        attachChild(mPlayer.getAnimatedSprite());
         
         mContext.getEngine().registerUpdateHandler(new UpdateHandler());
-        
-        attachChild(mPlayer.getAnimatedSprite());
-
         setOnSceneTouchListener((IOnSceneTouchListener)mContext);
         
         mLoaded = true;
@@ -181,20 +161,12 @@ public class MainScene extends GameScene {
         mMapIcon.setCurrentTileIndex(2);
         mPotionIcon.setCurrentTileIndex(6);
         mPotionText.setText(String.format("%02d", mPlayer.getNumPotions()) + "x");
-        
-        /* Make the camera not exceed the bounds of the TMXEntity. */
-        /*
-        mCamera.setBounds(0, mTMXTiledMap.getTMXLayers().get(0).getWidth(),
-                0, mTMXTiledMap.getTMXLayers().get(0).getHeight());
-        mCamera.setBoundsEnabled(true);
-        */
+        updateHP();
 
         /* Create the sprite and add it to the scene. */
         mCamera.setChaseEntity(mPlayer.getAnimatedSprite());
         mCamera.updateChaseEntity();
         mCamera.setHUD(mHud);
-
-        mHPBarFill.setWidth( ((float)mHpBarFillRegion.getWidth()) * mPlayer.getHPFraction() * mContext.getGameScaleX());
         
         mPlayer.setPlayerState(PlayerState.IDLE);
         
@@ -242,15 +214,15 @@ public class MainScene extends GameScene {
                                            
             if (Math.abs(mTotalTouchOffsetX) >= TOUCH_SENSITIVITY) {
                 if (mTotalTouchOffsetX < 0) {
-                    mPlayer.move(Direction.DIRECTION_RIGHT, mPlayer.getTileWidth() * mMap.ROOM_WIDTH);
+                    mPlayer.move(Direction.DIRECTION_RIGHT, mPlayer.getTileWidth() * GameMap.ROOM_WIDTH);
                 } else if (mTotalTouchOffsetX > 0) {
-                    mPlayer.move(Direction.DIRECTION_LEFT, mPlayer.getTileWidth() * mMap.ROOM_WIDTH);
+                    mPlayer.move(Direction.DIRECTION_LEFT, mPlayer.getTileWidth() * GameMap.ROOM_WIDTH);
                 }
             } else if (Math.abs(mTotalTouchOffsetY) >= TOUCH_SENSITIVITY) {
                 if (mTotalTouchOffsetY < 0) {
-                    mPlayer.move(Direction.DIRECTION_DOWN, mPlayer.getTileHeight() * mMap.ROOM_HEIGHT);
+                    mPlayer.move(Direction.DIRECTION_DOWN, mPlayer.getTileHeight() * GameMap.ROOM_HEIGHT);
                 } else if (mTotalTouchOffsetY > 0) {
-                    mPlayer.move(Direction.DIRECTION_UP, mPlayer.getTileHeight() * mMap.ROOM_HEIGHT);
+                    mPlayer.move(Direction.DIRECTION_UP, mPlayer.getTileHeight() * GameMap.ROOM_HEIGHT);
                 }
             }
             
@@ -273,13 +245,13 @@ public class MainScene extends GameScene {
     
     private void openMiniMap() {
         if (mItem == null || !mItem.isVisible()) {
-            Item item = ItemFactory.createRandomWeapon(mContext, 1);
-            mItem = item.getSprite();
-            mItem.setPosition(64, 96);
-            if (!mItem.hasParent()) attachChild(mItem);
-            mItem.setVisible(true);
+            //Item item = ItemFactory.createRandomWeapon(1);
+            //mItem = item.getSprite();
+            //mItem.setPosition(64, 96);
+            //if (!mItem.hasParent()) attachChild(mItem);
+            //mItem.setVisible(true);
         } else {
-            mItem.setVisible(false);
+            //mItem.setVisible(false);
         }
             
         
@@ -300,11 +272,14 @@ public class MainScene extends GameScene {
         */
     }
     
+    private void updateHP() {
+        mHPBarFill.setWidth( ((float)mHPBar.getWidth()) * mPlayer.getHPFraction());
+    }
+    
     private void usePotion() {
         mPlayer.usePotion();
         mPotionText.setText(String.format("%02d", mPlayer.getNumPotions()) + "x");
-        mHPBarFill.setWidth( ((float)mHpBarFillRegion.getWidth()) * mPlayer.getHPFraction() * mContext.getGameScaleX());
-        
+        updateHP();
     }
     
     private class UpdateHandler implements IUpdateHandler {

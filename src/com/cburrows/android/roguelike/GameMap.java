@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import org.simpleframework.xml.Root;
 
-import android.util.Log;
-
 import com.cburrows.android.roguelike.TmxMap.Image;
 import com.cburrows.android.roguelike.TmxMap.Tileset;
 import com.cburrows.android.roguelike.TmxMap.Map;

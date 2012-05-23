@@ -12,61 +12,48 @@ import org.anddev.andengine.entity.modifier.DelayModifier;
 import org.anddev.andengine.entity.modifier.DurationEntityModifier;
 import org.anddev.andengine.entity.modifier.EntityModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
-import org.anddev.andengine.entity.primitive.Line;
-import org.anddev.andengine.entity.sprite.AnimatedSprite;
 import org.anddev.andengine.entity.sprite.Sprite;
+import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.entity.text.ChangeableText;
 import org.anddev.andengine.entity.text.Text;
 import org.anddev.andengine.input.touch.TouchEvent;
-import org.anddev.andengine.opengl.texture.TextureOptions;
-import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.util.modifier.IModifier;
-import org.anddev.andengine.util.modifier.IModifier.DeepCopyNotSupportedException;
-
 import com.cburrows.android.roguelike.Monster.MonsterState;
 
 import android.util.Log;
-import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
 public class BattleScene extends GameScene  {
+    
+    private static final int TEXTURE_ATLAS_WIDTH = 512;
+    private static final int TEXTURE_ATLAS_HEIGHT = 1024;
     
     private static final float HP_OPACITY = 0.40f;
     private static final float XP_SCROLL_TIME = 0.5f;
     
-    private static final int TEXTURE_ATLAS_WIDTH = 512;
-    private static final int TEXTURE_ATLAS_HEIGHT = 1024;
-    private static final int BG_IMAGE_X = 0;
-    private static final int BG_IMAGE_Y = 0;
-    private static final int POPUP_IMAGE_Y = 320;
-    private static final int MONSTER_IMAGE_Y = 352;
-    
-    private static final float VICTORY_TEXT_Y = 8;
-    private static final String VICTORY_TEXT = "Victory!";
-    private static final float LEVEL_TEXT_Y = 40;
-    private static final float LEVEL_TEXT_X = 8;
-    private static final float NO_SPOILS_TEXT_Y = 92;
-    
-    // All relative to spoils panel
-    private static final float XP_BAR_X = 120;
-    private static final float XP_BAR_Y = 40;
-    private static final float XP_BAR_WIDTH = 112;
-    private static final float XP_BAR_HEIGHT = 16;
-    
-    private static final float POPUP_POS_X = 80;
-    private static final float POPUP_POS_Y = 16;
-    
     private static final float MONSTER_FADE_DELAY = 0.3f;       // how long after the scene is presented to start presenting the monster
     private static final float MONSTER_FADE_DURATION = 0.3f;    // how long to fade in the monster
+    
+    private static final int MONSTER_NAME_Y = 16;
     private static final float TEXT_OPACITY = 0.8f;
     private static final float TEXT_DISPLAY_DURATION = 1.5f;  
     
     private static final float CAMERA_SHAKE_INTENSITY = 10.0f;
     private static final float CAMERA_SHAKE_DURATON = 0.35f;
     
+    // All relative to spoils panel
+    private static final float VICTORY_TEXT_Y = 8;
+    private static final String VICTORY_TEXT = "Victory!";
+    private static final float LEVEL_TEXT_Y = 40;
+    private static final float LEVEL_TEXT_X = 8;
+    private static final float NO_SPOILS_TEXT_Y = 92;
+    private static final float XP_BAR_X = 120;
+    private static final float XP_BAR_Y = 40;
+    private static final float XP_BAR_WIDTH = 112;
+    private static final float XP_BAR_HEIGHT = 16;
+    private static final int ITEM_X = 0;
+    private static final int ITEM_Y = 92;
+
     private static final int SWIPE_RIGHT = 0;
     private static final int SWIPE_DOWN_RIGHT = 1;
     private static final int SWIPE_DOWN = 2;
@@ -76,33 +63,25 @@ public class BattleScene extends GameScene  {
     private static final int SWIPE_UP = 6;
     private static final int SWIPE_UP_RIGHT = 7;
    
+    private static float sScaleX;
+    private static float sScaleY;
+    
     private HUD mHud;
     
-    private BitmapTextureAtlas mBitmapTextureAtlas;
-    private TextureRegion mBackgroundTextureRegion;
+    private TiledSprite mMonsterSprite;
     private Sprite mBackgroundSprite;
-    private TextureRegion mPopupTitleTextureRegion;
     private Sprite mPopupTitleSprite;
-    private TextureRegion mMonsterTextureRegion;
-    private Sprite mMonsterSprite;
-    
-    private TextureRegion mHpBarRegion;
-    private TextureRegion mHpBarFillRegion;
     private Sprite mHPBar;
     private Sprite mHPBarFill;
-    
-    private TextureRegion mSpoilsTitleTextureRegion;
-    private TextureRegion mXpBarRegion;
-    private TextureRegion mXpBarFillRegion;
-    private Sprite mSpoilsSprite;
+    //private Sprite mSpoilsSprite;
     private Sprite mXpBarSprite;
     private Sprite mXpBarFillSprite;
+    private TiledSprite mSpoilItem;
     private ChangeableText mVictoryText;
     private ChangeableText mLevelText;
+    private ChangeableText mMonsterNameText;
     private Text mNoSpoilsText;
     private Text mPlusText;
-
-    private ChangeableText mMonsterNameText;
     
     private Monster mMonster;
     private Player mPlayer;
@@ -115,10 +94,10 @@ public class BattleScene extends GameScene  {
     private float mTouchY;
     private float mTouchUpX;
     private float mTouchUpY;
-    private float mTouchOffsetX;
-    private float mTouchOffsetY;
-    private float mTotalTouchOffsetX;
-    private float mTotalTouchOffsetY;
+    //private float mTouchOffsetX;
+    //private float mTouchOffsetY;
+    //private float mTotalTouchOffsetX;
+    //private float mTotalTouchOffsetY;
     private int mSwipeDirection;
     
     private float mTime = 0f;
@@ -130,6 +109,9 @@ public class BattleScene extends GameScene  {
     public BattleScene(RoguelikeActivity context) {
         super(context);
         rand = new Random(System.currentTimeMillis());
+        sScaleX = RoguelikeActivity.sScaleX;
+        sScaleX = RoguelikeActivity.sScaleX;
+        sScaleY = RoguelikeActivity.sScaleY;
     }
     
     @Override
@@ -138,118 +120,79 @@ public class BattleScene extends GameScene  {
 
         mHud = new HUD();
         
-        BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-        mBitmapTextureAtlas = new BitmapTextureAtlas(TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT, 
-                TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        Graphics.beginLoad("gfx/", TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT);
         
         // The background
-        mBackgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory
-                .createFromAsset(mBitmapTextureAtlas, mContext, "dungeon_bg_320.png", BG_IMAGE_X, BG_IMAGE_Y);
-        mBackgroundSprite = new Sprite(0, 0, mCameraWidth, mCameraHeight, mBackgroundTextureRegion);
+        mBackgroundSprite = Graphics.createSprite("dungeon_bg_320.png");
         
         // The monster
-        mMonsterTextureRegion = BitmapTextureAtlasTextureRegionFactory
-                .createFromAsset(mBitmapTextureAtlas, mContext, "monsters/monsters.png", 0, MONSTER_IMAGE_Y);
-        mMonsterSprite = new Sprite(
-                (mCameraWidth / 2) - (mMonsterTextureRegion.getWidth() / 2),
-                (mCameraHeight / 2) - (mMonsterTextureRegion.getHeight() / 2), mMonsterTextureRegion);
-        mMonsterSprite.setScale(mContext.getGameScaleX(), mContext.getGameScaleY());
-        mMonsterSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        
-        mMonster = new Monster(mContext.getGameScaleX(), mContext.getGameScaleY());
-        mMonster.setSprite(mMonsterSprite);
+        mMonsterSprite = Graphics.createTiledSprite("monsters/monsters.png", 1, 1);
+        mMonsterSprite.setPosition(
+                (mCameraWidth / 2) - (mMonsterSprite.getWidth() / 2),
+                (mCameraHeight / 2) - (mMonsterSprite.getHeight() / 2)
+                );
+        mMonster = new Monster(mMonsterSprite);
         
         // The monster name popup panel
-        mPopupTitleTextureRegion = BitmapTextureAtlasTextureRegionFactory
-                .createFromAsset(mBitmapTextureAtlas, mContext, "panels/popup_title.png", 0, POPUP_IMAGE_Y);
-        mPopupTitleSprite = new Sprite (POPUP_POS_X * mContext.getGameScaleX(),
-                POPUP_POS_Y * mContext.getGameScaleY(), 160 * mContext.getGameScaleX(),
-                32 * mContext.getGameScaleY(), mPopupTitleTextureRegion);
-        mPopupTitleSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);  
-
+        mPopupTitleSprite = Graphics.createSprite("panels/popup_title.png", 0, 0);
+        mPopupTitleSprite.setPosition(
+                (mCameraWidth / 2) - (mPopupTitleSprite.getWidth() / 2), MONSTER_NAME_Y * sScaleY );
+        
         // The monster name text
-        mMonsterNameText = new ChangeableText(0, POPUP_IMAGE_Y + (8 * mContext.getGameScaleY()), mContext.Font, "MONSTER NAME");
+        mMonsterNameText = new ChangeableText(0, MONSTER_NAME_Y * sScaleY + (8 * sScaleY), mContext.Font, "MONSTER NAME");
         mMonsterNameText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         mPopupTitleSprite.attachChild(mMonsterNameText);
         
         // The HP bar
-        int HP_IMAGE_Y = MONSTER_IMAGE_Y + mMonsterTextureRegion.getHeight();
-        mHpBarRegion = BitmapTextureAtlasTextureRegionFactory
-                .createFromAsset(mBitmapTextureAtlas, mContext, "panels/hp_bar.png", 0, HP_IMAGE_Y);
-        mHPBar = new Sprite((mCameraWidth / 2) - (mHpBarRegion.getWidth() / 2 * mContext.getGameScaleX()), 
-                mCameraHeight - (24 * mContext.getGameScaleY()),
-                mHpBarRegion.getWidth() * mContext.getGameScaleX(),
-                mHpBarRegion.getHeight() * mContext.getGameScaleY(),
-                mHpBarRegion);
-        mHPBar.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mHPBar.setAlpha(HP_OPACITY);
+        mHPBar = Graphics.createSprite("panels/hp_bar.png", 0, 0, HP_OPACITY);
+        mHPBar.setPosition(
+                (mCameraWidth / 2) - (mHPBar.getWidth() / 2), 
+                mCameraHeight - (24 * sScaleY));
         
-        int HP_FILL_IMAGE_Y = HP_IMAGE_Y + mHpBarRegion.getHeight();
-        mHpBarFillRegion = BitmapTextureAtlasTextureRegionFactory
-                .createFromAsset(mBitmapTextureAtlas, mContext, "panels/hp_fill_bar.png", 0, HP_FILL_IMAGE_Y);
-        mHPBarFill = new Sprite((mCameraWidth / 2) - (mHpBarFillRegion.getWidth() / 2 * mContext.getGameScaleX()), 
-                mCameraHeight - (24 * mContext.getGameScaleY()),
-                mHpBarFillRegion.getWidth() * mContext.getGameScaleX(),
-                mHpBarFillRegion.getHeight() * mContext.getGameScaleY(),
-                mHpBarFillRegion);
-        mHPBarFill.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mHPBarFill.setAlpha(HP_OPACITY);
+        mHPBarFill = Graphics.createSprite("panels/hp_fill_bar.png", 0, 0, HP_OPACITY);
+        mHPBarFill.setPosition(
+                (mCameraWidth / 2) - (mHPBarFill.getWidth() / 2), 
+                mCameraHeight - (24 * sScaleY));
         
         // The spoils panel
-        mSpoilsTitleTextureRegion = BitmapTextureAtlasTextureRegionFactory
-                .createFromAsset(mBitmapTextureAtlas, mContext, "panels/display_panel.png", 0, 
-                        HP_FILL_IMAGE_Y + mHpBarFillRegion.getHeight());
-        mSpoilsSprite = new Sprite (
-                (mCamera.getWidth() / 2) - (mSpoilsTitleTextureRegion.getWidth() / 2 * mContext.getGameScaleX()),
-                (mCamera.getHeight() / 2) - (mSpoilsTitleTextureRegion.getHeight() / 2 * mContext.getGameScaleY()) - (8 * mContext.getGameScaleY()),
-                mSpoilsTitleTextureRegion.getWidth() * mContext.getGameScaleX(),
-                mSpoilsTitleTextureRegion.getHeight() * mContext.getGameScaleY(),
-                mSpoilsTitleTextureRegion);
-        mSpoilsSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mSpoilsSprite.setAlpha(0.0f);
+        /*
+        mSpoilsSprite = Graphics.createSprite("panels/display_panel.png");
+        mSpoilsSprite.setPosition(
+                (mCamera.getWidth() / 2) - (mSpoilsSprite.getWidth() / 2 ),
+                (mCamera.getHeight() / 2) - (mSpoilsSprite.getHeight() / 2) - (8 * sScaleY));
+        */
+        mXpBarSprite = Graphics.createSprite("panels/hp_bar.png", 
+                XP_BAR_X * sScaleX, 
+                XP_BAR_Y * sScaleY);
+        mXpBarSprite.setWidth(XP_BAR_WIDTH * sScaleX);
+        mXpBarSprite.setHeight(XP_BAR_HEIGHT * sScaleY);
         
-        mXpBarRegion = mHpBarRegion.deepCopy();
-        mXpBarSprite = new Sprite(XP_BAR_X * mContext.getGameScaleX(), XP_BAR_Y * mContext.getGameScaleY(), 
-                XP_BAR_WIDTH * mContext.getGameScaleX(), XP_BAR_HEIGHT * mContext.getGameScaleY(),
-                mXpBarRegion);
-        mXpBarSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-                
-        mXpBarFillRegion = BitmapTextureAtlasTextureRegionFactory
-                .createFromAsset(mBitmapTextureAtlas, mContext, "panels/xp_fill_bar.png", 0, 
-                        mSpoilsTitleTextureRegion.getTexturePositionY() + mSpoilsTitleTextureRegion.getHeight());
-        mXpBarFillSprite = new Sprite((XP_BAR_X+1) * mContext.getGameScaleX(), (XP_BAR_Y+1) * mContext.getGameScaleY(), 
-                (XP_BAR_WIDTH-2) * mContext.getGameScaleX(), (XP_BAR_HEIGHT-2) * mContext.getGameScaleY(),
-                mXpBarFillRegion);
-        mXpBarFillSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        mXpBarFillSprite = Graphics.createSprite("panels/xp_fill_bar.png",
+                XP_BAR_X * sScaleX, 
+                XP_BAR_Y *sScaleY);
+        mXpBarFillSprite.setWidth(XP_BAR_WIDTH * sScaleX);
+        mXpBarFillSprite.setHeight(XP_BAR_HEIGHT * sScaleY);
+        
+        Graphics.endLoad("BATTLE");
         
         mPotionIconSprite = ItemFactory.getPotionSprite();
         mPotionIconSprite.setPosition(
-                (mSpoilsSprite.getWidth() / 2) - (mPotionIconSprite.getWidth() / 2),
-                NO_SPOILS_TEXT_Y * mContext.getGameScaleY());
+                (mCameraWidth / 2) - (mPotionIconSprite.getWidth() / 2),
+                NO_SPOILS_TEXT_Y * sScaleY);
         mPotionIconSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         
-        mVictoryText = new ChangeableText(0, VICTORY_TEXT_Y * mContext.getGameScaleY(), mContext.LargeFont, VICTORY_TEXT);
-        mVictoryText.setPosition(mSpoilsSprite.getWidth() / 2 - (mVictoryText.getWidth() / 2), VICTORY_TEXT_Y * mContext.getGameScaleY());
+        mVictoryText = new ChangeableText(0, VICTORY_TEXT_Y * sScaleY, mContext.LargeFont, VICTORY_TEXT);
+        mVictoryText.setPosition(mCameraWidth / 2 - (mVictoryText.getWidth() / 2), VICTORY_TEXT_Y * sScaleY);
         mVictoryText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mLevelText = new ChangeableText(LEVEL_TEXT_X * mContext.getGameScaleX(), LEVEL_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "Lvl 88");
+        mLevelText = new ChangeableText(LEVEL_TEXT_X * sScaleX, LEVEL_TEXT_Y * sScaleY, mContext.Font, "Lvl 88");
         mLevelText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mNoSpoilsText = new Text(0, NO_SPOILS_TEXT_Y * mContext.getGameScaleY(), mContext.Font, "No spoils!");
-        mNoSpoilsText.setPosition(mSpoilsSprite.getWidth() / 2 - (mNoSpoilsText.getWidth() / 2), NO_SPOILS_TEXT_Y * mContext.getGameScaleY());
+        mNoSpoilsText = new Text(0, NO_SPOILS_TEXT_Y * sScaleY, mContext.Font, "No spoils!");
+        mNoSpoilsText.setPosition(mCameraWidth / 2 - (mNoSpoilsText.getWidth() / 2), NO_SPOILS_TEXT_Y * sScaleY);
         mNoSpoilsText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mPlusText = new Text( (mSpoilsSprite.getWidth() / 2) - (mPotionIconSprite.getWidth() / 2) - (20 * mContext.getGameScaleX()), 
-                (NO_SPOILS_TEXT_Y + 4) * mContext.getGameScaleY(), mContext.LargeFont, "+");
+        mPlusText = new Text( (mCameraWidth / 2) - (mPotionIconSprite.getWidth() / 2) - (20 * sScaleX), 
+                (NO_SPOILS_TEXT_Y + 4) * sScaleY, mContext.LargeFont, "+");
         mPlusText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        
-        mSpoilsSprite.attachChild(mVictoryText);
-        mSpoilsSprite.attachChild(mLevelText);
-        mSpoilsSprite.attachChild(mNoSpoilsText);
-        mSpoilsSprite.attachChild(mPlusText);
-        mSpoilsSprite.attachChild(mPotionIconSprite);
-        mSpoilsSprite.attachChild(mXpBarSprite);
-        mSpoilsSprite.attachChild(mXpBarFillSprite);
-        
-        mContext.getTextureManager().loadTexture(mBitmapTextureAtlas);
-        
+ 
         // The slash animations
         mSlash = new Animation[8];
         for (int i = 0; i < 8; i++) {
@@ -257,14 +200,14 @@ public class BattleScene extends GameScene  {
                 case SWIPE_DOWN_LEFT:
                     mSlash[SWIPE_DOWN_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY()-48,
                             mCamera.getCenterX()-48, mCamera.getCenterY()+48);
-                    mSlash[SWIPE_DOWN_LEFT].setScale(mContext.getGameScaleX());
+                    mSlash[SWIPE_DOWN_LEFT].setScale(sScaleX);
                     mSlash[SWIPE_DOWN_LEFT].loadAnimation(mContext);
                     mSlash[SWIPE_DOWN_LEFT].attachOnFinishListener(onAnimationDone);
                     break;
                 case SWIPE_DOWN_RIGHT:
                     mSlash[SWIPE_DOWN_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY()-48,
                             mCamera.getCenterX()+48, mCamera.getCenterY()+48);
-                    mSlash[SWIPE_DOWN_RIGHT].setScale(mContext.getGameScaleX());
+                    mSlash[SWIPE_DOWN_RIGHT].setScale(sScaleX);
                     mSlash[SWIPE_DOWN_RIGHT].setFlippedHorizontal(true);
                     mSlash[SWIPE_DOWN_RIGHT].loadAnimation(mContext);
                     mSlash[SWIPE_DOWN_RIGHT].attachOnFinishListener(onAnimationDone);
@@ -272,7 +215,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_UP_RIGHT:
                     mSlash[SWIPE_UP_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY()+48,
                             mCamera.getCenterX()+48, mCamera.getCenterY()-48);
-                    mSlash[SWIPE_UP_RIGHT].setScale(mContext.getGameScaleX());
+                    mSlash[SWIPE_UP_RIGHT].setScale(sScaleX);
                     mSlash[SWIPE_UP_RIGHT].setFlippedHorizontal(true);
                     mSlash[SWIPE_UP_RIGHT].setFlippedVertical(true);
                     mSlash[SWIPE_UP_RIGHT].loadAnimation(mContext);
@@ -281,7 +224,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_UP_LEFT:
                     mSlash[SWIPE_UP_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY()+48,
                             mCamera.getCenterX()-48, mCamera.getCenterY()-48);
-                    mSlash[SWIPE_UP_LEFT].setScale(mContext.getGameScaleX());
+                    mSlash[SWIPE_UP_LEFT].setScale(sScaleX);
                     mSlash[SWIPE_UP_LEFT].setFlippedVertical(true);
                     mSlash[SWIPE_UP_LEFT].loadAnimation(mContext);
                     mSlash[SWIPE_UP_LEFT].attachOnFinishListener(onAnimationDone);
@@ -289,7 +232,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_LEFT:
                     mSlash[SWIPE_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY(),
                             mCamera.getCenterX()-48, mCamera.getCenterY());
-                    mSlash[SWIPE_LEFT].setScale(mContext.getGameScaleX());
+                    mSlash[SWIPE_LEFT].setScale(sScaleX);
                     mSlash[SWIPE_LEFT].setRotation(45.0f);
                     mSlash[SWIPE_LEFT].loadAnimation(mContext);
                     mSlash[SWIPE_LEFT].attachOnFinishListener(onAnimationDone);
@@ -297,7 +240,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_RIGHT:
                     mSlash[SWIPE_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY(),
                             mCamera.getCenterX()+48, mCamera.getCenterY());
-                    mSlash[SWIPE_RIGHT].setScale(mContext.getGameScaleX());
+                    mSlash[SWIPE_RIGHT].setScale(sScaleX);
                     mSlash[SWIPE_RIGHT].setRotation(-135.0f);
                     mSlash[SWIPE_RIGHT].loadAnimation(mContext);
                     mSlash[SWIPE_RIGHT].attachOnFinishListener(onAnimationDone);
@@ -305,7 +248,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_UP:
                     mSlash[SWIPE_UP] = new Animation(mCamera.getCenterX(), mCamera.getCenterY()+48,
                             mCamera.getCenterX(), mCamera.getCenterY()-48);
-                    mSlash[SWIPE_UP].setScale(mContext.getGameScaleX());
+                    mSlash[SWIPE_UP].setScale(sScaleX);
                     mSlash[SWIPE_UP].setRotation(135.0f);
                     mSlash[SWIPE_UP].loadAnimation(mContext);
                     mSlash[SWIPE_UP].attachOnFinishListener(onAnimationDone);
@@ -313,7 +256,7 @@ public class BattleScene extends GameScene  {
                 case SWIPE_DOWN:
                     mSlash[SWIPE_DOWN] = new Animation(mCamera.getCenterX(), mCamera.getCenterY()-48,
                             mCamera.getCenterX(), mCamera.getCenterY()+48);
-                    mSlash[SWIPE_DOWN].setScale(mContext.getGameScaleX());
+                    mSlash[SWIPE_DOWN].setScale(sScaleX);
                     mSlash[SWIPE_DOWN].setRotation(-45.0f);
                     mSlash[SWIPE_DOWN].loadAnimation(mContext);
                     mSlash[SWIPE_DOWN].attachOnFinishListener(onAnimationDone);
@@ -324,7 +267,14 @@ public class BattleScene extends GameScene  {
         attachChild(mBackgroundSprite);
         attachChild(mPopupTitleSprite);
         attachChild(mMonsterSprite);
-        attachChild(mSpoilsSprite);
+        
+        attachChild(mVictoryText);
+        attachChild(mLevelText);
+        attachChild(mNoSpoilsText);
+        attachChild(mPlusText);
+        attachChild(mPotionIconSprite);
+        attachChild(mXpBarSprite);
+        attachChild(mXpBarFillSprite);
         
         mHud.attachChild(mHPBar);
         mHud.attachChild(mHPBarFill);
@@ -351,7 +301,7 @@ public class BattleScene extends GameScene  {
         mMonster.setDefense(3);
         mMonster.setSpeed(4.5f);
         
-        mSpoilsSprite.setAlpha(0f);
+        //mSpoilsSprite.setAlpha(0f);
         mVictoryText.setAlpha(0f);
         mLevelText.setAlpha(0f);
         mNoSpoilsText.setAlpha(0f);
@@ -364,7 +314,7 @@ public class BattleScene extends GameScene  {
         mMonsterNameText.setAlpha(0);
         mMonsterNameText.setText("Slime");
         mMonsterNameText.setPosition((mPopupTitleSprite.getWidth() / 2) - (mMonsterNameText.getWidth() / 2), 
-                8 * mContext.getGameScaleY());
+                8 *sScaleY);
         
         updateHP();
         updateXP();
@@ -394,11 +344,12 @@ public class BattleScene extends GameScene  {
         {
             mTouchX = pTouchEvent.getMotionEvent().getX();
             mTouchY = pTouchEvent.getMotionEvent().getY();
-            mTotalTouchOffsetX = 0;
-            mTotalTouchOffsetY = 0;     
+            //mTotalTouchOffsetX = 0;
+            //mTotalTouchOffsetY = 0;     
             
-            if (mSpoilsSprite.getAlpha() == TEXT_OPACITY && mSceneReady 
-                    && mSpoilsSprite.contains(mTouchX, mTouchY)) {
+            // Interupt xp bar fill
+            if (mVictoryText.getAlpha() == TEXT_OPACITY && mSceneReady 
+                    /*&& mSpoilsSprite.contains(mTouchX, mTouchY)*/) {
                 // If the player closes the spoils menu, make sure we take care
                 // of xp.
                 //xpBarModifier.reset();
@@ -406,18 +357,26 @@ public class BattleScene extends GameScene  {
                 mPlayer.increaseXP(mXpGained);
                 updateXP();
                 updateHP();
+                if (mSpoilItem != null) {
+                    RoguelikeActivity.getContext().runOnUpdateThread(new Runnable() {
+                        public void run() {
+                            mSpoilItem.setVisible(false);
+                            mSpoilItem.detachSelf();
+                        }
+                    });
+                }
                 mContext.endCombat();
             }
         }
         else if(pTouchEvent.getAction() == MotionEvent.ACTION_MOVE)
         {    
-            float newX = pTouchEvent.getMotionEvent().getX();
-            float newY = pTouchEvent.getMotionEvent().getY();
+            //float newX = pTouchEvent.getMotionEvent().getX();
+            //float newY = pTouchEvent.getMotionEvent().getY();
            
-            mTouchOffsetX = (newX - mTouchX);
-            mTouchOffsetY = (newY - mTouchY);
-            mTotalTouchOffsetX += mTouchOffsetX;
-            mTotalTouchOffsetY += mTouchOffsetY;                                          
+            //mTouchOffsetX = (newX - mTouchX);
+            //mTouchOffsetY = (newY - mTouchY);
+            //mTotalTouchOffsetX += mTouchOffsetX;
+            //mTotalTouchOffsetY += mTouchOffsetY;                                          
             
         } else if (pTouchEvent.getAction() == MotionEvent.ACTION_UP) {
             mTouchUpX = pTouchEvent.getMotionEvent().getX();
@@ -439,13 +398,13 @@ public class BattleScene extends GameScene  {
     }
     
     private void checkHit() {
-        Line line = new Line(mTouchX, mTouchY, mTouchUpX, mTouchUpY);
+        //Line line = new Line(mTouchX, mTouchY, mTouchUpX, mTouchUpY);
         if (mSceneReady && !mMonster.isDead() && !mAnimating /* && mMonsterSprite.collidesWith(line) */) {
             attachChild(mSlash[mSwipeDirection].getSprite());
             mAnimating = true;
             mSlash[mSwipeDirection].start();
             
-            int damage = mMonster.hit(mPlayer.getTotalAttack());
+            /*int damage = */ mMonster.hit(mPlayer.getTotalAttack());
             //mContext.gameToast("You deal " + damage + " damage!", Toast.LENGTH_SHORT);
             if (mMonster.getCurHP() <= 0) {
                 mXpGained = 8;
@@ -456,11 +415,11 @@ public class BattleScene extends GameScene  {
     }
     
     private void updateHP() {
-        mHPBarFill.setWidth( ((float)mHpBarFillRegion.getWidth()) * mPlayer.getHPFraction() * mContext.getGameScaleX());
+        mHPBarFill.setWidth( ((float)mHPBar.getWidth()) * mPlayer.getHPFraction());
     }
     
     private void updateXP() {
-        mXpBarFillSprite.setWidth( ((float)XP_BAR_WIDTH-2) * mPlayer.getXPFraction() * mContext.getGameScaleX());
+        mXpBarFillSprite.setWidth( ((float)XP_BAR_WIDTH-2) * mPlayer.getXPFraction());
         mLevelText.setText("Lvl " + mPlayer.getLevel());
     }
     
@@ -468,15 +427,43 @@ public class BattleScene extends GameScene  {
         
         int spoils = rand.nextInt(100);
         
-        if (spoils < 25) {
+        if (spoils < 60) {
             mNoSpoilsText.setVisible(true);
             mPotionIconSprite.setVisible(false);
             mPlusText.setVisible(false);
-        } else {
+            if (mSpoilItem != null) mSpoilItem.setVisible(false);
+        } else if (spoils < 90) {
             mNoSpoilsText.setVisible(false);
             mPotionIconSprite.setVisible(true);
             mPlusText.setVisible(true);
+            if (mSpoilItem != null) mSpoilItem.setVisible(false);
+            
             mPlayer.increasePotions(1);
+        } else {
+            RoguelikeActivity.getContext().runOnUpdateThread(new Runnable() {
+
+                public void run() {
+                    if (mSpoilItem != null) mSpoilItem.detachSelf();
+                    mNoSpoilsText.setVisible(false);
+                    mPotionIconSprite.setVisible(false);
+                    mPlusText.setVisible(true);
+                    
+                    Item item = ItemFactory.createRandomWeapon(rand.nextInt(3)+1);
+                    mSpoilItem = item.copySprite();
+                    mSpoilItem.setPosition((mCameraWidth / 2) - (mSpoilItem.getWidth() / 2), ITEM_Y * sScaleY);
+                    attachChild(mSpoilItem);
+                    mPlayer.addItem(item);
+                    
+                    if (mSpoilItem != null) {
+                        mSpoilItem.setVisible(true);
+                        mSpoilItem.setAlpha(0f);
+                        for (int i = 0; i < mSpoilItem.getChildCount(); i++) {
+                            mSpoilItem.getChild(i).setAlpha(0f);
+                        }
+                    }
+                }
+                
+            });
         }
         
         
@@ -524,12 +511,18 @@ public class BattleScene extends GameScene  {
             new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
-            mSpoilsSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+            //mSpoilsSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
             mVictoryText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
             mLevelText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY)); 
             if (mNoSpoilsText.isVisible()) mNoSpoilsText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
             if (mPlusText.isVisible()) mPlusText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
             if (mPotionIconSprite.isVisible()) mPotionIconSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+            if (mSpoilItem != null && mSpoilItem.isVisible()) {
+                mSpoilItem.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+                for (int i = 0; i < mSpoilItem.getChildCount(); i++) {
+                    mSpoilItem.getChild(i).registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+                }
+            }
             mXpBarSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
             mXpBarFillSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
 
@@ -555,7 +548,7 @@ public class BattleScene extends GameScene  {
                 if (fraction >= 1f) {
                     // level up !
                     
-                    int next = mPlayer.getNextXP();
+                    //int next = mPlayer.getNextXP();
                     mPlayer.increaseXP((int)xp);
                     mXpGained -= (int)xp;
                     this.
@@ -565,7 +558,7 @@ public class BattleScene extends GameScene  {
                     updateHP();
                     updateXP();
                 }
-                mXpBarFillSprite.setWidth( ((float)XP_BAR_WIDTH-2) * fraction * mContext.getGameScaleX());
+                mXpBarFillSprite.setWidth( ((float)XP_BAR_WIDTH-2) * fraction);
             }
         }
         

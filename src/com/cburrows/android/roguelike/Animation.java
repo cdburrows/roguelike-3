@@ -6,19 +6,12 @@ import java.util.List;
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
-import org.anddev.andengine.entity.sprite.AnimatedSprite;
-import org.anddev.andengine.entity.sprite.Sprite;
-import org.anddev.andengine.opengl.texture.TextureOptions;
-import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.anddev.andengine.opengl.texture.region.TextureRegion;
-import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
+import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
 
-import android.content.Context;
-import android.util.Log;
-
 public class Animation {
+    private static final int TEXTURE_ATLAS_WIDTH = 512;
+    private static final int TEXTURE_ATLAS_HEIGHT = 512;
     
     private String mAnimationName;
     private int mFrameWidth;
@@ -31,8 +24,8 @@ public class Animation {
     private float mPosY;
     private float mStartX;
     private float mStartY;
-    private float mEndX; // should be handled in keyframes
-    private float mEndY;
+    //private float mEndX; // should be handled in keyframes
+    //private float mEndY;
     private float mDuration; // seconds
     private float mCurrentTime;
     private float mDx;
@@ -48,8 +41,7 @@ public class Animation {
     private float mScale = 1f;
     private float mSpeed = 1f;
     
-    private TiledTextureRegion mAnimationTextureRegion;
-    private AnimatedSprite mAnimationSprite;
+    private TiledSprite mAnimationSprite;
     private Engine mEngine;
     IEntityModifierListener mFinishListener;
     
@@ -80,20 +72,16 @@ public class Animation {
         if (mKeyFrames.size() > 0) mNextKeyFrameTime = mKeyFrames.get(0).mTime;
     }
     
-    public AnimatedSprite loadAnimation(BaseGameActivity context) {
+    public TiledSprite loadAnimation(BaseGameActivity context) {
         mEngine = context.getEngine();
-        
-        final BitmapTextureAtlas bitmapTextureAtlas = new BitmapTextureAtlas(512, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-        mAnimationTextureRegion = BitmapTextureAtlasTextureRegionFactory
-                .createTiledFromAsset(bitmapTextureAtlas, context, mAnimationName, 0, 0, mFramesX, mFramesY);
 
-        mAnimationSprite = new AnimatedSprite(mStartX, mStartY, mFrameWidth, mFrameHeight, mAnimationTextureRegion);
+        Graphics.beginLoad("gfx/", TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT);
+        mAnimationSprite = Graphics.createTiledSprite(mAnimationName, mFramesX, mFramesY, mStartX, mStartY);
+        Graphics.endLoad("Animation " + mAnimationName);
+        
         mAnimationSprite.setRotation(mRotatation);
         mAnimationSprite.setFlippedHorizontal(isFlippedHorizontal());
         mAnimationSprite.setFlippedVertical(isFlippedVertical());
-        
-        context.getTextureManager().loadTexture(bitmapTextureAtlas);
-        
         mAnimationSprite.setPosition(mPosX, mPosY);
         
         return mAnimationSprite;
@@ -179,7 +167,7 @@ public class Animation {
         }
     }
     
-    public AnimatedSprite getSprite() { return mAnimationSprite; }
+    public TiledSprite getSprite() { return mAnimationSprite; }
 
     public float getRotatation() {
         return mRotatation;

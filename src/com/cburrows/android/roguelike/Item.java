@@ -1,9 +1,13 @@
 package com.cburrows.android.roguelike;
 
 import org.anddev.andengine.entity.sprite.Sprite;
+import org.anddev.andengine.entity.sprite.TiledSprite;
 
 public class Item {
-    private Sprite mSprite;
+    public static int ITEM_TYPE_WEAPON = 0;
+    public static int ITEM_TYPE_ARMOUR = 0;
+    
+    private TiledSprite mSprite;
 
     private String mName;
     private float mX;
@@ -14,16 +18,31 @@ public class Item {
     private int mDefense;
     private int mMagic;
     
+    private int mItemType;
+    private int mFontColor;
+    private int mImageIndex;
     
-    public Item(Sprite sprite, String name, int itemType, int attack, int defense, int magic) {
+    
+    public Item(TiledSprite sprite, String name, int fontColor, int imageIndex, int itemType, int attack, int defense, int magic) {
         mSprite = sprite;
         mName = name;
+        mFontColor = fontColor;
+        mImageIndex = imageIndex;
+        mItemType = itemType;
         mAttack = attack;
         mDefense = defense;
         mMagic = magic;
     }
     
-    public Sprite getSprite() { return mSprite; }
+    public void handleTouchDown() {
+        mSprite.setCurrentTileIndex(1);
+    }
+    
+    public void handleTouchUp() {
+        mSprite.setCurrentTileIndex(0);
+    }
+    
+    public TiledSprite getSprite() { return mSprite; }
 
     public String getName() {
         return mName;
@@ -32,7 +51,7 @@ public class Item {
         this.mName = name;
     }
     
-    public void setPosition(int x, int y) {
+    public void setPosition(float x, float y) {
         mX = x;
         mY = y;
         mSprite.setPosition(mX, mY);
@@ -73,6 +92,17 @@ public class Item {
     }
     public void setMagic(int mMagic) {
         this.mMagic = mMagic;
+    }
+    
+    public int getItemType() {
+        return mItemType;
+    }
+    public void ItemType(int itemType) {
+        this.mItemType = itemType;
+    }
+    
+    public TiledSprite copySprite() {
+        return ItemFactory.createItem(mName, mFontColor, mImageIndex, mItemType, mAttack, mDefense, mMagic).getSprite();
     }
         
 }

@@ -59,5 +59,8 @@ public class Layer {
     public void setData(int x, int y, int gid) {
         this.data.setTile(width, x, y, gid);
     }
+    public void setData(int[] data) {
+        //this.data.setValue(data);
+    }
 
 }

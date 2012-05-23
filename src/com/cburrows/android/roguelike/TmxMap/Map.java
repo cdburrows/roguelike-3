@@ -105,9 +105,11 @@ public class Map {
     }
     
     public void build(int[] data) {
+        
         this.layer = new ArrayList<Layer>();                         
         for (int l = 0; l < 1; l++) {                 // layer
             Layer newLayer = new Layer("layer_" + l, width, height);
+            //newLayer.setData(data);
             for (int i = 0; i < width * height; i++) {
                 newLayer.setData(i, data[i]);
             }

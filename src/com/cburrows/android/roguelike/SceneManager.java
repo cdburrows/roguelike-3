@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anddev.andengine.entity.IEntity;
-import org.anddev.andengine.entity.modifier.IEntityModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
-import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.util.modifier.IModifier;
 
 import android.util.Log;
