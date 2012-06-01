@@ -101,9 +101,11 @@ public class SceneManager {
     
     final IEntityModifierListener transitionDown = new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
-        public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {       
-            mScenes.get(mScenes.size()-1).destroy();
-            mScenes.remove(mScenes.get(getSize()-1));
+        public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {  
+            if (mScenes.size() > 0) {
+                mScenes.get(mScenes.size()-1).destroy();
+                mScenes.remove(mScenes.get(getSize()-1));
+            }
             
             setScene();
         }

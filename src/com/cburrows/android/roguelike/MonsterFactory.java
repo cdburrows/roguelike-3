@@ -5,6 +5,8 @@ import java.util.Random;
 
 import junit.framework.Assert;
 
+import android.util.Log;
+
 import com.cburrows.android.roguelike.xml.DungeonMonsterTemplate;
 
 public class MonsterFactory {
@@ -19,15 +21,19 @@ public class MonsterFactory {
         for (DungeonMonsterTemplate monster : sMonsterList) {
             sMaxRate += monster.getRate();
         }
+        Log.d("MONSTER FACTORY", "Total rate: " + sMaxRate);
     }
     
     public static Monster generateMonster() {
         float prob = sRand.nextFloat() * sMaxRate;
         float curProb = 0f;
         DungeonMonsterTemplate monster = null;
+        Log.d("MONSTER FACTORY", "Probability: " + prob);
         for (DungeonMonsterTemplate m : sMonsterList) {
-            if (prob <= m.mRate + curProb) {
+            Log.d("MONSTER FACTORY", "Monster: " + m.getId() + " Rate: " +  (m.mRate + curProb));
+            if (prob <= (m.mRate + curProb)) {
                 monster = m;
+                break;
             } else {
                 curProb += m.mRate;
             }
