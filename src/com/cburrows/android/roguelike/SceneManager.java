@@ -12,23 +12,21 @@ import android.util.Log;
 public class SceneManager {
     private static final float FADE_DURATION = 0.25f;
     
-    private RoguelikeActivity mBase;
     private List<GameScene> mScenes;
+    private GameScene mNextScene = null;
  
     public SceneManager(RoguelikeActivity base) {
-        // context to work with from the main game activity
-        this.mBase = base;
-        this.mScenes = new ArrayList<GameScene>();
+        mScenes = new ArrayList<GameScene>();
     }
     
-    public void pushScene(GameScene scene) { pushScene(scene, null); }
-    public void pushScene(GameScene scene, IEntityModifierListener listener) {
+    //public void pushScene(GameScene scene) { pushScene(scene, null); }
+    public void pushScene(GameScene scene) {
         if (mScenes.size() == 0) {
             mScenes.add(scene);
-            setScene(listener);
+            setScene();
         } else {
-            mScenes.add(scene);
-            mScenes.get(getSize()-2).fadeOut(FADE_DURATION, transition);
+            mNextScene = scene;
+            getTopScene().fadeOut(FADE_DURATION, transitionUp);
         }
     }
     
@@ -36,8 +34,7 @@ public class SceneManager {
     public GameScene popScene(IEntityModifierListener listener) {
         if (mScenes.size() > 0) {
             GameScene scene = getTopScene();
-            scene.fadeOut(FADE_DURATION, transition);
-            mScenes.remove(mScenes.get(getSize()-1)); 
+            scene.fadeOut(FADE_DURATION, transitionDown);
             return scene;
         }
         return null;
@@ -57,22 +54,58 @@ public class SceneManager {
         }
     }
     
-    private void setScene(IEntityModifierListener listener) {
+    private void setScene() {
         GameScene scene = getTopScene();
         if (scene != null) {
             if (!scene.isLoaded()) scene.loadResources();
-            
-            scene.initialize();
-            scene.fadeIn(FADE_DURATION, listener);
-            mBase.getEngine().setScene(scene);
+            scene.prepare(prepared); 
+        } else {
+            RoguelikeActivity.destroy();
         }
     }   
     
-    final IEntityModifierListener transition = new IEntityModifierListener() {
+    final IEntityModifierListener prepared = new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {       
-            Log.d("SCENE", "FADE DONe");
-            setScene(null);
+            Log.d("SCENE", "Scene prepared");
+            GameScene scene = getTopScene();
+            RoguelikeActivity.getContext().getEngine().setScene(scene);
+            scene.fadeIn(FADE_DURATION, null);
+        }
+    };
+    
+    final IEntityModifierListener transitionOn = new IEntityModifierListener() {
+        public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
+        public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {       
+            Log.d("SCENE", "Fade in complete");
+            setScene();
+        }
+    };
+    
+    
+    
+    final IEntityModifierListener transitionUp = new IEntityModifierListener() {
+        public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
+        public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {       
+            //Log.d("SCENE", "FADE DONe");
+            if (mNextScene != null) {
+                mScenes.add(mNextScene);
+                mNextScene = null;
+                Log.d("SCENE", "Load next scene");
+            } else {
+                
+            }
+            setScene();
+        }
+    };
+    
+    final IEntityModifierListener transitionDown = new IEntityModifierListener() {
+        public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
+        public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {       
+            mScenes.get(mScenes.size()-1).destroy();
+            mScenes.remove(mScenes.get(getSize()-1));
+            
+            setScene();
         }
     };
 }

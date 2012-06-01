@@ -5,6 +5,8 @@ import javax.microedition.khronos.opengles.GL10;
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.entity.sprite.TiledSprite;
+import org.anddev.andengine.entity.text.ChangeableText;
+import org.anddev.andengine.entity.text.Text;
 import org.anddev.andengine.opengl.font.Font;
 import org.anddev.andengine.opengl.font.FontFactory;
 import org.anddev.andengine.opengl.texture.TextureOptions;
@@ -14,6 +16,7 @@ import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.Display;
@@ -24,7 +27,14 @@ import android.view.Display;
  *
  */
 public class Graphics {
-
+    public static final int FONT_LARGE_SIZE = 20;
+    public static final int FONT_SIZE = 14;
+    public static final int FONT_SMALL_SIZE = 10;
+    
+    public static Font Font;
+    public static Font SmallFont;
+    public static Font LargeFont;
+    
     private static BaseGameActivity sContext;
     //private static int sDesiredWidth;
     //private static int sDesiredHeight;
@@ -45,6 +55,12 @@ public class Graphics {
         final Display display = context.getWindowManager().getDefaultDisplay();
         sScaleX = display.getWidth() / (float)desiredWidth;
         sScaleY = display.getHeight() / (float)desiredHeight;
+        
+        // Setup fonts       
+        Typeface t = Typeface.createFromAsset(context.getAssets(), "fonts/prstart.ttf");
+        Font = createFont(t, FONT_SIZE, Color.WHITE);
+        LargeFont = createFont(t, FONT_LARGE_SIZE, Color.WHITE);
+        SmallFont = createFont(t, FONT_SMALL_SIZE, Color.WHITE);
     }
     
     public static void beginLoad(String atlasPath, int atlasWidth, int atlasHeight) {
@@ -54,6 +70,12 @@ public class Graphics {
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath(atlasPath);
         sBitmapTextureAtlas = new BitmapTextureAtlas(atlasWidth, atlasHeight,
                 TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+    }
+    
+    public static void endLoad() { endLoad(""); }
+    public static void endLoad(String debug) {
+        sContext.getTextureManager().loadTexture(sBitmapTextureAtlas);
+        Log.d("GRAPHICS", debug + " Width: " + sCurrentAtlasX + ", Height: " + sCurrentAtlasY);
     }
     
     public static Sprite createSprite(String imagePath) { 
@@ -155,10 +177,33 @@ public class Graphics {
         return font;
     }
     
-    public static void endLoad() { endLoad(""); }
-    public static void endLoad(String debug) {
-        sContext.getTextureManager().loadTexture(sBitmapTextureAtlas);
-        Log.d("GRAPHICS", debug + " Width: " + sCurrentAtlasX + ", Height: " + sCurrentAtlasY);
+    public static Text createText(float x, float y, Font font, String caption) {
+        return createText(x, y, font, caption, Color.WHITE, 1.0f);
+    }
+    public static Text createText(float x, float y, Font font, String caption, int fontColor) {
+        return createText(x, y, font, caption, fontColor, 1.0f);
+    }
+    public static Text createText(float x, float y, Font font, String caption, int fontColor, float alpha) {
+        Text text = new Text(x, y, font, caption);
+        text.setColor(Color.red(fontColor)/255, Color.green(fontColor)/255, Color.blue(fontColor)/255, alpha);
+        text.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        return text;
+    }
+    
+    public static ChangeableText createChangeableText(float x, float y, Font font, String caption) {
+        return createChangeableText(x, y, font, caption, Color.WHITE, 1.0f);
+    }
+    public static ChangeableText createChangeableText(float x, float y, Font font, String caption, int fontColor) {
+        return createChangeableText(x, y, font, caption, fontColor, 1.0f);
+    }
+    public static ChangeableText createChangeableText(float x, float y, Font font, String caption, float alpha) {
+        return createChangeableText(x, y, font, caption, Color.WHITE, alpha);
+    }
+    public static ChangeableText createChangeableText(float x, float y, Font font, String caption, int fontColor, float alpha) {
+        ChangeableText text = new ChangeableText(x, y, font, caption, 24);
+        text.setColor(Color.red(fontColor)/255, Color.green(fontColor)/255, Color.blue(fontColor)/255, alpha);
+        text.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        return text;
     }
 
 }

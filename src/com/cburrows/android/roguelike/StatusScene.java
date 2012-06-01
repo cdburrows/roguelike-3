@@ -1,11 +1,7 @@
 package com.cburrows.android.roguelike;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-
 import org.anddev.andengine.engine.camera.hud.HUD;
+import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.entity.text.ChangeableText;
@@ -13,8 +9,6 @@ import org.anddev.andengine.input.touch.TouchEvent;
 import org.anddev.andengine.input.touch.detector.ScrollDetector;
 import org.anddev.andengine.input.touch.detector.SurfaceScrollDetector;
 import org.anddev.andengine.input.touch.detector.ScrollDetector.IScrollDetectorListener;
-import org.anddev.andengine.util.sort.Sorter;
-
 import com.cburrows.android.roguelike.ScrollList.ISelectListener;
 
 import android.util.Log;
@@ -86,7 +80,9 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
     private static TiledSprite sWeaponSprite;
     private static TiledSprite sArmourSprite;
     private static TiledSprite sEquippedWeaponSprite;
+    private static TiledSprite sEquippedArmourSprite;
     private static ScrollList sWeaponsScrollList;
+    private static ScrollList sArmourScrollList;
         
     private static ChangeableText sTitleText;
     private static ChangeableText sNameText;
@@ -107,6 +103,7 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
     //private float mTotalTouchOffsetY;
     
     private static Player sPlayer;
+    
             
     public StatusScene(RoguelikeActivity context) {
         super(context);
@@ -117,7 +114,9 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
         
         sScaleX = RoguelikeActivity.sScaleX;
         sScaleY = RoguelikeActivity.sScaleY;
+        sScrollDetector = new SurfaceScrollDetector(this);
         
+        // Cross panel icons
         Graphics.beginLoad("gfx/", TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT);
         
         sStatusBackgroundSprite = Graphics.createSprite("panels/status_panel.png");
@@ -141,19 +140,20 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
                sScaleX, sScaleY, HUD_OPACITY);
         sSkillIcon.setPosition(mCameraWidth - (SKILL_ICON_X *sScaleX), sScaleY);
         
-        Graphics.endLoad("Status");
+        Graphics.endLoad("STATUS");
         
         sHud = new HUD();
         
-        sTitleText = new ChangeableText (32 *sScaleX, (float)TITLE_Y, mContext.Font, "Status");
-        sNameText = new ChangeableText(NAME_TEXT_X *sScaleX, NAME_TEXT_Y * sScaleY, mContext.SmallFont, "XXXXXX", 24);
-        sLevelText= new ChangeableText(LEVEL_TEXT_X *sScaleX, LEVEL_TEXT_Y * sScaleY, mContext.SmallFont, "Lvl 88", 24);
-        sHPText = new ChangeableText(HP_TEXT_X *sScaleX, HP_TEXT_Y * sScaleY, mContext.SmallFont, "HP XXXX/XXXX", 24);
-        sXPText = new ChangeableText(XP_TEXT_X *sScaleX, XP_TEXT_Y * sScaleY, mContext.SmallFont, "XP XXXX/XXXX", 24);
-        sAttackText = new ChangeableText(ATTACK_TEXT_X *sScaleX, ATTACK_TEXT_Y * sScaleY, mContext.SmallFont, "888", 24);
-        sDefenseText = new ChangeableText(DEFENSE_TEXT_X *sScaleX, DEFENSE_TEXT_Y * sScaleY, mContext.SmallFont, "888", 24);
-        sMagicText = new ChangeableText(MAGIC_TEXT_X *sScaleX, MAGIC_TEXT_Y * sScaleY, mContext.SmallFont, "888", 24);
-        sPotionText = new ChangeableText(POTION_TEXT_X *sScaleX, MAGIC_TEXT_Y * sScaleY, mContext.SmallFont, "x08", 24);
+        // Status panel
+        sTitleText = Graphics.createChangeableText (32 *sScaleX, (float)TITLE_Y, Graphics.Font, "Status");
+        sNameText = Graphics.createChangeableText(NAME_TEXT_X *sScaleX, NAME_TEXT_Y * sScaleY, Graphics.SmallFont, "XXXXXX");
+        sLevelText= Graphics.createChangeableText(LEVEL_TEXT_X *sScaleX, LEVEL_TEXT_Y * sScaleY, Graphics.SmallFont, "Lvl 88");
+        sHPText = Graphics.createChangeableText(HP_TEXT_X *sScaleX, HP_TEXT_Y * sScaleY, Graphics.SmallFont, "HP XXXX/XXXX");
+        sXPText = Graphics.createChangeableText(XP_TEXT_X *sScaleX, XP_TEXT_Y * sScaleY, Graphics.SmallFont, "XP XXXX/XXXX");
+        sAttackText = Graphics.createChangeableText(ATTACK_TEXT_X *sScaleX, ATTACK_TEXT_Y * sScaleY, Graphics.SmallFont, "888");
+        sDefenseText = Graphics.createChangeableText(DEFENSE_TEXT_X *sScaleX, DEFENSE_TEXT_Y * sScaleY, Graphics.SmallFont, "888");
+        sMagicText = Graphics.createChangeableText(MAGIC_TEXT_X *sScaleX, MAGIC_TEXT_Y * sScaleY, Graphics.SmallFont, "888");
+        sPotionText = Graphics.createChangeableText(POTION_TEXT_X *sScaleX, MAGIC_TEXT_Y * sScaleY, Graphics.SmallFont, "x08");
         
         attachChild(sStatusBackgroundSprite);
         attachChild(sWeaponsBackgroundSprite);
@@ -175,6 +175,7 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
         sStatusBackgroundSprite.attachChild(sMagicText);
         sStatusBackgroundSprite.attachChild(sPotionText);
         
+        // Weapon panel
         sWeaponsScrollList = new ScrollList(ITEM_SCROLL_X * sScaleX, ITEM_SCROLL_Y * sScaleY, ITEM_SCROLL_WIDTH * sScaleX, ITEM_SCROLL_HEIGHT * sScaleY,
                 new ISelectListener() {
                     public void itemSelected(Item item) {
@@ -185,14 +186,25 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
                 });
         
         sWeaponsBackgroundSprite.attachChild(sWeaponsScrollList.getSprite());
-        sScrollDetector = new SurfaceScrollDetector(this);
+        
+        // Armour panel
+        sArmourScrollList = new ScrollList(ITEM_SCROLL_X * sScaleX, ITEM_SCROLL_Y * sScaleY, ITEM_SCROLL_WIDTH * sScaleX, ITEM_SCROLL_HEIGHT * sScaleY,
+                new ISelectListener() {
+                    public void itemSelected(Item item) {
+                        equip(item);
+                        sArmourScrollList.setData(sPlayer.getArmourList());
+                        updatePlayerData();
+                    }
+                });
+        
+        sArmourBackgroundSprite.attachChild(sArmourScrollList.getSprite());
         
         mLoaded = true;
         
         Log.d("STATUS", "Load time: " + (System.currentTimeMillis() - timeStart));
     }
 
-    public void initialize() {        
+    public void prepare(IEntityModifierListener preparedListener) {        
         mCamera.setHUD(sHud);
         mCamera.setChaseEntity(null);
         mCamera.setCenter(mCameraWidth / 2,  mCameraHeight / 2);
@@ -203,13 +215,15 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
         resetIcons();
         
         if (sPlayer.getWeaponList() != null) sWeaponsScrollList.setData(sPlayer.getWeaponList());
+        if (sPlayer.getArmourList() != null) sArmourScrollList.setData(sPlayer.getArmourList());
 
         sStatusBackgroundSprite.setVisible(false);
         sWeaponsBackgroundSprite.setVisible(false);
         sArmourBackgroundSprite.setVisible(false);
         sSkillsBackgroundSprite.setVisible(false);
         sCurrentPanel.setVisible(true);
-        mInitialized = true;
+        mPrepared = true;
+        preparedListener.onModifierFinished(null, this);
     }
     
     public void pause() {
@@ -237,10 +251,10 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
     private void showArmourPanel() {
         sArmourIcon.setAlpha(1.0f);
         sCurrentPanel.setVisible(false);
+        updatePlayerData();
         sArmourBackgroundSprite.setVisible(true);
         sCurrentPanel = sArmourBackgroundSprite;
         resetIcons();
-        sArmourIcon.setCurrentTileIndex(11);
     }
     
     private void showSkillsPanel() {
@@ -277,6 +291,7 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
                 showSkillsPanel();
             } 
             
+            /*
             if (sCurrentPanel == sStatusBackgroundSprite) {
                 if (sWeaponSprite.contains(sTouchX, sTouchY)) {
                     //sWeaponSprite.handleTouchDown();
@@ -284,6 +299,7 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
                     //sArmourItem.handleTouchDown();   
                 }
             }
+            */
         }
         else if(pTouchEvent.getAction() == MotionEvent.ACTION_MOVE)
         {    
@@ -314,6 +330,9 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
         if (sCurrentPanel == sWeaponsBackgroundSprite) {
             sWeaponsScrollList.handleTouchEvent(pTouchEvent);
             sScrollDetector.onTouchEvent(pTouchEvent);
+        } else if (sCurrentPanel == sArmourBackgroundSprite) {
+            sArmourScrollList.handleTouchEvent(pTouchEvent);
+            sScrollDetector.onTouchEvent(pTouchEvent);
         }
         
         return true;
@@ -322,6 +341,8 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
     public void onScroll(final ScrollDetector pScollDetector, final TouchEvent pTouchEvent, final float pDistanceX, final float pDistanceY) {
         if (sWeaponsBackgroundSprite.isVisible()) {
             sWeaponsScrollList.handleScrollEvent(pScollDetector, pTouchEvent, pDistanceX, pDistanceY);
+        } else if (sArmourBackgroundSprite.isVisible()) {
+            sArmourScrollList.handleScrollEvent(pScollDetector, pTouchEvent, pDistanceX, pDistanceY);
         }
     }
     
@@ -392,13 +413,20 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
                 sEquippedWeaponSprite = sPlayer.getWeapon().copySprite();
                 sEquippedWeaponSprite.setPosition((int)(EQUIPPED_ITEM_X *sScaleX), (int)(EQUIPPED_ITEM_Y * sScaleY));
                 if (!sEquippedWeaponSprite.hasParent()) sWeaponsBackgroundSprite.attachChild(sEquippedWeaponSprite);
+                
+                // Armour panel    
+                if (sEquippedArmourSprite != null) sEquippedArmourSprite.detachSelf();
+                sEquippedArmourSprite = sPlayer.getArmour().copySprite();
+                sEquippedArmourSprite.setPosition((int)(EQUIPPED_ITEM_X *sScaleX), (int)(EQUIPPED_ITEM_Y * sScaleY));
+                if (!sEquippedArmourSprite.hasParent()) sArmourBackgroundSprite.attachChild(sEquippedArmourSprite);
             }});
     }
     
     private void equip(Item item) {
         if (item.getItemType() == Item.ITEM_TYPE_WEAPON) {
             sPlayer.equipWeapon(item);
-            
+        } if (item.getItemType() == Item.ITEM_TYPE_ARMOUR) {
+            sPlayer.equipArmour(item);
         }
     }
     

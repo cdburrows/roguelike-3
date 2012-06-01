@@ -21,6 +21,8 @@ import org.simpleframework.xml.core.Persister;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 
+import com.cburrows.android.roguelike.RoguelikeActivity;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -67,6 +69,17 @@ public class Map {
         tileset = new ArrayList<Tileset>();
         layer = new ArrayList<Layer>();
     }
+    
+    public Map(int width, int height) {
+        version = 1.0f;
+        orientation = "orthogonal";
+        this.width = width;
+        this.height = height;
+        tileheight = 32;
+        tilewidth = 32;
+        tileset = new ArrayList<Tileset>();
+        layer = new ArrayList<Layer>();
+    }
 
     public float getVersion() { return version; }
     public void setVersion(float version) { this.version = version; }
@@ -89,6 +102,10 @@ public class Map {
     public List<Tileset> getTilesets() { return tileset; }
     public void setTilesets(List<Tileset> tileset) { this.tileset = tileset; }
     public void addTileset(Tileset tileset) { this.tileset.add(tileset); }
+    public void setTileset(Tileset tileset) { 
+        this.tileset = new ArrayList<Tileset>(); 
+        this.tileset.add(tileset); 
+    } 
     
     public List<Layer> getLayers() { return layer; }
     public void setLayers(List<Layer> layer) { this.layer = layer; }
@@ -117,18 +134,19 @@ public class Map {
         }
     }
       
-    public TMXTiledMap getTmxTiledMap(Context context, TextureManager textureManager) {
+    public static TMXTiledMap getTmxTiledMap(Map map) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Serializer serializer = new Persister();
         try {
             PrintWriter writer = new PrintWriter(out);
             writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
             writer.flush();
-            serializer.write(this, out);
-            TMXLoader loader = new TMXLoader(context, textureManager);
-            TMXTiledMap map = loader.load(new ByteArrayInputStream(out.toByteArray()));
+            serializer.write(map, out);
+            TMXLoader loader = new TMXLoader(RoguelikeActivity.getContext(), 
+                    RoguelikeActivity.getContext().getTextureManager());
+            TMXTiledMap result = loader.load(new ByteArrayInputStream(out.toByteArray()));
             out.close();
-            return map;
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -16,6 +16,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 public class ScrollList {
+    
+    // The offset of the item buttons into the scroll list
+    protected static final float ITEM_OFFSET_X = 2;
+    protected static final float ITEM_OFFSET_Y = 2;
     private ISelectListener mSelectListener;
     private Sprite mSprite;
     private float mX;
@@ -35,7 +39,7 @@ public class ScrollList {
     //private float mTotalTouchOffsetY;  
     
     private float mOffY;
-    private int mNumToDisplay = 5;
+    //private int mNumToDisplay = 5;
     private float mMinOffY;
     private float mMaxOffY;
     private Item mSelectedItem;
@@ -52,28 +56,27 @@ public class ScrollList {
         mSprite = Graphics.createSprite("scroll_list.png", mX, mY);
         Graphics.endLoad();
         
-        mClipEntity = new ClippingEntity(mX + (2 * RoguelikeActivity.sScaleX), mY + (2 * RoguelikeActivity.sScaleY), 
-                (int)(mWidth - (2 * RoguelikeActivity.sScaleX)), (int)(mHeight - (2 * RoguelikeActivity.sScaleY)));
+        mClipEntity = new ClippingEntity(mX + (ITEM_OFFSET_X * RoguelikeActivity.sScaleX), 
+                mY + (ITEM_OFFSET_Y * RoguelikeActivity.sScaleY), 
+                (int)(mWidth - (ITEM_OFFSET_X * RoguelikeActivity.sScaleX)), 
+                (int)(mHeight - (ITEM_OFFSET_Y * RoguelikeActivity.sScaleY)));
         mSprite.attachChild(mClipEntity);
-        
-        
     }
     
     public void setData(ArrayList<Item> data) {
-        
         mData = data;
         
-        RoguelikeActivity.getContext().runOnUpdateThread(new Runnable() {
-            
+        RoguelikeActivity.getContext().runOnUpdateThread(new Runnable() {     
             public void run() {
                 if (mFrame != null) mClipEntity.detachChild(mFrame);
                 mFrame = new Scene();
                 mFrame.setBackgroundEnabled(false);
-                mFrame.setPosition(mX+(4 * RoguelikeActivity.sScaleX) , mOffY + (4 * RoguelikeActivity.sScaleY));//mY+(2 * RoguelikeActivity.sScaleY)+mSprite.getHeight());
+                mFrame.setPosition(mX + (ITEM_OFFSET_X * RoguelikeActivity.sScaleX), 
+                        mOffY + (ITEM_OFFSET_Y * RoguelikeActivity.sScaleY));
                 mClipEntity.attachChild(mFrame);
         
                 for (int i = 0; i < mFrame.getChildCount(); i++) mFrame.getChild(i).setParent(null);
-                int y = 0; 
+                int y = (int)ITEM_OFFSET_Y; 
                 for (Item e : mData) {
                     e.getSprite().setPosition(0, y);
                     y += 32 * RoguelikeActivity.sScaleY;
@@ -83,16 +86,13 @@ public class ScrollList {
             }
         });
         
-        
         mData = data;
         render();
     }
     
     private void render() {   
         
-        
-        
-        mMaxOffY = mY; //+ (32 * RoguelikeActivity.sScaleY);
+        mMaxOffY = mY + (ITEM_OFFSET_Y * RoguelikeActivity.sScaleX); //+ (32 * RoguelikeActivity.sScaleY);
         /*
         if (mData.size() > mNumToDisplay) {
             mMinOffY = mY - mData.get(mData.size()-1).getY();
@@ -100,7 +100,7 @@ public class ScrollList {
             mMinOffY = mY;
         }
         */
-        mMinOffY = mData.get(mData.size()-1).getY() - mY - (6 * RoguelikeActivity.sScaleY);
+        mMinOffY = mY - (32 * RoguelikeActivity.sScaleY * (mData.size()-1)); //mData.get(mData.size()-1).getY() - mY - (6 * RoguelikeActivity.sScaleY);
         
     }
     

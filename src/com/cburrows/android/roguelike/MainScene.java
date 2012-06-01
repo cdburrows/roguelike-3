@@ -2,18 +2,13 @@ package com.cburrows.android.roguelike;
 
 import java.util.Random;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import org.anddev.andengine.engine.camera.hud.HUD;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
-import org.anddev.andengine.entity.layer.tiled.tmx.TMXLayer;
-import org.anddev.andengine.entity.layer.tiled.tmx.TMXTiledMap;
+import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.entity.text.ChangeableText;
 import org.anddev.andengine.input.touch.TouchEvent;
-import org.anddev.andengine.util.HorizontalAlign;
-
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -29,8 +24,9 @@ public class MainScene extends GameScene {
     private static final float HUD_OPACITY = 0.3f;
     
     private Player mPlayer;
-    private GameMap mMap;
-    private TMXTiledMap mTMXTiledMap;
+    private Dungeon mDungeon;
+    //private GameMap mMap;
+    //private TMXTiledMap mTMXTiledMap;
     
     private TiledSprite mStatusIcon;
     private TiledSprite mMapIcon;
@@ -79,18 +75,16 @@ public class MainScene extends GameScene {
                 mCameraWidth - mPotionIcon.getWidth() - scaleX,
                 mCameraHeight - mPotionIcon.getHeight() - scaleY);
    
-        mPotionText = new ChangeableText(mPotionIcon.getX() - (28 * scaleX) , 
+        mPotionText = Graphics.createChangeableText(mPotionIcon.getX() - (28 * scaleX) , 
                 mPotionIcon.getY() + (11 * scaleY), 
-                mContext.SmallFont, "88x", HorizontalAlign.RIGHT, 3);
-        mPotionText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mPotionText.setAlpha(HUD_OPACITY);
+                Graphics.SmallFont, "88x", HUD_OPACITY);
         
-        mHPBar = Graphics.createSprite("panels/hp_bar.png", 0, 0, HUD_OPACITY);
+        mHPBar = Graphics.createSprite("panels/hp_bar.png", 0, 0, HUD_OPACITY * 1.5f);
         mHPBar.setPosition(
                 (mCameraWidth / 2) - (mHPBar.getWidth() / 2), 
                 mCameraHeight - (24 * scaleY));
         
-        mHPBarFill =  Graphics.createSprite("panels/hp_fill_bar.png", 0, 0, HUD_OPACITY);
+        mHPBarFill =  Graphics.createSprite("panels/hp_fill_bar.png", 0, 0, HUD_OPACITY * 1.5f);
         mHPBarFill.setPosition(
                 (mCameraWidth / 2) - (mHPBarFill.getWidth() / 2), 
                 mCameraHeight - (24 * scaleY));
@@ -98,7 +92,7 @@ public class MainScene extends GameScene {
         Graphics.endLoad("MAIN");
         
         // TODO: Dump gameMap map data when tmx max loaded -- maybe keep the tmx data inside gameMap.
-        mMap = new GameMap(66, 45);
+        //mMap = RoguelikeActivity.sDungeonDefinition.getGameMap(); //new GameMap(66, 45);
         
         /*
         try {
@@ -109,7 +103,7 @@ public class MainScene extends GameScene {
         }
         */
         
-        mTMXTiledMap = mMap.getTmxTiledMap(mContext, mContext.getTextureManager());
+       // mTMXTiledMap = mMap.getTmxTiledMap(mContext, mContext.getTextureManager());
         //TMXLoader loader = new TMXLoader(mContext, mContext.getTextureManager());
 
         /*
@@ -124,16 +118,19 @@ public class MainScene extends GameScene {
         }
         */
         
-        TMXLayer layer = mTMXTiledMap.getTMXLayers().get(0);
-        layer.setScaleCenter(0, 0);
-        layer.setScale(scaleX, scaleY);
-        attachChild(layer);
-       
+        //mMap = RoguelikeActivity.sDungeon.getGameMap();
+        //mTMXTiledMap = RoguelikeActivity.sDungeon.getTmxMap();
+        //TMXLayer layer = mTMXTiledMap.getTMXLayers().get(0);
+        //layer.setScaleCenter(0, 0);
+        //layer.setScale(scaleX, scaleY);
+        mDungeon = RoguelikeActivity.sDungeon;
+        MonsterFactory.initialize(mDungeon.getMonsterList());
+        attachChild(RoguelikeActivity.sDungeon.getSprite());
         
         //Log.d("Map", "0,0:" + layer.getTMXTile(0, 0).getTileY());
         
         mPlayer = mContext.getPlayer();
-        mPlayer.setParentMap(mMap);
+        mPlayer.setParentMap(mDungeon.getGameMap());
         mPlayer.setRoom(0, 0);
         mPlayer.setCurHP(80);
         mContext.setPlayer(mPlayer);
@@ -154,7 +151,7 @@ public class MainScene extends GameScene {
         Log.d("MAIN", "Load time: " + (System.currentTimeMillis() - timeStart));
     }
     
-    public void initialize() {
+    public void prepare(IEntityModifierListener preparedListener) {
      // Load the map
         
         mStatusIcon.setCurrentTileIndex(0);
@@ -171,7 +168,8 @@ public class MainScene extends GameScene {
         mPlayer.setPlayerState(PlayerState.IDLE);
         
         mTransitionOver = false;
-        mInitialized = true;
+        mPrepared = true;
+        preparedListener.onModifierFinished(null, this);
     }
     
     public void pause() {
@@ -214,15 +212,15 @@ public class MainScene extends GameScene {
                                            
             if (Math.abs(mTotalTouchOffsetX) >= TOUCH_SENSITIVITY) {
                 if (mTotalTouchOffsetX < 0) {
-                    mPlayer.move(Direction.DIRECTION_RIGHT, mPlayer.getTileWidth() * GameMap.ROOM_WIDTH);
+                    mPlayer.move(Direction.DIRECTION_RIGHT, mPlayer.getTileWidth() * Dungeon.getRoomWidth());
                 } else if (mTotalTouchOffsetX > 0) {
-                    mPlayer.move(Direction.DIRECTION_LEFT, mPlayer.getTileWidth() * GameMap.ROOM_WIDTH);
+                    mPlayer.move(Direction.DIRECTION_LEFT, mPlayer.getTileWidth() * Dungeon.getRoomWidth());
                 }
             } else if (Math.abs(mTotalTouchOffsetY) >= TOUCH_SENSITIVITY) {
                 if (mTotalTouchOffsetY < 0) {
-                    mPlayer.move(Direction.DIRECTION_DOWN, mPlayer.getTileHeight() * GameMap.ROOM_HEIGHT);
+                    mPlayer.move(Direction.DIRECTION_DOWN, mPlayer.getTileHeight() * Dungeon.getRoomHeight());
                 } else if (mTotalTouchOffsetY > 0) {
-                    mPlayer.move(Direction.DIRECTION_UP, mPlayer.getTileHeight() * GameMap.ROOM_HEIGHT);
+                    mPlayer.move(Direction.DIRECTION_UP, mPlayer.getTileHeight() * Dungeon.getRoomHeight());
                 }
             }
             

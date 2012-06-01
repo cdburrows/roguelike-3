@@ -44,6 +44,11 @@ public class Tileset {
         this.tileheight = tileHeight;
     }
     
+    public Tileset(String name, int tileWidth, int tileHeight) {
+        this.name = name;
+        
+    }
+    
     public int getFirstgid() {
         return firstgid;
     }

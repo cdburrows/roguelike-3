@@ -15,11 +15,11 @@ import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextur
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
 
-import android.graphics.Color;
 import com.cburrows.android.roguelike.xml.ItemDefinitions;
 import com.cburrows.android.roguelike.xml.ItemRarity;
 
 public class ItemFactory {
+    private static final String ITEM_ICON_PATH = "xml/item_definitions.xml";
     private static final int TEXTURE_ATLAS_WIDTH = 512;
     private static final int TEXTURE_ATLAS_HEIGHT = 512;
     
@@ -31,7 +31,7 @@ public class ItemFactory {
     private static final int FIRST_ICON_X = 32;
     private static final int SECOND_ICON_X = 72;
     private static final int THIRD_ICON_X = 112;
-    private static final int VALUE_TEXT_Y = 19;
+    private static final int VALUE_TEXT_Y = 18;
     private static final int FIRST_VALUE_TEXT_X = 46;
     private static final int SECOND_VALUE_TEXT_X = 86;
     private static final int THIRD_VALUE_TEXT_X = 124;
@@ -61,7 +61,7 @@ public class ItemFactory {
         BitmapTextureAtlas bitmapTextureAtlas = new BitmapTextureAtlas(TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT, 
                 TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         sItemIconsTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
-                bitmapTextureAtlas, context, "panels/weapon_icons.png", 0, 0, 5, 10);
+                bitmapTextureAtlas, context, "panels/item_icons.png", 0, 0, 5, 10);
         sItemAttributesTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
                 bitmapTextureAtlas, context, "panels/icons.png", 0, 
                 sItemIconsTextureRegion.getTexturePositionY() + sItemIconsTextureRegion.getHeight(), 4, 4);     
@@ -74,7 +74,7 @@ public class ItemFactory {
         context.getTextureManager().loadTexture(bitmapTextureAtlas);
         
         try {
-            mItemDefinitions = ItemDefinitions.inflate(context.getAssets().open("xml/item_definitions.xml"));
+            mItemDefinitions = ItemDefinitions.inflate(context.getAssets().open(ITEM_ICON_PATH));
             
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -84,7 +84,6 @@ public class ItemFactory {
     }
     
     public static Item createItem(String name, int fontColor, int imageIndex, int itemType, int attack, int defense, int magic) {
-        RoguelikeActivity context = RoguelikeActivity.getContext();
         TiledSprite sprite = new TiledSprite(0, 0, 
                 sEquipmentBackgroundTextureRegion.getTileWidth() * sScaleX,
                 sEquipmentBackgroundTextureRegion.getTileHeight() * sScaleY, 
@@ -95,10 +94,8 @@ public class ItemFactory {
         icon.setCurrentTileIndex(imageIndex);
         icon.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         
-        Text itemName = new Text(TEXT_X * context.sScaleX, TEXT_Y * sScaleY, 
-                context.SmallFont, name);
-        itemName.setColor(Color.red(fontColor)/255, Color.green(fontColor)/255, Color.blue(fontColor)/255);
-        itemName.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        Text itemName = Graphics.createText(TEXT_X * RoguelikeActivity.sScaleX, TEXT_Y * sScaleY, 
+                Graphics.SmallFont, name,  fontColor); 
         
         int curValueIndex = -1;
         for (int i = 0; i < 3; i++) {
@@ -144,9 +141,8 @@ public class ItemFactory {
                 attributeIcon.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
                 attributeIcon.setCurrentTileIndex(i);
                 
-                Text attributeText = new Text(textPosX * sScaleX, VALUE_TEXT_Y * sScaleY, 
-                        context.SmallFont, String.valueOf(attributeValue));
-                attributeText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+                Text attributeText = Graphics.createText(textPosX * sScaleX, VALUE_TEXT_Y * sScaleY, 
+                        Graphics.SmallFont, String.valueOf(attributeValue));
                 
                 sprite.attachChild(attributeIcon);
                 sprite.attachChild(attributeText);
@@ -171,7 +167,7 @@ public class ItemFactory {
     
     public static Item createRandomItem(int level, int itemType) {
         int i = 0;
-        if (itemType == Item.ITEM_TYPE_WEAPON) i = rand.nextInt(mItemDefinitions.mFirstArmour-1); 
+        if (itemType == Item.ITEM_TYPE_WEAPON) i = rand.nextInt(mItemDefinitions.mFirstArmour); 
         if (itemType == Item.ITEM_TYPE_ARMOUR) i = rand.nextInt(25) + mItemDefinitions.mFirstArmour;
         
         ItemRarity rarity = mItemDefinitions.getRandomRarity();

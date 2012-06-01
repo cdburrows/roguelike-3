@@ -33,7 +33,7 @@ public abstract class GameScene extends Scene {
     private Sprite fadeSprite;
     
     protected boolean mLoaded;
-    protected boolean mInitialized;
+    protected boolean mPrepared;
     protected boolean mTransitionOver;
     
     public GameScene(RoguelikeActivity context) { 
@@ -50,12 +50,14 @@ public abstract class GameScene extends Scene {
     }
     
     public void loadResources() { mLoaded = true; }
-    public void initialize() { mInitialized = true; }
+    public void prepare(IEntityModifierListener preparedListener) { mPrepared = true; }
+    public void destroy() { mPrepared = false; }
+    
     public abstract void pause();
     
     public boolean isLoaded() { return mLoaded; }
     
-    public boolean isInitialized() { return mInitialized; }
+    public boolean isPrepared() { return mPrepared; }
     
     public void fadeOut(float duration, IEntityModifierListener listener) {
         mCamera.updateChaseEntity();
@@ -66,18 +68,22 @@ public abstract class GameScene extends Scene {
         fadeSprite.registerEntityModifier(prFadeOutModifier);
     }
     
-    public void fadeIn(float duration, IEntityModifierListener listener) {
+    public void fadeIn(float duration, final IEntityModifierListener listener) {
         mCamera.updateChaseEntity();
         fadeSprite.setPosition(mCamera.getMinX(), mCamera.getMinY());
         
-        listener = new IEntityModifierListener() {
+
+        IEntityModifierListener fadeListener = new IEntityModifierListener() {
             public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) { }
             public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
                 mTransitionOver = true;
+                //listener.onModifierFinished(null, null);
             }  
         };
         
-        AlphaModifier prFadeOutModifier = new FadeOutModifier(duration, listener, EaseLinear.getInstance()); 
+        
+        
+        AlphaModifier prFadeOutModifier = new FadeOutModifier(duration, fadeListener, EaseLinear.getInstance()); 
         fadeSprite.setAlpha(1.0f);
         if (!fadeSprite.hasParent()) attachChild(fadeSprite);
         fadeSprite.registerEntityModifier(prFadeOutModifier);

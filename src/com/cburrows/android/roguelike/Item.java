@@ -1,11 +1,10 @@
 package com.cburrows.android.roguelike;
 
-import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.entity.sprite.TiledSprite;
 
 public class Item {
     public static int ITEM_TYPE_WEAPON = 0;
-    public static int ITEM_TYPE_ARMOUR = 0;
+    public static int ITEM_TYPE_ARMOUR = 1;
     
     private TiledSprite mSprite;
 

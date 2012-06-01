@@ -163,129 +163,130 @@
         <magic>0</magic>
     </item_definition>
     
-    <item_definition name="Knife" index="25">
-        <attack>2</attack>
-        <defense>0</defense>
+    
+    <item_definition name="Buckler" index="25">
+        <attack>0</attack>
+        <defense>2</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Dagger" index="26">
-        <attack>4</attack>
-        <defense>0</defense>
+    <item_definition name="Copper Shield" index="26">
+        <attack>0</attack>
+        <defense>4</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Short Sword" index="27">
-        <attack>7</attack>
-        <defense>0</defense>
+    <item_definition name="Iron Shield" index="27">
+        <attack>0</attack>
+        <defense>7</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Long Sword" index="28">
-        <attack>11</attack>
-        <defense>0</defense>
+    <item_definition name="Steel Shield" index="28">
+        <attack>0</attack>
+        <defense>11</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Broad Sword" index="29">
-        <attack>16</attack>
-        <defense>0</defense>
+    <item_definition name="Tower Shield" index="29">
+        <attack>0</attack>
+        <defense>16</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Knife" index="30">
-        <attack>2</attack>
-        <defense>0</defense>
+    <item_definition name="Cloth Armour" index="30">
+        <attack>0</attack>
+        <defense>2</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Dagger" index="31">
-        <attack>4</attack>
-        <defense>0</defense>
+    <item_definition name="Leather Armour" index="31">
+        <attack>0</attack>
+        <defense>4</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Short Sword" index="32">
-        <attack>7</attack>
-        <defense>0</defense>
+    <item_definition name="Chain Mail" index="32">
+        <attack>0</attack>
+        <defense>8</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Long Sword" index="33">
-        <attack>11</attack>
-        <defense>0</defense>
+    <item_definition name="Plate Mail" index="33">
+        <attack>0</attack>
+        <defense>16</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Broad Sword" index="34">
-        <attack>16</attack>
-        <defense>0</defense>
+    <item_definition name="Mithril Armour" index="34">
+        <attack>0</attack>
+        <defense>32</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Knife" index="35">
-        <attack>2</attack>
-        <defense>0</defense>
+    <item_definition name="Cap" index="35">
+        <attack>0</attack>
+        <defense>2</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Dagger" index="36">
-        <attack>4</attack>
-        <defense>0</defense>
+    <item_definition name="Helmet" index="36">
+        <attack>0</attack>
+        <defense>4</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Short Sword" index="37">
-        <attack>7</attack>
-        <defense>0</defense>
+    <item_definition name="Helmet" index="37">
+        <attack>0</attack>
+        <defense>7</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Long Sword" index="38">
-        <attack>11</attack>
-        <defense>0</defense>
+    <item_definition name="Helmet" index="38">
+        <attack>0</attack>
+        <defense>11</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Broad Sword" index="39">
-        <attack>16</attack>
-        <defense>0</defense>
+    <item_definition name="Helmet" index="39">
+        <attack>0</attack>
+        <defense>16</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Knife" index="40">
-        <attack>2</attack>
-        <defense>0</defense>
+    <item_definition name="Boot" index="40">
+        <attack>0</attack>
+        <defense>2</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Dagger" index="41">
-        <attack>4</attack>
-        <defense>0</defense>
+    <item_definition name="Boot" index="41">
+        <attack>0</attack>
+        <defense>4</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Short Sword" index="42">
-        <attack>7</attack>
-        <defense>0</defense>
+    <item_definition name="Boot" index="42">
+        <attack>0</attack>
+        <defense>7</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Long Sword" index="43">
-        <attack>11</attack>
-        <defense>0</defense>
+    <item_definition name="Boot" index="43">
+        <attack>0</attack>
+        <defense>11</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Broad Sword" index="44">
-        <attack>16</attack>
-        <defense>0</defense>
+    <item_definition name="Boot" index="44">
+        <attack>0</attack>
+        <defense>16</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Knife" index="45">
-        <attack>2</attack>
-        <defense>0</defense>
+    <item_definition name="Gauntlet" index="45">
+        <attack>0</attack>
+        <defense>2</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Dagger" index="46">
-        <attack>4</attack>
-        <defense>0</defense>
+    <item_definition name="Gauntlet" index="46">
+        <attack>0</attack>
+        <defense>4</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Short Sword" index="47">
-        <attack>7</attack>
-        <defense>0</defense>
+    <item_definition name="Gauntlet" index="47">
+        <attack>0</attack>
+        <defense>7</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Long Sword" index="48">
-        <attack>11</attack>
-        <defense>0</defense>
+    <item_definition name="Gauntlet" index="48">
+        <attack>0</attack>
+        <defense>11</defense>
         <magic>0</magic>
     </item_definition>
-    <item_definition name="Broad Sword" index="49">
-        <attack>16</attack>
-        <defense>0</defense>
+    <item_definition name="Gauntlet" index="49">
+        <attack>0</attack>
+        <defense>16</defense>
         <magic>0</magic>
     </item_definition>
 </item_definitions>

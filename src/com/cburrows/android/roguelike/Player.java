@@ -3,13 +3,9 @@ package com.cburrows.android.roguelike;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.Random;
 
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
-import org.anddev.andengine.entity.sprite.Sprite;
-
-import android.util.Log;
 
 public class Player {
     
@@ -80,10 +76,13 @@ public class Player {
         mWeaponList = new ArrayList<Item>();
         mArmourList = new ArrayList<Item>();
         
-        for (int i = 0; i < 3; i++)
-            mWeaponList.add(ItemFactory.createRandomItem(1));
+        for (int i = 0; i < 3; i++) {
+            mWeaponList.add(ItemFactory.createRandomWeapon(1));
+            mArmourList.add(ItemFactory.createRandomArmour(1));
+        }
         
         sortWeapons();
+        sortArmour();
     }
     
     public Event update(float elapsed) {
@@ -176,35 +175,32 @@ public class Player {
         }
     }
     
-    /*
-    private void updateStats() {
-        if (mWeapon != null && mArmour != null) {
-            mTotalAttack = mBaseAttack + mWeapon.getAttack() + mArmour.getAttack();
-            mTotalDefense = mBaseDefense + mWeapon.getDefense() + mArmour.getDefense();
-            mTotalMagic = mBaseMagic + mWeapon.getMagic() + mArmour.getMagic();
-        }
-    }
-    */
-    
     public void updatePositionFromRoom() {
-        mPosX = ((mRoomX * GameMap.ROOM_WIDTH) + (GameMap.ROOM_WIDTH / 2)) * (mTileWidth * mScaleX); 
-        mPosY = ((mRoomY * GameMap.ROOM_HEIGHT) + (GameMap.ROOM_HEIGHT / 2)) * (mTileHeight * mScaleY);
+        mPosX = ((mRoomX * Dungeon.getRoomWidth()) + (Dungeon.getRoomWidth() / 2)) * (mTileWidth * mScaleX); 
+        mPosY = ((mRoomY * Dungeon.getRoomHeight()) + (Dungeon.getRoomHeight() / 2)) * (mTileHeight * mScaleY);
         mSprite.setPosition(mPosX, mPosY);
-        Log.d("SPRITE", "X: " + mPosX + ", " + mTileWidth);
-        Log.d("SPRITE", "Y: " + mPosY);
     }
     
     public void face(Direction direction) {
         mSprite.setCurrentTileIndex(direction.getValue() * 4 + 1);
     }
     
-    
-    
     private void sortWeapons() {
         Collections.sort(mWeaponList, new Comparator<Item>() {
             public int compare(Item lhs, Item rhs) {
                 if (lhs.getAttack() < rhs.getAttack()) return 1;
                 if (lhs.getAttack() == rhs.getAttack()) return 0;
+                return -1;
+            }
+            
+        });
+    }
+    
+    private void sortArmour() {
+        Collections.sort(mArmourList, new Comparator<Item>() {
+            public int compare(Item lhs, Item rhs) {
+                if (lhs.getDefense() < rhs.getDefense()) return 1;
+                if (lhs.getDefense() == rhs.getDefense()) return 0;
                 return -1;
             }
             
@@ -263,8 +259,14 @@ public class Player {
         mAttackBonus -= item.getAttack();
         mDefenseBonus -= item.getDefense();
         mMagicBonus -= item.getMagic();
-        mWeaponList.add(item);
-        sortWeapons();
+        if (item.getItemType() == Item.ITEM_TYPE_WEAPON) {
+            mWeaponList.add(item);
+            sortWeapons();
+        } else if (item.getItemType() == Item.ITEM_TYPE_ARMOUR) {
+            mArmourList.add(item);
+            sortArmour();
+        }
+        
     }
     
     public Item getWeapon() { return mWeapon; }
@@ -285,8 +287,13 @@ public class Player {
     public Item getArmour() { return mArmour; }
     
     public void equipArmour(Item armour) { 
+        if (mArmour != null) unequip(mArmour);
+        
+        mArmourList.remove(armour);
         mArmour = armour;
-        //updateStats();
+        mAttackBonus += armour.getAttack();
+        mDefenseBonus += armour.getDefense();
+        mMagicBonus += armour.getMagic();
     }
     
     public ArrayList<Item> getArmourList() { return mArmourList; }

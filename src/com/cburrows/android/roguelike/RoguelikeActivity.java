@@ -1,8 +1,5 @@
 package com.cburrows.android.roguelike;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.view.Display;
 import android.widget.Toast;
 
@@ -14,15 +11,11 @@ import org.anddev.andengine.engine.options.resolutionpolicy.RatioResolutionPolic
 import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.entity.scene.Scene.IOnSceneTouchListener;
 import org.anddev.andengine.input.touch.TouchEvent;
-import org.anddev.andengine.opengl.font.Font;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
 
 public class RoguelikeActivity extends BaseGameActivity implements
     IOnSceneTouchListener {
     
-    public static final int FONT_LARGE_SIZE = 20;
-    public static final int FONT_SIZE = 14;
-    public static final int FONT_SMALL_SIZE = 10;
     public static final int DESIRED_WIDTH = 320;
     public static final int DESIRED_HEIGHT = 240;
     
@@ -36,15 +29,13 @@ public class RoguelikeActivity extends BaseGameActivity implements
     
     private BoundCamera mCamera;
     
-    public Font Font;
-    public Font SmallFont;
-    public Font LargeFont;
-    
     private Player mPlayer;
     
-    public GameScene mMainScene;
-    public GameScene mBattleScene;
-    public GameScene mStatusScene;
+    public static GameScene sMainScene;
+    public static GameScene sBattleScene;
+    public static GameScene sStatusScene;
+    
+    public static Dungeon sDungeon;
     
     //private Random rand;
         
@@ -57,7 +48,6 @@ public class RoguelikeActivity extends BaseGameActivity implements
         sScaleX = sCameraWidth / (float)DESIRED_WIDTH; 
         sScaleY = sCameraHeight / (float)DESIRED_HEIGHT;
         
-        Graphics.initialize(this, DESIRED_WIDTH, DESIRED_HEIGHT);
         mContext = this;
         mSceneManager = new SceneManager(this);
         mCamera = new BoundCamera(0, 0, sCameraWidth, sCameraHeight);
@@ -67,34 +57,35 @@ public class RoguelikeActivity extends BaseGameActivity implements
                 new RatioResolutionPolicy(sCameraWidth, sCameraHeight), mCamera));
     }
 
-    public void onLoadResources() {
+    public void onLoadResources() {   
+        Graphics.initialize(this, DESIRED_WIDTH, DESIRED_HEIGHT);
         
-        Typeface t = Typeface.createFromAsset(getAssets(), "fonts/prstart.ttf");
-        Font = Graphics.createFont(t, FONT_SIZE, Color.WHITE);
-        LargeFont = Graphics.createFont(t, FONT_LARGE_SIZE, Color.WHITE);
-        SmallFont = Graphics.createFont(t, FONT_SMALL_SIZE, Color.WHITE);
+        // Load the dungeon from definition file
+        sDungeon = new Dungeon("dungeon_definition.xml");
         
+        // Prepare our item factory by loading all the assets from
+        // which every item is created
         ItemFactory.loadResources();
         
+        // Prepare the player
         Graphics.beginLoad("gfx/", 256, 512);
-        
         mPlayer = new Player(Graphics.createAnimatedSprite("hero.png", 4, 4));
-        mPlayer.equipWeapon(ItemFactory.createRandomWeapon(2)); //createItem(this, "Dagger", 0, 0, 5, 0, 0));
-        mPlayer.equipArmour(ItemFactory.createRandomArmour(1)); //.createItem(this, "Buckler", 50, 1, 0, 4, 0));
-        
         Graphics.endLoad();
+        mPlayer.equipWeapon(ItemFactory.createRandomWeapon(2));
+        mPlayer.equipArmour(ItemFactory.createRandomArmour(2));
         
-        mMainScene = new MainScene(this);
-        mBattleScene = new BattleScene(this);
-        mStatusScene = new StatusScene(this);
-        mMainScene.loadResources();
-        mBattleScene.loadResources();
-        mStatusScene.loadResources();
+        // Setup all of the main panels used in the game
+        sMainScene = new MainScene(this);
+        sBattleScene = new BattleScene(this);
+        sStatusScene = new StatusScene(this);
+        sMainScene.loadResources();
+        sBattleScene.loadResources();
+        sStatusScene.loadResources();
     }
 
     public Scene onLoadScene() {
         
-        mSceneManager.pushScene(mMainScene);
+        mSceneManager.pushScene(sMainScene);
         //gameToast(mGameScaleX + ", " + mGameScaleY, Toast.LENGTH_SHORT);
         return mSceneManager.getTopScene();
     }
@@ -134,13 +125,14 @@ public class RoguelikeActivity extends BaseGameActivity implements
     }
      */
     
+    public static void destroy() {
+        sMainScene = null;
+        sBattleScene = null;
+        getContext().finish();    
+    }
+    
     public void onBackPressed() {
         mSceneManager.popScene();
-        if (mSceneManager.getSize() == 0) {
-            mMainScene = null;
-            mBattleScene = null;
-            finish();        
-        }
     }
     
     public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
@@ -148,7 +140,7 @@ public class RoguelikeActivity extends BaseGameActivity implements
     }
     
     public void startCombat() {
-        mSceneManager.pushScene(mBattleScene);
+        mSceneManager.pushScene(sBattleScene);
     }
     
     public void endCombat() {
@@ -156,7 +148,7 @@ public class RoguelikeActivity extends BaseGameActivity implements
     }
     
     public void openStatus() {
-        mSceneManager.pushScene(mStatusScene);
+        mSceneManager.pushScene(sStatusScene);
     }
     
     public void closeStatus() {

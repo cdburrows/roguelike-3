@@ -51,7 +51,7 @@ public class BattleScene extends GameScene  {
     private static final float XP_BAR_Y = 40;
     private static final float XP_BAR_WIDTH = 112;
     private static final float XP_BAR_HEIGHT = 16;
-    private static final int ITEM_X = 0;
+    //private static final int ITEM_X = 0;
     private static final int ITEM_Y = 92;
 
     private static final int SWIPE_RIGHT = 0;
@@ -68,7 +68,7 @@ public class BattleScene extends GameScene  {
     
     private HUD mHud;
     
-    private TiledSprite mMonsterSprite;
+    private Sprite mMonsterSprite;
     private Sprite mBackgroundSprite;
     private Sprite mPopupTitleSprite;
     private Sprite mHPBar;
@@ -125,31 +125,22 @@ public class BattleScene extends GameScene  {
         // The background
         mBackgroundSprite = Graphics.createSprite("dungeon_bg_320.png");
         
-        // The monster
-        mMonsterSprite = Graphics.createTiledSprite("monsters/monsters.png", 1, 1);
-        mMonsterSprite.setPosition(
-                (mCameraWidth / 2) - (mMonsterSprite.getWidth() / 2),
-                (mCameraHeight / 2) - (mMonsterSprite.getHeight() / 2)
-                );
-        mMonster = new Monster(mMonsterSprite);
-        
         // The monster name popup panel
         mPopupTitleSprite = Graphics.createSprite("panels/popup_title.png", 0, 0);
         mPopupTitleSprite.setPosition(
                 (mCameraWidth / 2) - (mPopupTitleSprite.getWidth() / 2), MONSTER_NAME_Y * sScaleY );
         
         // The monster name text
-        mMonsterNameText = new ChangeableText(0, MONSTER_NAME_Y * sScaleY + (8 * sScaleY), mContext.Font, "MONSTER NAME");
-        mMonsterNameText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        mMonsterNameText = Graphics.createChangeableText(0, MONSTER_NAME_Y * sScaleY + (8 * sScaleY), Graphics.Font, "MONSTER NAME");
         mPopupTitleSprite.attachChild(mMonsterNameText);
         
         // The HP bar
-        mHPBar = Graphics.createSprite("panels/hp_bar.png", 0, 0, HP_OPACITY);
+        mHPBar = Graphics.createSprite("panels/hp_bar.png", 0, 0, HP_OPACITY * 1.5f);
         mHPBar.setPosition(
                 (mCameraWidth / 2) - (mHPBar.getWidth() / 2), 
                 mCameraHeight - (24 * sScaleY));
         
-        mHPBarFill = Graphics.createSprite("panels/hp_fill_bar.png", 0, 0, HP_OPACITY);
+        mHPBarFill = Graphics.createSprite("panels/hp_fill_bar.png", 0, 0, HP_OPACITY * 1.5f);
         mHPBarFill.setPosition(
                 (mCameraWidth / 2) - (mHPBarFill.getWidth() / 2), 
                 mCameraHeight - (24 * sScaleY));
@@ -181,17 +172,13 @@ public class BattleScene extends GameScene  {
                 NO_SPOILS_TEXT_Y * sScaleY);
         mPotionIconSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         
-        mVictoryText = new ChangeableText(0, VICTORY_TEXT_Y * sScaleY, mContext.LargeFont, VICTORY_TEXT);
+        mVictoryText = Graphics.createChangeableText(0, VICTORY_TEXT_Y * sScaleY, Graphics.LargeFont, VICTORY_TEXT);
         mVictoryText.setPosition(mCameraWidth / 2 - (mVictoryText.getWidth() / 2), VICTORY_TEXT_Y * sScaleY);
-        mVictoryText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mLevelText = new ChangeableText(LEVEL_TEXT_X * sScaleX, LEVEL_TEXT_Y * sScaleY, mContext.Font, "Lvl 88");
-        mLevelText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mNoSpoilsText = new Text(0, NO_SPOILS_TEXT_Y * sScaleY, mContext.Font, "No spoils!");
+        mLevelText = Graphics.createChangeableText(LEVEL_TEXT_X * sScaleX, LEVEL_TEXT_Y * sScaleY, Graphics.Font, "Lvl 88");
+        mNoSpoilsText = Graphics.createText(0, NO_SPOILS_TEXT_Y * sScaleY, Graphics.Font, "No spoils!");
         mNoSpoilsText.setPosition(mCameraWidth / 2 - (mNoSpoilsText.getWidth() / 2), NO_SPOILS_TEXT_Y * sScaleY);
-        mNoSpoilsText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        mPlusText = new Text( (mCameraWidth / 2) - (mPotionIconSprite.getWidth() / 2) - (20 * sScaleX), 
-                (NO_SPOILS_TEXT_Y + 4) * sScaleY, mContext.LargeFont, "+");
-        mPlusText.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        mPlusText = Graphics.createText( (mCameraWidth / 2) - (mPotionIconSprite.getWidth() / 2) - (20 * sScaleX), 
+                (NO_SPOILS_TEXT_Y + 4) * sScaleY, Graphics.LargeFont, "+");
  
         // The slash animations
         mSlash = new Animation[8];
@@ -266,7 +253,6 @@ public class BattleScene extends GameScene  {
         
         attachChild(mBackgroundSprite);
         attachChild(mPopupTitleSprite);
-        attachChild(mMonsterSprite);
         
         attachChild(mVictoryText);
         attachChild(mLevelText);
@@ -289,17 +275,32 @@ public class BattleScene extends GameScene  {
     }
 
     @Override
-    public void initialize() {
+    public void prepare(IEntityModifierListener preparedListener) {
         mSceneReady = false;
         
-        mMonsterSprite.setAlpha(0f);
+        // The monster
+        //Graphics.beginLoad("gfx/", 256, 256);
+        //mMonsterSprite = Graphics.createSprite("monsters/monsters.png", 1, 1);
+        //Graphics.endLoad("MONSTER PREPARED");
+        
+        //mMonster = new Monster(mMonsterSprite);
+        mMonster = MonsterFactory.generateMonster();
         mMonster.setMonsterState(MonsterState.MONSTER_TRANSITION_IN);
         mMonster.setDead(false);
-        mMonster.setMaxHP(60);
-        mMonster.setCurHP(60);
-        mMonster.setAttack(8);
-        mMonster.setDefense(3);
-        mMonster.setSpeed(4.5f);
+        
+        mMonsterSprite = mMonster.getSprite();
+        mMonsterSprite.setAlpha(0f);
+        mMonsterSprite.setPosition(
+                (mCameraWidth / 2) - (mMonsterSprite.getWidth() / 2),
+                (mCameraHeight / 2) - (mMonsterSprite.getHeight() / 2) + (mMonster.getOffY() * sScaleY)
+                );
+        attachChild(mMonsterSprite);
+        
+        //mMonster.setMaxHP(60);
+        //mMonster.setCurHP(60);
+        //mMonster.setAttack(8);
+        //mMonster.setDefense(3);
+        //mMonster.setSpeed(4.5f);
         
         //mSpoilsSprite.setAlpha(0f);
         mVictoryText.setAlpha(0f);
@@ -312,7 +313,7 @@ public class BattleScene extends GameScene  {
         
         mPopupTitleSprite.setAlpha(0f);
         mMonsterNameText.setAlpha(0);
-        mMonsterNameText.setText("Slime");
+        mMonsterNameText.setText(mMonster.getName());
         mMonsterNameText.setPosition((mPopupTitleSprite.getWidth() / 2) - (mMonsterNameText.getWidth() / 2), 
                 8 *sScaleY);
         
@@ -332,7 +333,22 @@ public class BattleScene extends GameScene  {
         this.registerEntityModifier(monsterNameFadeOutModifier);
 
         mTime = 0f;
-        mInitialized = true;
+        mPrepared = true;
+        preparedListener.onModifierFinished(null, this);
+        
+    }
+    
+    public void destroy() {
+        RoguelikeActivity.getContext().runOnUpdateThread(new Runnable() {
+            public void run() {
+                detachChild(mMonsterSprite);
+                unregisterEntityModifier(monsterFadeInModifier);
+                unregisterEntityModifier(monsterNameFadeOutModifier);
+            }
+        });
+        
+        mMonster = null;
+        mMonsterSprite = null;
     }
     
     public void pause() {

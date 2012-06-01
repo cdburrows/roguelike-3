@@ -8,45 +8,43 @@ import org.anddev.andengine.entity.modifier.ColorModifier;
 import org.anddev.andengine.entity.modifier.MoveModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.anddev.andengine.entity.modifier.ScaleModifier;
-import org.anddev.andengine.entity.sprite.TiledSprite;
+import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.util.modifier.ease.EaseBackInOut;
 import org.anddev.andengine.util.modifier.IModifier;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
 
-@Root(name="monster")
+import com.cburrows.android.roguelike.xml.DungeonMonsterTemplate;
+
 public class Monster {
     private static final float MONSTER_FLASH_DURATION = 0.15f;
-
     private static final float JUMP_HEIGHT = 24;
-
     private static final float JUMP_SCALE = 1.2f;
     
     private MonsterState mMonsterState;
+    private Sprite mSprite;
     
-    //@Element(name="sprite")
-    private TiledSprite mSprite;
-    
-    @Element(name="hp")
+    private String mName = "";
+    private int mLevel;
     private int mMaxHP;
-    
     private int mCurHP;
-    
-    @Element(name="attack")
     private int mAttack;
-    
-    @Element(name="defense")
     private int mDefense;
-    
-    @Element(name="speed")
     private float mSpeed;
-    
     private boolean mDead;
+    private float mOffY;        
+    private static Random sRand = new Random(System.currentTimeMillis());;
     
-    private Random rand;
+    public Monster(DungeonMonsterTemplate template) {
+        mSprite = template.getSprite();
+        mName = template.getId();
+        mLevel = sRand.nextInt(template.getMaxLevel() - template.getMinLevel()) + template.getMinLevel();
+        mMaxHP = sRand.nextInt(template.getMaxHP() - template.getMinHP()) + template.getMinHP();
+        mAttack = sRand.nextInt(template.getMaxAttack() - template.getMinAttack()) + template.getMinAttack();
+        mDefense = sRand.nextInt(template.getMaxDefense() - template.getMinDefense()) + template.getMinDefense();
+        mSpeed = sRand.nextFloat() * (template.getMaxSpeed() - template.getMinSpeed()) + template.getMinSpeed();
+    }
     
-    public Monster(TiledSprite sprite) {
-         rand = new Random(System.currentTimeMillis());
+    public Monster(Sprite sprite) {
+         sRand = new Random(System.currentTimeMillis());
          mSprite = sprite;
     }
     
@@ -57,8 +55,8 @@ public class Monster {
     public int hit(int attack) {
         flash();
         
-        int damage = attack + (int)(attack * rand.nextFloat());
-        damage -= mDefense * rand.nextFloat();
+        int damage = attack + (int)(attack * sRand.nextFloat());
+        damage -= mDefense * sRand.nextFloat();
         if (damage < 0) damage = 0;
         
         mCurHP -= damage;
@@ -152,10 +150,10 @@ public class Monster {
         }
     };
     
-    public TiledSprite getSprite() {
+    public Sprite getSprite() {
         return mSprite;
     }
-    public void setSprite(TiledSprite mMonsterSprite) {
+    public void setSprite(Sprite mMonsterSprite) {
         this.mSprite = mMonsterSprite;
     }
     
@@ -164,6 +162,18 @@ public class Monster {
     }
     public void setMonsterState(MonsterState MonsterState) {
         this.mMonsterState = MonsterState;
+    }
+    
+    public String getName() {
+        return mName;
+    }
+    
+    public int getLevel() {
+        return mLevel;
+    }
+    
+    public void setLevel(int level) {
+        mLevel = level;
     }
 
     public int getMaxHP() {
@@ -206,8 +216,35 @@ public class Monster {
     public void setDead(boolean Dead) {
         this.mDead = Dead;
     }
+    
+    public float getOffY() {
+        return mOffY;
+    }
+    
+    public void setOffY(float offY) {
+        mOffY = offY;
+    }
+    
+    /*
+    public static Monster inflate(String path) {
+        
+        Serializer serializer = new Persister();
+        try {
+            Monster monster = serializer.read(Monster.class, path);
+            Graphics.beginLoad("gfx/monsters/", 256, 256);
+            monster.setSprite(Graphics.createSprite(monster.getSpritePath()));
+            Graphics.endLoad("Monster loaded");
+            return monster;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    */
 
-    public enum MonsterState {
+    public static enum MonsterState {
         MONSTER_TRANSITION_IN, MONSTER_IDLE, MONSTER_ATTACK, MONSTER_DODGE, 
         MONSTER_FLASH, MONSTER_DEAD, MONSTER_TRANSITION_OUT
     }

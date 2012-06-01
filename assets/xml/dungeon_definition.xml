@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dungeon_definition>
+    
+    <tileset name="dungeon_tiles" path="gfx/dungeon_tiles.png" tileheight="32" tilewidth="32" />
+   
+    <floor tileset="dungeon_tiles" depth="1" cols="22" rows="55" room_width="11" room_height="9" room_padding="2"
+        battle_bg="dungeon_bg_320.png" monster_spawn_rate = "0.40" chest_spawn_rate = "0.20">
+      
+        <rarity id="0" rate="20"/>
+        <rarity id="1" rate="50"/>
+        <rarity id="2" rate="20"/>
+        <rarity id="3" rate="8"/>
+        <rarity id="4" rate="2"/>
+        
+        <monster id="Slime" rate="50" sprite_path="slime.png">
+            <min_level>1</min_level>
+            <max_level>2</max_level>
+            <min_hp>50</min_hp>
+            <max_hp>75</max_hp>
+            <min_attack>6</min_attack>
+            <max_attack>10</max_attack>
+            <min_defense>2</min_defense>
+            <max_defense>6</max_defense>
+            <min_speed>3.0f</min_speed>
+            <max_speed>4.0f</max_speed>
+        </monster>
+        <monster id="Bat" rate="50"sprite_path="bat.png" offY ="0f">
+            <min_level>1</min_level>
+            <max_level>2</max_level>
+            <min_hp>40</min_hp>
+            <max_hp>65</max_hp>
+            <min_attack>4</min_attack>
+            <max_attack>8</max_attack>
+            <min_defense>2</min_defense>
+            <max_defense>5</max_defense>
+            <min_speed>5.0f</min_speed>
+            <max_speed>7.0f</max_speed>
+        </monster>
+    </floor>
+</dungeon_definition>
