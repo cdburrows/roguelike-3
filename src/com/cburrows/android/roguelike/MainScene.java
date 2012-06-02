@@ -289,7 +289,7 @@ public class MainScene extends GameScene {
                     break;
                     
                 case EVENT_NEW_ROOM:
-                    if (rand.nextFloat() <= FIGHT_CHANCE) {
+                    if (rand.nextFloat() <= mDungeon.getCurrentFloor().mMonsterSpawnRate) {
                         mPlayer.setPlayerState(PlayerState.FIGHTING);
                         mContext.startCombat();
                     }

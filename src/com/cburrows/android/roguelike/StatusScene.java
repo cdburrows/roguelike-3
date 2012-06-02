@@ -9,7 +9,9 @@ import org.anddev.andengine.input.touch.TouchEvent;
 import org.anddev.andengine.input.touch.detector.ScrollDetector;
 import org.anddev.andengine.input.touch.detector.SurfaceScrollDetector;
 import org.anddev.andengine.input.touch.detector.ScrollDetector.IScrollDetectorListener;
-import com.cburrows.android.roguelike.ScrollList.ISelectListener;
+
+import com.cburrows.android.roguelike.components.ScrollList;
+import com.cburrows.android.roguelike.components.ScrollList.ISelectListener;
 
 import android.util.Log;
 import android.view.MotionEvent;

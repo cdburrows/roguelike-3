@@ -50,6 +50,8 @@ public class Graphics {
     private static TiledTextureRegion sLastTiledTextureRegion;
     private static String sLastImagePath;
     
+    private static boolean sLoading = false;
+    
     public static void initialize(BaseGameActivity context, int desiredWidth, int desiredHeight) {
         sContext = context;
         final Display display = context.getWindowManager().getDefaultDisplay();
@@ -64,6 +66,8 @@ public class Graphics {
     }
     
     public static void beginLoad(String atlasPath, int atlasWidth, int atlasHeight) {
+        assert sLoading = false;
+        sLoading = true;
         sCurrentAtlasX = 0;
         sCurrentAtlasY = 0;
         //sAtlasPath = atlasPath;
@@ -75,6 +79,7 @@ public class Graphics {
     public static void endLoad() { endLoad(""); }
     public static void endLoad(String debug) {
         sContext.getTextureManager().loadTexture(sBitmapTextureAtlas);
+        sLoading = false;
         Log.d("GRAPHICS", debug + " Width: " + sCurrentAtlasX + ", Height: " + sCurrentAtlasY);
     }
     

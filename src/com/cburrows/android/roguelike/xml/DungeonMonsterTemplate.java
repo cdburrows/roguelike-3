@@ -53,6 +53,9 @@ public class DungeonMonsterTemplate {
     @Element(name="max_speed")
     private float mMaxSpeed;
     
+    @Element(name="xp")
+    private int mXp;
+    
     private Sprite mSprite;
     
     
@@ -167,4 +170,6 @@ public class DungeonMonsterTemplate {
     public void setMaxSpeed(float mMaxSpeed) {
         this.mMaxSpeed = mMaxSpeed;
     }
+    
+    public int getXp() { return mXp; }
 }

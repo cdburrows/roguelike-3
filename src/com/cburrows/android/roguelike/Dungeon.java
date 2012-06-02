@@ -43,6 +43,8 @@ public class Dungeon {
     public TMXTiledMap getTmxMap() {
         return Map.getTmxTiledMap(sGameMap);
     }
+    
+    public DungeonFloor getCurrentFloor() { return sCurrentFloor; }
 
     private static GameMap generateMap(DungeonFloor floor) {
         GameMap map = new GameMap(floor);

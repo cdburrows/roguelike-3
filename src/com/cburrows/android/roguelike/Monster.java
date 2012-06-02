@@ -7,17 +7,19 @@ import org.anddev.andengine.entity.modifier.AlphaModifier;
 import org.anddev.andengine.entity.modifier.ColorModifier;
 import org.anddev.andengine.entity.modifier.MoveModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
+import org.anddev.andengine.entity.modifier.QuadraticBezierMoveModifier;
 import org.anddev.andengine.entity.modifier.ScaleModifier;
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.util.modifier.ease.EaseBackInOut;
+import org.anddev.andengine.util.modifier.ease.EaseLinear;
 import org.anddev.andengine.util.modifier.IModifier;
 
 import com.cburrows.android.roguelike.xml.DungeonMonsterTemplate;
 
 public class Monster {
     private static final float MONSTER_FLASH_DURATION = 0.15f;
-    private static final float JUMP_HEIGHT = 24;
-    private static final float JUMP_SCALE = 1.2f;
+    private static final float JUMP_HEIGHT = 30;
+    private static final float JUMP_SCALE = 1.4f;
     
     private MonsterState mMonsterState;
     private Sprite mSprite;
@@ -29,6 +31,7 @@ public class Monster {
     private int mAttack;
     private int mDefense;
     private float mSpeed;
+    private int mXp;
     private boolean mDead;
     private float mOffY;        
     private static Random sRand = new Random(System.currentTimeMillis());;
@@ -38,9 +41,11 @@ public class Monster {
         mName = template.getId();
         mLevel = sRand.nextInt(template.getMaxLevel() - template.getMinLevel()) + template.getMinLevel();
         mMaxHP = sRand.nextInt(template.getMaxHP() - template.getMinHP()) + template.getMinHP();
+        mCurHP = mMaxHP;
         mAttack = sRand.nextInt(template.getMaxAttack() - template.getMinAttack()) + template.getMinAttack();
         mDefense = sRand.nextInt(template.getMaxDefense() - template.getMinDefense()) + template.getMinDefense();
         mSpeed = sRand.nextFloat() * (template.getMaxSpeed() - template.getMinSpeed()) + template.getMinSpeed();
+        mXp = template.getXp();
     }
     
     public Monster(Sprite sprite) {
@@ -66,6 +71,13 @@ public class Monster {
         }
         
         return damage;
+    }
+    
+    public void startIdleAnimation() {
+        mSprite.registerEntityModifier(new QuadraticBezierMoveModifier(0.5f, 
+                mSprite.getX(), mSprite.getY(), 
+                mSprite.getX()+8, mSprite.getY()-16, 
+                mSprite.getX()+16, mSprite.getY(), EaseLinear.getInstance()));
     }
     
     public void fadeIn(float duration, final IEntityModifierListener listener) {
@@ -210,6 +222,8 @@ public class Monster {
         this.mSpeed = Speed;
     }
     
+    public int getXp() { return mXp; }
+    
     public boolean isDead() {
         return mDead;
     }
@@ -225,25 +239,6 @@ public class Monster {
         mOffY = offY;
     }
     
-    /*
-    public static Monster inflate(String path) {
-        
-        Serializer serializer = new Persister();
-        try {
-            Monster monster = serializer.read(Monster.class, path);
-            Graphics.beginLoad("gfx/monsters/", 256, 256);
-            monster.setSprite(Graphics.createSprite(monster.getSpritePath()));
-            Graphics.endLoad("Monster loaded");
-            return monster;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    */
-
     public static enum MonsterState {
         MONSTER_TRANSITION_IN, MONSTER_IDLE, MONSTER_ATTACK, MONSTER_DODGE, 
         MONSTER_FLASH, MONSTER_DEAD, MONSTER_TRANSITION_OUT

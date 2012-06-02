@@ -1,9 +1,11 @@
-package com.cburrows.android.roguelike;
+package com.cburrows.android.roguelike.components;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import org.anddev.andengine.engine.camera.Camera;
 import org.anddev.andengine.entity.Entity;
+
+import com.cburrows.android.roguelike.RoguelikeActivity;
 
 public class ClippingEntity extends Entity {
     

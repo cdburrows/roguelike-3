@@ -137,4 +137,7 @@ public abstract class GameScene extends Scene {
         }
         mContext.getEngine().getTextureManager().loadTexture(mBitmapTextureAtlas);
     }
+    
+    public float getCenterX() { return mCameraWidth / 2; }
+    public float getCenterY() { return mCameraHeight / 2; }
 }

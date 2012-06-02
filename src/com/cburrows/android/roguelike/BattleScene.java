@@ -19,7 +19,10 @@ import org.anddev.andengine.entity.text.Text;
 import org.anddev.andengine.input.touch.TouchEvent;
 import org.anddev.andengine.util.modifier.IModifier;
 import com.cburrows.android.roguelike.Monster.MonsterState;
+import com.cburrows.android.roguelike.components.FloatingText;
+import com.cburrows.android.roguelike.components.ProgressBar;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -30,13 +33,25 @@ public class BattleScene extends GameScene  {
     
     private static final float HP_OPACITY = 0.40f;
     private static final float XP_SCROLL_TIME = 0.5f;
+    private static final int NUM_DAMAGE_TEXTS = 10;
     
     private static final float MONSTER_FADE_DELAY = 0.3f;       // how long after the scene is presented to start presenting the monster
     private static final float MONSTER_FADE_DURATION = 0.3f;    // how long to fade in the monster
     
-    private static final int MONSTER_NAME_Y = 16;
-    private static final float TEXT_OPACITY = 0.8f;
-    private static final float TEXT_DISPLAY_DURATION = 1.5f;  
+    private static final int MONSTER_NAME_FRAME_Y = 18;
+    private static final int MONSTER_NAME_FRAME_WIDTH = 160;
+    private static final int MONSTER_NAME_FRAME_HEIGHT = 48;
+    private static final float MONSTER_NAME_DISPLAY_DURATION = 1.5f;
+    private static final float MONSTER_NAME_OPACITY = 0.8f;
+    private static final int MONSTER_NAME_TEXT_Y = 8;
+    private static final int MONSTER_LEVEL_TEXT_Y = 30;
+    
+    private static final float MONSTER_HP_X = 0;
+    private static final float MONSTER_HP_Y = 8;
+    private static final int MONSTER_HP_WIDTH = 192;
+    private static final int MONSTER_HP_HEIGHT = 6;
+    private static final int MONSTER_HP_COLOR = Color.RED;
+    private static final float MONSTER_HP_ALPHA = 0.75f;
     
     private static final float CAMERA_SHAKE_INTENSITY = 10.0f;
     private static final float CAMERA_SHAKE_DURATON = 0.35f;
@@ -75,13 +90,18 @@ public class BattleScene extends GameScene  {
     private Sprite mHPBarFill;
     //private Sprite mSpoilsSprite;
     private Sprite mXpBarSprite;
-    private Sprite mXpBarFillSprite;
+    private Sprite mXpBarFillSprite;    
     private TiledSprite mSpoilItem;
     private ChangeableText mVictoryText;
     private ChangeableText mLevelText;
     private ChangeableText mMonsterNameText;
+    private ChangeableText mMonsterLevelText;
     private Text mNoSpoilsText;
     private Text mPlusText;
+    private ProgressBar mMonsterHp;
+    
+    private FloatingText[] mDamageNumber;
+    private int mCurDamageNumber;
     
     private Monster mMonster;
     private Player mPlayer;
@@ -103,13 +123,11 @@ public class BattleScene extends GameScene  {
     private float mTime = 0f;
     private int mXpGained;
     
-    private Random rand;
+    private static Random sRand = new Random(System.currentTimeMillis());;
     private Sprite mPotionIconSprite;
     
     public BattleScene(RoguelikeActivity context) {
         super(context);
-        rand = new Random(System.currentTimeMillis());
-        sScaleX = RoguelikeActivity.sScaleX;
         sScaleX = RoguelikeActivity.sScaleX;
         sScaleY = RoguelikeActivity.sScaleY;
     }
@@ -127,12 +145,18 @@ public class BattleScene extends GameScene  {
         
         // The monster name popup panel
         mPopupTitleSprite = Graphics.createSprite("panels/popup_title.png", 0, 0);
+        mPopupTitleSprite.setSize(MONSTER_NAME_FRAME_WIDTH * sScaleX, MONSTER_NAME_FRAME_HEIGHT * sScaleY);
         mPopupTitleSprite.setPosition(
-                (mCameraWidth / 2) - (mPopupTitleSprite.getWidth() / 2), MONSTER_NAME_Y * sScaleY );
+                (mCameraWidth / 2) - (mPopupTitleSprite.getWidth() / 2), MONSTER_NAME_FRAME_Y * sScaleY );
         
         // The monster name text
-        mMonsterNameText = Graphics.createChangeableText(0, MONSTER_NAME_Y * sScaleY + (8 * sScaleY), Graphics.Font, "MONSTER NAME");
+        mMonsterNameText = Graphics.createChangeableText(0, MONSTER_NAME_FRAME_Y * sScaleY + (MONSTER_NAME_TEXT_Y * sScaleY), 
+                Graphics.Font, "MONSTER NAME");
         mPopupTitleSprite.attachChild(mMonsterNameText);
+        
+        mMonsterLevelText = Graphics.createChangeableText(0, MONSTER_NAME_FRAME_Y * sScaleY + (MONSTER_LEVEL_TEXT_Y * sScaleY), 
+                Graphics.SmallFont, "Level XX");
+        mPopupTitleSprite.attachChild(mMonsterLevelText);
         
         // The HP bar
         mHPBar = Graphics.createSprite("panels/hp_bar.png", 0, 0, HP_OPACITY * 1.5f);
@@ -144,7 +168,7 @@ public class BattleScene extends GameScene  {
         mHPBarFill.setPosition(
                 (mCameraWidth / 2) - (mHPBarFill.getWidth() / 2), 
                 mCameraHeight - (24 * sScaleY));
-        
+               
         // The spoils panel
         /*
         mSpoilsSprite = Graphics.createSprite("panels/display_panel.png");
@@ -179,6 +203,9 @@ public class BattleScene extends GameScene  {
         mNoSpoilsText.setPosition(mCameraWidth / 2 - (mNoSpoilsText.getWidth() / 2), NO_SPOILS_TEXT_Y * sScaleY);
         mPlusText = Graphics.createText( (mCameraWidth / 2) - (mPotionIconSprite.getWidth() / 2) - (20 * sScaleX), 
                 (NO_SPOILS_TEXT_Y + 4) * sScaleY, Graphics.LargeFont, "+");
+        
+        mMonsterHp = new ProgressBar(MONSTER_HP_X, MONSTER_HP_Y, MONSTER_HP_WIDTH, MONSTER_HP_HEIGHT, 
+                MONSTER_HP_COLOR, MONSTER_HP_ALPHA, 100);
  
         // The slash animations
         mSlash = new Animation[8];
@@ -261,13 +288,22 @@ public class BattleScene extends GameScene  {
         attachChild(mPotionIconSprite);
         attachChild(mXpBarSprite);
         attachChild(mXpBarFillSprite);
+        attachChild(mMonsterHp.getEntity());
         
         mHud.attachChild(mHPBar);
         mHud.attachChild(mHPBarFill);
         
+        mDamageNumber = new FloatingText[NUM_DAMAGE_TEXTS];
+        for (int i = 0; i < NUM_DAMAGE_TEXTS; i++) {
+            mDamageNumber[i] = new FloatingText(Graphics.Font, Color.WHITE, 0, 0, "00");
+            mHud.attachChild(mDamageNumber[i].getEntity());
+        }
+        
         mPlayer = mContext.getPlayer();
         
         this.registerUpdateHandler(updateHandler);
+        
+        
         
         mLoaded = true;
         
@@ -278,12 +314,20 @@ public class BattleScene extends GameScene  {
     public void prepare(IEntityModifierListener preparedListener) {
         mSceneReady = false;
         
-        // The monster
-        //Graphics.beginLoad("gfx/", 256, 256);
-        //mMonsterSprite = Graphics.createSprite("monsters/monsters.png", 1, 1);
-        //Graphics.endLoad("MONSTER PREPARED");
+        //mSpoilsSprite.setAlpha(0f);
+        mVictoryText.setAlpha(0f);
+        mLevelText.setAlpha(0f);
+        mNoSpoilsText.setAlpha(0f);
+        mPlusText.setAlpha(0f);
+        mPotionIconSprite.setAlpha(0f);
+        mXpBarSprite.setAlpha(0f);
+        mXpBarFillSprite.setAlpha(0f);
         
-        //mMonster = new Monster(mMonsterSprite);
+        mPopupTitleSprite.setAlpha(0f);
+        mMonsterNameText.setAlpha(0f);
+        mMonsterLevelText.setAlpha(0f);
+        
+        // The monster
         mMonster = MonsterFactory.generateMonster();
         mMonster.setMonsterState(MonsterState.MONSTER_TRANSITION_IN);
         mMonster.setDead(false);
@@ -296,26 +340,18 @@ public class BattleScene extends GameScene  {
                 );
         attachChild(mMonsterSprite);
         
-        //mMonster.setMaxHP(60);
-        //mMonster.setCurHP(60);
-        //mMonster.setAttack(8);
-        //mMonster.setDefense(3);
-        //mMonster.setSpeed(4.5f);
+        mMonsterHp.setPosition((mCameraWidth / 2) - (mMonsterHp.getWidth() / 2),
+                MONSTER_HP_Y * sScaleY);
+        mMonsterHp.setMaxValue(mMonster.getMaxHP());
+        mMonsterHp.setCurValue(mMonster.getCurHP());
+        mMonsterHp.setAlpha(0f);
         
-        //mSpoilsSprite.setAlpha(0f);
-        mVictoryText.setAlpha(0f);
-        mLevelText.setAlpha(0f);
-        mNoSpoilsText.setAlpha(0f);
-        mPlusText.setAlpha(0f);
-        mPotionIconSprite.setAlpha(0f);
-        mXpBarSprite.setAlpha(0f);
-        mXpBarFillSprite.setAlpha(0f);
-        
-        mPopupTitleSprite.setAlpha(0f);
-        mMonsterNameText.setAlpha(0);
         mMonsterNameText.setText(mMonster.getName());
         mMonsterNameText.setPosition((mPopupTitleSprite.getWidth() / 2) - (mMonsterNameText.getWidth() / 2), 
-                8 *sScaleY);
+                MONSTER_NAME_TEXT_Y * sScaleY);
+        mMonsterLevelText.setText("Level " + mMonster.getLevel());
+        mMonsterLevelText.setPosition((mPopupTitleSprite.getWidth() / 2) - (mMonsterLevelText.getWidth() / 2), 
+                MONSTER_LEVEL_TEXT_Y * sScaleY);
         
         updateHP();
         updateXP();
@@ -333,6 +369,8 @@ public class BattleScene extends GameScene  {
         this.registerEntityModifier(monsterNameFadeOutModifier);
 
         mTime = 0f;
+        mCurDamageNumber = 0;
+        
         mPrepared = true;
         preparedListener.onModifierFinished(null, this);
         
@@ -351,9 +389,7 @@ public class BattleScene extends GameScene  {
         mMonsterSprite = null;
     }
     
-    public void pause() {
-        
-    }
+    public void pause() { }
     
     public boolean onSceneTouchEvent(TouchEvent pTouchEvent) {
         if(pTouchEvent.getAction() == MotionEvent.ACTION_DOWN)
@@ -364,7 +400,7 @@ public class BattleScene extends GameScene  {
             //mTotalTouchOffsetY = 0;     
             
             // Interupt xp bar fill
-            if (mVictoryText.getAlpha() == TEXT_OPACITY && mSceneReady 
+            if (mVictoryText.getAlpha() == MONSTER_NAME_OPACITY && mSceneReady 
                     /*&& mSpoilsSprite.contains(mTouchX, mTouchY)*/) {
                 // If the player closes the spoils menu, make sure we take care
                 // of xp.
@@ -419,13 +455,21 @@ public class BattleScene extends GameScene  {
             attachChild(mSlash[mSwipeDirection].getSprite());
             mAnimating = true;
             mSlash[mSwipeDirection].start();
+                        
+            int damage = mMonster.hit(mPlayer.getTotalAttack());
             
-            /*int damage = */ mMonster.hit(mPlayer.getTotalAttack());
+            mMonsterHp.setCurValue(mMonster.getCurHP());
+            mDamageNumber[mCurDamageNumber].activate(damage, 
+                    getCenterX() + (sRand.nextInt(32) - 16), 
+                    getCenterY() - (32 * sScaleY));
+            mCurDamageNumber = (mCurDamageNumber + 1) % NUM_DAMAGE_TEXTS;
+            
             //mContext.gameToast("You deal " + damage + " damage!", Toast.LENGTH_SHORT);
             if (mMonster.getCurHP() <= 0) {
-                mXpGained = 8;
+                mXpGained = mMonster.getXp();
                 mMonster.setMonsterState(MonsterState.MONSTER_DEAD);
                 mMonster.fadeOut(MONSTER_FADE_DURATION, battleWinListener);
+                mMonsterHp.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, MONSTER_NAME_OPACITY, 0f));
             }
         }
     }
@@ -440,15 +484,16 @@ public class BattleScene extends GameScene  {
     }
     
     private void endCombat() {
+        int spoils = sRand.nextInt(100);
         
-        int spoils = rand.nextInt(100);
-        
-        if (spoils < 60) {
+        if (spoils < 10) {
+            // No spoils!
             mNoSpoilsText.setVisible(true);
             mPotionIconSprite.setVisible(false);
             mPlusText.setVisible(false);
             if (mSpoilItem != null) mSpoilItem.setVisible(false);
-        } else if (spoils < 90) {
+        } else if (spoils < 20) {
+            // A potion
             mNoSpoilsText.setVisible(false);
             mPotionIconSprite.setVisible(true);
             mPlusText.setVisible(true);
@@ -456,6 +501,7 @@ public class BattleScene extends GameScene  {
             
             mPlayer.increasePotions(1);
         } else {
+            // An item!
             RoguelikeActivity.getContext().runOnUpdateThread(new Runnable() {
 
                 public void run() {
@@ -464,7 +510,7 @@ public class BattleScene extends GameScene  {
                     mPotionIconSprite.setVisible(false);
                     mPlusText.setVisible(true);
                     
-                    Item item = ItemFactory.createRandomWeapon(rand.nextInt(3)+1);
+                    Item item = ItemFactory.createRandomWeapon(sRand.nextInt(3)+1);
                     mSpoilItem = item.copySprite();
                     mSpoilItem.setPosition((mCameraWidth / 2) - (mSpoilItem.getWidth() / 2), ITEM_Y * sScaleY);
                     attachChild(mSpoilItem);
@@ -481,22 +527,27 @@ public class BattleScene extends GameScene  {
                 
             });
         }
-        
-        
         this.registerEntityModifier(spoilsFadeInModifer);
     }
     
     private final IUpdateHandler updateHandler = new IUpdateHandler() {
-
         public void onUpdate(float pSecondsElapsed) {
-           mTime += pSecondsElapsed;
-           if (mMonster.targetable() && mTime > 1.5f) {
-               mTime = 0f;
-               if (rand.nextFloat() < 0.5f) 
-                   mMonster.jumpForward(0.4f, monsterAttackListener);
-               else
-                   mMonster.jumpBackward(0.4f);
-           }
+           
+            // Monster update
+            mTime += pSecondsElapsed;
+            if (mMonster.targetable() && mTime > 1.5f) {
+                mTime = 0f;
+                float attackSpeed = 1.2f - (mMonster.getSpeed() / 100);
+                if (sRand.nextFloat() < 0.5f) 
+                    mMonster.jumpForward(attackSpeed, monsterAttackListener);
+                else
+                    mMonster.jumpBackward(attackSpeed);
+            }
+            
+            // Damage text update
+            for (FloatingText t : mDamageNumber) {
+                t.update(pSecondsElapsed);
+            }
         }
         public void reset() {}
     };
@@ -507,18 +558,21 @@ public class BattleScene extends GameScene  {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
             mMonster.fadeIn(MONSTER_FADE_DURATION, sceneLoadListener);
-            mPopupTitleSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
-            mMonsterNameText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+            mPopupTitleSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
+            mMonsterNameText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
+            mMonsterLevelText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
+            mMonsterHp.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
         }
     });
     
     // Make the monster name panel to fade out  after MONSTER_FADE_DELAY + TEXT_DISPLAY_DURATION seconds
-    final DelayModifier monsterNameFadeOutModifier = new DelayModifier(MONSTER_FADE_DELAY + TEXT_DISPLAY_DURATION,
+    final DelayModifier monsterNameFadeOutModifier = new DelayModifier(MONSTER_FADE_DELAY + MONSTER_NAME_DISPLAY_DURATION,
             new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
-            mPopupTitleSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, TEXT_OPACITY, 0f));
-            mMonsterNameText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, TEXT_OPACITY, 0f));    
+            mPopupTitleSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, MONSTER_NAME_OPACITY, 0f));
+            mMonsterNameText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, MONSTER_NAME_OPACITY, 0f));    
+            mMonsterLevelText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, MONSTER_NAME_OPACITY, 0f));
         }
     });
     
@@ -528,19 +582,19 @@ public class BattleScene extends GameScene  {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
             //mSpoilsSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
-            mVictoryText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
-            mLevelText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY)); 
-            if (mNoSpoilsText.isVisible()) mNoSpoilsText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
-            if (mPlusText.isVisible()) mPlusText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
-            if (mPotionIconSprite.isVisible()) mPotionIconSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+            mVictoryText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
+            mLevelText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY)); 
+            if (mNoSpoilsText.isVisible()) mNoSpoilsText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
+            if (mPlusText.isVisible()) mPlusText.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
+            if (mPotionIconSprite.isVisible()) mPotionIconSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
             if (mSpoilItem != null && mSpoilItem.isVisible()) {
-                mSpoilItem.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+                mSpoilItem.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
                 for (int i = 0; i < mSpoilItem.getChildCount(); i++) {
-                    mSpoilItem.getChild(i).registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+                    mSpoilItem.getChild(i).registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
                 }
             }
-            mXpBarSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
-            mXpBarFillSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, TEXT_OPACITY));
+            mXpBarSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
+            mXpBarFillSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
 
             registerEntityModifier(xpBarModifier);
             
@@ -598,6 +652,7 @@ public class BattleScene extends GameScene  {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) { }
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
             mSceneReady = true;
+            mMonster.startIdleAnimation();
         }
     };
     
@@ -606,7 +661,7 @@ public class BattleScene extends GameScene  {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {    }
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
             shake(CAMERA_SHAKE_DURATON, CAMERA_SHAKE_INTENSITY);    
-            mPlayer.decreaseHP(rand.nextInt(10)+1);
+            mPlayer.decreaseHP(sRand.nextInt(10)+1);
             updateHP();
         }
     };

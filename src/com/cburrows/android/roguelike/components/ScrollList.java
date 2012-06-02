@@ -1,4 +1,4 @@
-package com.cburrows.android.roguelike;
+package com.cburrows.android.roguelike.components;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -11,6 +11,10 @@ import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.input.touch.TouchEvent;
 import org.anddev.andengine.input.touch.detector.ScrollDetector;
+
+import com.cburrows.android.roguelike.Graphics;
+import com.cburrows.android.roguelike.Item;
+import com.cburrows.android.roguelike.RoguelikeActivity;
 
 import android.util.Log;
 import android.view.MotionEvent;

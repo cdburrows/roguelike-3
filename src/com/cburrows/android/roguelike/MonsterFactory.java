@@ -21,16 +21,13 @@ public class MonsterFactory {
         for (DungeonMonsterTemplate monster : sMonsterList) {
             sMaxRate += monster.getRate();
         }
-        Log.d("MONSTER FACTORY", "Total rate: " + sMaxRate);
     }
     
     public static Monster generateMonster() {
         float prob = sRand.nextFloat() * sMaxRate;
         float curProb = 0f;
         DungeonMonsterTemplate monster = null;
-        Log.d("MONSTER FACTORY", "Probability: " + prob);
         for (DungeonMonsterTemplate m : sMonsterList) {
-            Log.d("MONSTER FACTORY", "Monster: " + m.getId() + " Rate: " +  (m.mRate + curProb));
             if (prob <= (m.mRate + curProb)) {
                 monster = m;
                 break;
