@@ -12,6 +12,7 @@ import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.input.touch.TouchEvent;
 import org.anddev.andengine.input.touch.detector.ScrollDetector;
 
+import com.cburrows.android.roguelike.AudioManager;
 import com.cburrows.android.roguelike.Graphics;
 import com.cburrows.android.roguelike.Item;
 import com.cburrows.android.roguelike.RoguelikeActivity;
@@ -138,6 +139,7 @@ public class ScrollList {
                 if (i.getSprite().contains(mTouchUpX, mTouchUpY)) {
                     if (mSelectedItem != null && mSelectedItem == i) {
                         if (mSelectListener != null) mSelectListener.itemSelected(mSelectedItem);
+                        AudioManager.playClick();
                     }
                     break;
                 }

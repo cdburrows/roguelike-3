@@ -87,6 +87,7 @@ public class SceneManager {
     final IEntityModifierListener transitionUp = new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {       
+            getTopScene().suspend();
             //Log.d("SCENE", "FADE DONe");
             if (mNextScene != null) {
                 mScenes.add(mNextScene);

@@ -1,11 +1,13 @@
 package com.cburrows.android.roguelike;
 
+import java.io.IOException;
 import java.util.Random;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import org.anddev.andengine.engine.camera.hud.HUD;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
+import org.anddev.andengine.entity.Entity;
 import org.anddev.andengine.entity.IEntity;
 import org.anddev.andengine.entity.modifier.AlphaModifier;
 import org.anddev.andengine.entity.modifier.DelayModifier;
@@ -22,7 +24,9 @@ import com.cburrows.android.roguelike.Monster.MonsterState;
 import com.cburrows.android.roguelike.components.FloatingText;
 import com.cburrows.android.roguelike.components.ProgressBar;
 
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -81,53 +85,62 @@ public class BattleScene extends GameScene  {
     private static float sScaleX;
     private static float sScaleY;
     
-    private HUD mHud;
+    private static HUD mHud;
     
-    private Sprite mMonsterSprite;
-    private Sprite mBackgroundSprite;
-    private Sprite mPopupTitleSprite;
-    private Sprite mHPBar;
-    private Sprite mHPBarFill;
+    private static Sprite mMonsterSprite;
+    private static Sprite mBackgroundSprite;
+    private static Sprite mPopupTitleSprite;
+    private static Sprite mHPBar;
+    private static Sprite mHPBarFill;
     //private Sprite mSpoilsSprite;
-    private Sprite mXpBarSprite;
-    private Sprite mXpBarFillSprite;    
-    private TiledSprite mSpoilItem;
-    private ChangeableText mVictoryText;
-    private ChangeableText mLevelText;
-    private ChangeableText mMonsterNameText;
-    private ChangeableText mMonsterLevelText;
-    private Text mNoSpoilsText;
-    private Text mPlusText;
-    private ProgressBar mMonsterHp;
+    private static Sprite mXpBarSprite;
+    private static Sprite mXpBarFillSprite;    
+    private static TiledSprite mSpoilItem;
+    private static ChangeableText mVictoryText;
+    private static ChangeableText mLevelText;
+    private static ChangeableText mMonsterNameText;
+    private static ChangeableText mMonsterLevelText;
+    private static Text mNoSpoilsText;
+    private static Text mPlusText;
+    private static ProgressBar mMonsterHp;
     
-    private FloatingText[] mDamageNumber;
-    private int mCurDamageNumber;
+    private static FloatingText[] mDamageNumber;
+    private static int mCurDamageNumber;
     
-    private Monster mMonster;
-    private Player mPlayer;
-    private Animation[] mSlash;
+    private static Monster mMonster;
+    private static Player mPlayer;
+    private static Animation[] mSlash;
     
-    private boolean mSceneReady;
-    private boolean mAnimating;
+    private static boolean mSceneReady;
+    private static boolean mAnimating;
     
-    private float mTouchX;
-    private float mTouchY;
-    private float mTouchUpX;
-    private float mTouchUpY;
+    private static float mTouchX;
+    private static float mTouchY;
+    private static float mTouchUpX;
+    private static float mTouchUpY;
     //private float mTouchOffsetX;
     //private float mTouchOffsetY;
     //private float mTotalTouchOffsetX;
     //private float mTotalTouchOffsetY;
-    private int mSwipeDirection;
+    private static int mSwipeDirection;
     
-    private float mTime = 0f;
-    private int mXpGained;
+    private static float mTime = 0f;
+    private static int mXpGained;
     
     private static Random sRand = new Random(System.currentTimeMillis());;
-    private Sprite mPotionIconSprite;
+    private static Sprite mPotionIconSprite;
+    
+    private static MediaPlayer mBackgroundMusic;
+    private static MediaPlayer mSwordSlashEffect;
+    private static MediaPlayer mMonsterAttackEffect;
+    private static MediaPlayer mMonsterEvadeEffect;
+    private static MediaPlayer mVictoryEffect;
+    
+    private static GameScene sScene;
     
     public BattleScene(RoguelikeActivity context) {
         super(context);
+        sScene = this;
         sScaleX = RoguelikeActivity.sScaleX;
         sScaleY = RoguelikeActivity.sScaleY;
     }
@@ -206,6 +219,8 @@ public class BattleScene extends GameScene  {
         
         mMonsterHp = new ProgressBar(MONSTER_HP_X, MONSTER_HP_Y, MONSTER_HP_WIDTH, MONSTER_HP_HEIGHT, 
                 MONSTER_HP_COLOR, MONSTER_HP_ALPHA, 100);
+        mMonsterHp.setPosition((mCameraWidth / 2) - (mMonsterHp.getWidth() / 2),
+                MONSTER_HP_Y * sScaleY);
  
         // The slash animations
         mSlash = new Animation[8];
@@ -303,7 +318,39 @@ public class BattleScene extends GameScene  {
         
         this.registerUpdateHandler(updateHandler);
         
-        
+        try {
+            AssetFileDescriptor afd = RoguelikeActivity.getContext().getAssets().openFd("sfx/music/Insidia.aac");
+            if (RoguelikeActivity.sMusic) {
+                mBackgroundMusic = new MediaPlayer();
+                mBackgroundMusic.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            }
+            
+            if (RoguelikeActivity.sSound) {            
+                afd = RoguelikeActivity.getContext().getAssets().openFd("sfx/sword_slash.mp3");
+                mSwordSlashEffect = new MediaPlayer();
+                mSwordSlashEffect.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                mSwordSlashEffect.prepare();
+                
+                afd = RoguelikeActivity.getContext().getAssets().openFd("sfx/monster_attack.mp3");
+                mMonsterAttackEffect = new MediaPlayer();
+                mMonsterAttackEffect.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                mMonsterAttackEffect.prepare();
+                
+                afd = RoguelikeActivity.getContext().getAssets().openFd("sfx/monster_evade_28.mp3");
+                mMonsterEvadeEffect = new MediaPlayer();
+                mMonsterEvadeEffect.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                mMonsterEvadeEffect.prepare();
+                
+                afd = RoguelikeActivity.getContext().getAssets().openFd("sfx/victory.mp3");
+                mVictoryEffect = new MediaPlayer();
+                mVictoryEffect.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                mVictoryEffect.prepare();
+            }
+            
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         
         mLoaded = true;
         
@@ -340,8 +387,6 @@ public class BattleScene extends GameScene  {
                 );
         attachChild(mMonsterSprite);
         
-        mMonsterHp.setPosition((mCameraWidth / 2) - (mMonsterHp.getWidth() / 2),
-                MONSTER_HP_Y * sScaleY);
         mMonsterHp.setMaxValue(mMonster.getMaxHP());
         mMonsterHp.setCurValue(mMonster.getCurHP());
         mMonsterHp.setAlpha(0f);
@@ -371,6 +416,10 @@ public class BattleScene extends GameScene  {
         mTime = 0f;
         mCurDamageNumber = 0;
         
+        AudioManager.pushMusic(mBackgroundMusic);
+        
+        sScene = this;
+        
         mPrepared = true;
         preparedListener.onModifierFinished(null, this);
         
@@ -387,6 +436,12 @@ public class BattleScene extends GameScene  {
         
         mMonster = null;
         mMonsterSprite = null;
+        
+        if (RoguelikeActivity.sSound) {
+            mVictoryEffect.pause();
+            mVictoryEffect.seekTo(0);
+        }
+        AudioManager.popMusic();
     }
     
     public void pause() { }
@@ -449,20 +504,33 @@ public class BattleScene extends GameScene  {
         return true;
     }
     
-    private void checkHit() {
+    public static void showFloatingText(int text) { showFloatingText(String.valueOf(text)); }
+    public static void showFloatingText(String text) { showFloatingText(text, 0); }
+    public static void showFloatingText(String text, int offX) {
+        mDamageNumber[mCurDamageNumber].activate(text, 
+                sScene.getCenterX() + ((sRand.nextInt(32) - 16) + offX) * sScaleX, 
+                sScene.getCenterY() - (32 * sScaleY));
+        mCurDamageNumber = (mCurDamageNumber + 1) % NUM_DAMAGE_TEXTS;
+    }
+    
+    private static void checkHit() {
         //Line line = new Line(mTouchX, mTouchY, mTouchUpX, mTouchUpY);
         if (mSceneReady && !mMonster.isDead() && !mAnimating /* && mMonsterSprite.collidesWith(line) */) {
-            attachChild(mSlash[mSwipeDirection].getSprite());
+            SkillManager.queueAction(SkillDirection.getDirection(mSwipeDirection));
+            
+            sScene.attachChild(mSlash[mSwipeDirection].getSprite());
             mAnimating = true;
             mSlash[mSwipeDirection].start();
+            
+            if (RoguelikeActivity.sSound) {
+                mSwordSlashEffect.seekTo(0);
+                mSwordSlashEffect.start();
+            }
                         
             int damage = mMonster.hit(mPlayer.getTotalAttack());
             
             mMonsterHp.setCurValue(mMonster.getCurHP());
-            mDamageNumber[mCurDamageNumber].activate(damage, 
-                    getCenterX() + (sRand.nextInt(32) - 16), 
-                    getCenterY() - (32 * sScaleY));
-            mCurDamageNumber = (mCurDamageNumber + 1) % NUM_DAMAGE_TEXTS;
+            showFloatingText(damage);
             
             //mContext.gameToast("You deal " + damage + " damage!", Toast.LENGTH_SHORT);
             if (mMonster.getCurHP() <= 0) {
@@ -474,17 +542,23 @@ public class BattleScene extends GameScene  {
         }
     }
     
-    private void updateHP() {
+    private static void updateHP() {
         mHPBarFill.setWidth( ((float)mHPBar.getWidth()) * mPlayer.getHPFraction());
     }
     
-    private void updateXP() {
+    private static void updateXP() {
         mXpBarFillSprite.setWidth( ((float)XP_BAR_WIDTH-2) * mPlayer.getXPFraction());
         mLevelText.setText("Lvl " + mPlayer.getLevel());
     }
     
-    private void endCombat() {
+    private static void endCombat() {
         int spoils = sRand.nextInt(100);
+        AudioManager.stop();
+        SkillManager.reset();
+        
+        if (RoguelikeActivity.sSound) {
+            mVictoryEffect.start();
+        }
         
         if (spoils < 10) {
             // No spoils!
@@ -512,8 +586,8 @@ public class BattleScene extends GameScene  {
                     
                     Item item = ItemFactory.createRandomWeapon(sRand.nextInt(3)+1);
                     mSpoilItem = item.copySprite();
-                    mSpoilItem.setPosition((mCameraWidth / 2) - (mSpoilItem.getWidth() / 2), ITEM_Y * sScaleY);
-                    attachChild(mSpoilItem);
+                    mSpoilItem.setPosition((sScene.mCameraWidth / 2) - (mSpoilItem.getWidth() / 2), ITEM_Y * sScaleY);
+                    sScene.attachChild(mSpoilItem);
                     mPlayer.addItem(item);
                     
                     if (mSpoilItem != null) {
@@ -527,7 +601,7 @@ public class BattleScene extends GameScene  {
                 
             });
         }
-        this.registerEntityModifier(spoilsFadeInModifer);
+        sScene.registerEntityModifier(spoilsFadeInModifer);
     }
     
     private final IUpdateHandler updateHandler = new IUpdateHandler() {
@@ -538,10 +612,15 @@ public class BattleScene extends GameScene  {
             if (mMonster.targetable() && mTime > 1.5f) {
                 mTime = 0f;
                 float attackSpeed = 1.2f - (mMonster.getSpeed() / 100);
-                if (sRand.nextFloat() < 0.5f) 
+
+                if (sRand.nextFloat() < 0.5f) { 
                     mMonster.jumpForward(attackSpeed, monsterAttackListener);
-                else
-                    mMonster.jumpBackward(attackSpeed);
+                } else {
+                    mMonster.jumpBackward(attackSpeed, monsterEvadeListener);
+                    if (RoguelikeActivity.sSound) {
+                        mMonsterEvadeEffect.start();
+                    }
+                }
             }
             
             // Damage text update
@@ -577,7 +656,7 @@ public class BattleScene extends GameScene  {
     });
     
     // Make the spoils panel fade in
-    final DelayModifier spoilsFadeInModifer = new DelayModifier(MONSTER_FADE_DELAY,
+    final static DelayModifier spoilsFadeInModifer = new DelayModifier(MONSTER_FADE_DELAY,
             new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
@@ -596,13 +675,13 @@ public class BattleScene extends GameScene  {
             mXpBarSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
             mXpBarFillSprite.registerEntityModifier(new AlphaModifier(MONSTER_FADE_DURATION, 0f, MONSTER_NAME_OPACITY));
 
-            registerEntityModifier(xpBarModifier);
+            sScene.registerEntityModifier(xpBarModifier);
             
         }
     });
     
     // Increases the xp bar after combat
-    final DurationEntityModifier xpBarModifier = new DurationEntityModifier(XP_SCROLL_TIME) { 
+    final static DurationEntityModifier xpBarModifier = new DurationEntityModifier(XP_SCROLL_TIME) { 
         float dx;
         float xp;
         
@@ -640,7 +719,7 @@ public class BattleScene extends GameScene  {
     };
     
     // Listens for the monster to stop animating
-    final IEntityModifierListener onAnimationDone = new IEntityModifierListener() {
+    final static IEntityModifierListener onAnimationDone = new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) { }
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
             mAnimating = false;
@@ -648,26 +727,36 @@ public class BattleScene extends GameScene  {
     };
     
     // Listens for the monster and name panel to load
-    final IEntityModifierListener sceneLoadListener = new IEntityModifierListener() {
+    final static IEntityModifierListener sceneLoadListener = new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) { }
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
             mSceneReady = true;
-            mMonster.startIdleAnimation();
         }
     };
     
     // Listens for monster attack to shake camera and take damage
-    final IEntityModifierListener monsterAttackListener  = new IEntityModifierListener() {
+    final static IEntityModifierListener monsterAttackListener  = new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {    }
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
-            shake(CAMERA_SHAKE_DURATON, CAMERA_SHAKE_INTENSITY);    
+            if (RoguelikeActivity.sSound) {
+                mMonsterAttackEffect.start();
+            }
+            sScene.shake(CAMERA_SHAKE_DURATON, CAMERA_SHAKE_INTENSITY);    
             mPlayer.decreaseHP(sRand.nextInt(10)+1);
             updateHP();
         }
     };
     
+ // Listens for monster attack to shake camera and take damage
+    final static IEntityModifierListener monsterEvadeListener  = new IEntityModifierListener() {
+        public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {    }
+        public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+            
+        }
+    };
+    
     // Opens spoils panel
-    final IEntityModifierListener battleWinListener  = new IEntityModifierListener() {
+    final static IEntityModifierListener battleWinListener  = new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
             DelayModifier delayMod = new DelayModifier(MONSTER_FADE_DELAY);
@@ -680,5 +769,13 @@ public class BattleScene extends GameScene  {
             pItem.registerEntityModifier(delayMod);
         }
     };
+
+    @Override
+    public void suspend() {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    public static GameScene getScene() { return sScene; }
     
 }

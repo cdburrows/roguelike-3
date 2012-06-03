@@ -10,6 +10,7 @@ import com.cburrows.android.roguelike.Graphics;
 import com.cburrows.android.roguelike.RoguelikeActivity;
 
 import android.graphics.Color;
+import android.util.Log;
 
 public class ProgressBar {
     
@@ -82,6 +83,7 @@ public class ProgressBar {
     
     public void setCurValue(int cur) {
         mCurValue = cur;
+        Log.d("Bar", "Cur: " + mCurValue);
         adjustFill();
     }
     

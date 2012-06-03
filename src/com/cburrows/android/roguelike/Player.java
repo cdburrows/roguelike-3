@@ -1,6 +1,7 @@
 package com.cburrows.android.roguelike;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
@@ -52,6 +53,8 @@ public class Player {
     private Item mArmour;
     private ArrayList<Item> mWeaponList;
     private ArrayList<Item> mArmourList;
+    
+    private static ArrayList<Skill> sSkills;
 
     public Player(AnimatedSprite sprite) {
         mScaleX = RoguelikeActivity.sScaleX;
@@ -80,6 +83,9 @@ public class Player {
             mWeaponList.add(ItemFactory.createRandomWeapon(1));
             mArmourList.add(ItemFactory.createRandomArmour(1));
         }
+        
+        sSkills = new ArrayList<Skill>();
+        SkillManager.setSkillList(sSkills);
         
         sortWeapons();
         sortArmour();
@@ -403,6 +409,12 @@ public class Player {
     }
     public int getTotalMagic() {
         return mBaseMagic + mMagicBonus;
+    }
+    
+    public ArrayList<Skill> getSkills() { return sSkills; }
+    public void setSkills(ArrayList<Skill> skills) {
+        sSkills = skills;
+        SkillManager.setSkillList(skills);
     }
 }
     

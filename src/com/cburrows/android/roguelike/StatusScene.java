@@ -1,5 +1,8 @@
 package com.cburrows.android.roguelike;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.anddev.andengine.engine.camera.hud.HUD;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.anddev.andengine.entity.sprite.Sprite;
@@ -105,7 +108,6 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
     //private float mTotalTouchOffsetY;
     
     private static Player sPlayer;
-    
             
     public StatusScene(RoguelikeActivity context) {
         super(context);
@@ -168,6 +170,7 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
         attachChild(sArmourIcon);
         attachChild(sSkillIcon);
         
+        
         sStatusBackgroundSprite.attachChild(sNameText);
         sStatusBackgroundSprite.attachChild(sLevelText);
         sStatusBackgroundSprite.attachChild(sHPText);
@@ -198,7 +201,6 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
                         updatePlayerData();
                     }
                 });
-        
         sArmourBackgroundSprite.attachChild(sArmourScrollList.getSprite());
         
         mLoaded = true;
@@ -279,17 +281,22 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
             // Check navagation icons
             if (sBackIcon.contains(sTouchX, sTouchY)) {
                 sBackIcon.setCurrentTileIndex(5);
+                AudioManager.playClick();
                 mContext.closeStatus();
                 resetIcons();
             } else if (sStatusIcon.contains(sTouchX, sTouchY)) {
+                AudioManager.playClick();
                 showStatusPanel();
                 sStatusIcon.setCurrentTileIndex(1);
             } else if (sWeaponIcon.contains(sTouchX, sTouchY)) {
+                AudioManager.playClick();
                 showWeaponsPanel();
                 sWeaponIcon.setCurrentTileIndex(9);
             } else if (sArmourIcon.contains(sTouchX, sTouchY) ) {
+                AudioManager.playClick();
                 showArmourPanel();
             } else if (sSkillIcon.contains(sTouchX, sTouchY)) {
+                AudioManager.playClick();
                 showSkillsPanel();
             } 
             
@@ -430,6 +437,12 @@ public class StatusScene extends GameScene implements IScrollDetectorListener {
         } if (item.getItemType() == Item.ITEM_TYPE_ARMOUR) {
             sPlayer.equipArmour(item);
         }
+    }
+
+    @Override
+    public void suspend() {
+        // TODO Auto-generated method stub
+        
     }
     
 }

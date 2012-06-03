@@ -1,5 +1,8 @@
 package com.cburrows.android.roguelike;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import org.anddev.andengine.engine.camera.hud.HUD;
@@ -9,6 +12,11 @@ import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.entity.text.ChangeableText;
 import org.anddev.andengine.input.touch.TouchEvent;
+
+import android.R;
+import android.content.res.AssetFileDescriptor;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -25,8 +33,6 @@ public class MainScene extends GameScene {
     
     private Player mPlayer;
     private Dungeon mDungeon;
-    //private GameMap mMap;
-    //private TMXTiledMap mTMXTiledMap;
     
     private TiledSprite mStatusIcon;
     private TiledSprite mMapIcon;
@@ -48,12 +54,16 @@ public class MainScene extends GameScene {
     private Random rand;
     
     private Sprite mItem;
+    
+    private MediaPlayer mBackgroundMusic;
+    private MediaPlayer mPotionEffect;
 
     public MainScene(RoguelikeActivity context) {
         super(context);
         rand = new Random(System.currentTimeMillis());
     }
     
+    @Override
     public void loadResources() {
         long timeStart = System.currentTimeMillis();
         
@@ -91,38 +101,6 @@ public class MainScene extends GameScene {
         
         Graphics.endLoad("MAIN");
         
-        // TODO: Dump gameMap map data when tmx max loaded -- maybe keep the tmx data inside gameMap.
-        //mMap = RoguelikeActivity.sDungeonDefinition.getGameMap(); //new GameMap(66, 45);
-        
-        /*
-        try {
-            Map.deflate(mMap, mContext.openFileOutput("TEXT.tmx", mContext.MODE_WORLD_WRITEABLE));
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        */
-        
-       // mTMXTiledMap = mMap.getTmxTiledMap(mContext, mContext.getTextureManager());
-        //TMXLoader loader = new TMXLoader(mContext, mContext.getTextureManager());
-
-        /*
-        try {
-            mTMXTiledMap = loader.load(mContext.openFileInput("untitled1.tmx"));
-        } catch (TMXLoadException e) {
-            // TODO Auto-generated catch block
-            Log.d("ERROR", "ERROR");
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            Log.d("ERROR", "ERROR");
-        }
-        */
-        
-        //mMap = RoguelikeActivity.sDungeon.getGameMap();
-        //mTMXTiledMap = RoguelikeActivity.sDungeon.getTmxMap();
-        //TMXLayer layer = mTMXTiledMap.getTMXLayers().get(0);
-        //layer.setScaleCenter(0, 0);
-        //layer.setScale(scaleX, scaleY);
         mDungeon = RoguelikeActivity.sDungeon;
         MonsterFactory.initialize(mDungeon.getMonsterList());
         attachChild(RoguelikeActivity.sDungeon.getSprite());
@@ -134,6 +112,19 @@ public class MainScene extends GameScene {
         mPlayer.setRoom(0, 0);
         mPlayer.setCurHP(80);
         mContext.setPlayer(mPlayer);
+        
+        ArrayList<Skill> skills = new ArrayList<Skill>();
+        skills.add(new Skill("Stab", new ArrayList<SkillDirection>(
+                Arrays.asList(SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_UP))));
+        skills.add(new Skill("Slash", new ArrayList<SkillDirection>(
+                Arrays.asList(SkillDirection.DIRECTION_DOWN_LEFT, SkillDirection.DIRECTION_DOWN_RIGHT))));
+        skills.add(new Skill("Stab", new ArrayList<SkillDirection>(
+                Arrays.asList(SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_DOWN, SkillDirection.DIRECTION_UP_RIGHT))));
+        skills.add(new Skill("Lunge", new ArrayList<SkillDirection>(
+                Arrays.asList(SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_DOWN, SkillDirection.DIRECTION_RIGHT))));
+        skills.add(new Skill("Flurry", new ArrayList<SkillDirection>(
+                Arrays.asList(SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_DOWN, SkillDirection.DIRECTION_LEFT, SkillDirection.DIRECTION_RIGHT))));
+        mPlayer.setSkills(skills);
         
         mHud = new HUD();
         mHud.attachChild(mStatusIcon);
@@ -147,10 +138,30 @@ public class MainScene extends GameScene {
         mContext.getEngine().registerUpdateHandler(new UpdateHandler());
         setOnSceneTouchListener((IOnSceneTouchListener)mContext);
         
+        try {
+            AssetFileDescriptor afd = RoguelikeActivity.getContext().getAssets().openFd("sfx/music/CornFields.aac");
+            if (RoguelikeActivity.sMusic) {
+                mBackgroundMusic = new MediaPlayer();
+                mBackgroundMusic.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                AudioManager.pushMusic(mBackgroundMusic);
+            }
+            
+            if (RoguelikeActivity.sSound) {
+                afd = RoguelikeActivity.getContext().getAssets().openFd("sfx/power_up.mp3");
+                mPotionEffect = new MediaPlayer();
+                mPotionEffect.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                mPotionEffect.prepare();
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
         mLoaded = true;
         Log.d("MAIN", "Load time: " + (System.currentTimeMillis() - timeStart));
     }
     
+    @Override
     public void prepare(IEntityModifierListener preparedListener) {
      // Load the map
         
@@ -170,12 +181,19 @@ public class MainScene extends GameScene {
         mTransitionOver = false;
         mPrepared = true;
         preparedListener.onModifierFinished(null, this);
+        AudioManager.play();
     }
     
+    public void suspend() {
+        //AudioManager.pause();
+    }
+    
+    @Override
     public void pause() {
         
     }
     
+    @Override
     public boolean onSceneTouchEvent(TouchEvent pTouchEvent) {
         if (!mTransitionOver) return true;
         if(pTouchEvent.getAction() == MotionEvent.ACTION_DOWN)
@@ -187,15 +205,18 @@ public class MainScene extends GameScene {
             
             if (mStatusIcon.contains(mTouchX, mTouchY)) {
                 mStatusIcon.setCurrentTileIndex(1);
+                AudioManager.playClick();
                 openStatus();
             }
             
             if (mMapIcon.contains(mTouchX, mTouchY)) {
                 mMapIcon.setCurrentTileIndex(3);
+                AudioManager.playClick();
                 openMiniMap();
             }
             
             if (mPotionIcon.contains(mTouchX, mTouchY)) {
+                if (RoguelikeActivity.sSound) mPotionEffect.start();
                 mPotionIcon.setCurrentTileIndex(7);
                 usePotion();
             }
@@ -242,32 +263,6 @@ public class MainScene extends GameScene {
     }
     
     private void openMiniMap() {
-        if (mItem == null || !mItem.isVisible()) {
-            //Item item = ItemFactory.createRandomWeapon(1);
-            //mItem = item.getSprite();
-            //mItem.setPosition(64, 96);
-            //if (!mItem.hasParent()) attachChild(mItem);
-            //mItem.setVisible(true);
-        } else {
-            //mItem.setVisible(false);
-        }
-            
-        
-        //ItemFactory.createRandomItem(mContext, 0);
-        //shake(2.0f, 2.0f);
-        //mContext.gameToast("MINIMAP", 50);
-        /*
-        Scene minimapScene = new Scene();
-        
-        BitmapTextureAtlas minimapTextureAtlas = new BitmapTextureAtlas(
-                64, 32, TextureOptions.REPEATING_BILINEAR_PREMULTIPLYALPHA);
-        TiledTextureRegion minimapTextureRegion = 
-                BitmapTextureAtlasTextureRegionFactory
-                .createTiledFromAsset(mIconTextureAtlas, this, "minimap_icons.png", 0, 0, 4, 2);
-        mStatusIcon = new AnimatedSprite(8,8,mIconTextureRegion); 
-        
-        mMainScene.attachChild(minimapScene);
-        */
     }
     
     private void updateHP() {

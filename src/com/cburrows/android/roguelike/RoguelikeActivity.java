@@ -37,6 +37,9 @@ public class RoguelikeActivity extends BaseGameActivity implements
     
     public static Dungeon sDungeon;
     
+    public static boolean sMusic = false;
+    public static boolean sSound = false;
+    
     //private Random rand;
         
     public Engine onLoadEngine() {
@@ -66,6 +69,8 @@ public class RoguelikeActivity extends BaseGameActivity implements
         // Prepare our item factory by loading all the assets from
         // which every item is created
         ItemFactory.loadResources();
+        
+        AudioManager.initialize();
         
         // Prepare the player
         Graphics.beginLoad("gfx/", 256, 512);
@@ -126,6 +131,7 @@ public class RoguelikeActivity extends BaseGameActivity implements
      */
     
     public static void destroy() {
+        AudioManager.stop();
         sMainScene = null;
         sBattleScene = null;
         getContext().finish();    

@@ -5,10 +5,12 @@ import java.util.Random;
 import org.anddev.andengine.entity.IEntity;
 import org.anddev.andengine.entity.modifier.AlphaModifier;
 import org.anddev.andengine.entity.modifier.ColorModifier;
+import org.anddev.andengine.entity.modifier.LoopEntityModifier;
 import org.anddev.andengine.entity.modifier.MoveModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.anddev.andengine.entity.modifier.QuadraticBezierMoveModifier;
 import org.anddev.andengine.entity.modifier.ScaleModifier;
+import org.anddev.andengine.entity.modifier.SequenceEntityModifier;
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.util.modifier.ease.EaseBackInOut;
 import org.anddev.andengine.util.modifier.ease.EaseLinear;
@@ -73,13 +75,6 @@ public class Monster {
         return damage;
     }
     
-    public void startIdleAnimation() {
-        mSprite.registerEntityModifier(new QuadraticBezierMoveModifier(0.5f, 
-                mSprite.getX(), mSprite.getY(), 
-                mSprite.getX()+8, mSprite.getY()-16, 
-                mSprite.getX()+16, mSprite.getY(), EaseLinear.getInstance()));
-    }
-    
     public void fadeIn(float duration, final IEntityModifierListener listener) {
         mSprite.registerEntityModifier(new AlphaModifier(duration, 0f, 1f, 
                 new IEntityModifierListener() {
@@ -125,12 +120,15 @@ public class Monster {
                 JUMP_SCALE, EaseBackInOut.getInstance()));
     }
 
-    public void jumpBackward(final float duration) {
+    public void jumpBackward(final float duration, final IEntityModifierListener listener) {
         mSprite.registerEntityModifier(new MoveModifier(duration / 2, 
                 mSprite.getX(), mSprite.getX(), mSprite.getY(), mSprite.getY() - JUMP_HEIGHT, 
                 new IEntityModifierListener() {
-                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
+                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+                        if (listener != null) listener.onModifierStarted(pModifier, pItem);
+                    }
                     public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+                        if (listener != null) listener.onModifierFinished(pModifier, pItem);
                         pItem.registerEntityModifier(new MoveModifier(duration / 2, 
                                 mSprite.getX(), mSprite.getX(), 
                                 mSprite.getY(), mSprite.getY() + JUMP_HEIGHT, EaseBackInOut.getInstance()));

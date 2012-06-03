@@ -55,6 +55,8 @@ public abstract class GameScene extends Scene {
     
     public abstract void pause();
     
+    public abstract void suspend();
+    
     public boolean isLoaded() { return mLoaded; }
     
     public boolean isPrepared() { return mPrepared; }
@@ -140,4 +142,5 @@ public abstract class GameScene extends Scene {
     
     public float getCenterX() { return mCameraWidth / 2; }
     public float getCenterY() { return mCameraHeight / 2; }
+    public int getHeight() { return mCameraHeight; }
 }
