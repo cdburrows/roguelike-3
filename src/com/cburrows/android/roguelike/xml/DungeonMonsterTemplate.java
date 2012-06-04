@@ -7,7 +7,7 @@ import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
-import com.cburrows.android.roguelike.Graphics;
+import base.Graphics;
 
 @Root(name="monster")
 public class DungeonMonsterTemplate {

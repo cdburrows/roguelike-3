@@ -15,6 +15,9 @@ import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextur
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
 
+import base.Graphics;
+import base.RoguelikeActivity;
+
 import com.cburrows.android.roguelike.xml.ItemDefinitions;
 import com.cburrows.android.roguelike.xml.ItemRarity;
 

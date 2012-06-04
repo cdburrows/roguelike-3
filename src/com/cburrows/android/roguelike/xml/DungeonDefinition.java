@@ -9,8 +9,8 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import android.util.Log;
+import base.RoguelikeActivity;
 
-import com.cburrows.android.roguelike.RoguelikeActivity;
 import com.cburrows.android.roguelike.TmxMap.Map;
 import com.cburrows.android.roguelike.TmxMap.Tileset;
 

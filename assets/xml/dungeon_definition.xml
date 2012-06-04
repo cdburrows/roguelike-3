@@ -4,7 +4,7 @@
     
     <tileset name="dungeon_tiles" path="gfx/dungeon_tiles.png" tileheight="32" tilewidth="32" />
    
-    <floor tileset="dungeon_tiles" depth="1" cols="99" rows="72" room_width="11" room_height="9" room_padding="2"
+    <floor tileset="dungeon_tiles" depth="1" cols="88" rows="72" room_width="11" room_height="9" room_padding="2"
         battle_bg="dungeon_bg_320.png" monster_spawn_rate = "1.00f" chest_spawn_rate = "0.20">
       
         <rarity id="0" rate="20"/>

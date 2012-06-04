@@ -12,10 +12,11 @@ import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.input.touch.TouchEvent;
 import org.anddev.andengine.input.touch.detector.ScrollDetector;
 
-import com.cburrows.android.roguelike.AudioManager;
-import com.cburrows.android.roguelike.Graphics;
+import base.AudioManager;
+import base.Graphics;
+import base.RoguelikeActivity;
+
 import com.cburrows.android.roguelike.Item;
-import com.cburrows.android.roguelike.RoguelikeActivity;
 
 import android.util.Log;
 import android.view.MotionEvent;

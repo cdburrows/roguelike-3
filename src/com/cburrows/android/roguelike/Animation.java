@@ -9,6 +9,8 @@ import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListe
 import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
 
+import base.Graphics;
+
 public class Animation {
     private static final int TEXTURE_ATLAS_WIDTH = 512;
     private static final int TEXTURE_ATLAS_HEIGHT = 512;

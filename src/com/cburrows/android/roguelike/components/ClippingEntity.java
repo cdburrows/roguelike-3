@@ -5,7 +5,7 @@ import javax.microedition.khronos.opengles.GL10;
 import org.anddev.andengine.engine.camera.Camera;
 import org.anddev.andengine.entity.Entity;
 
-import com.cburrows.android.roguelike.RoguelikeActivity;
+import base.RoguelikeActivity;
 
 public class ClippingEntity extends Entity {
     

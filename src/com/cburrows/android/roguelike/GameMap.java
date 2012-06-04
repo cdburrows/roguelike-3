@@ -64,13 +64,9 @@ public class GameMap extends Map {
             }
         }
         
-        Log.d("MAP", "Rooms Y " + mNumRoomsY + ", " + mNumRoomsX);
         for (int y = 0; y < mNumRoomsY; y++) {
             for (int x = 0; x < mNumRoomsX; x++) {
                 Room room = mRooms.get((y * mNumRoomsX) + x);
-                
-                //if (y != 0) room.buildPath(mRooms.get(((y-1) * mNumRoomsY) + x));
-                //if (x != 0) room.buildPath(mRooms.get((y * mNumRoomsY) + x-1));
                 if (y != mNumRoomsY-1) room.buildPath(mRooms.get(((y+1) * mNumRoomsX) + x));
                 if (x != mNumRoomsX-1) room.buildPath(mRooms.get((y * mNumRoomsX) + x+1));
                                     

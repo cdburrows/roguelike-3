@@ -6,8 +6,9 @@ import org.anddev.andengine.entity.modifier.EntityModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier;
 import org.anddev.andengine.entity.sprite.Sprite;
 
-import com.cburrows.android.roguelike.Graphics;
-import com.cburrows.android.roguelike.RoguelikeActivity;
+import base.Graphics;
+import base.RoguelikeActivity;
+
 
 import android.graphics.Color;
 import android.util.Log;
@@ -31,6 +32,11 @@ public class ProgressBar {
     
     public ProgressBar(float x, float y, int width, int height,
             int color, float alpha, int maxValue) {
+        this(x, y, width, height, color, alpha, maxValue, maxValue);
+    }
+
+    public ProgressBar(float x, float y, int width, int height,
+            int color, float alpha, int curValue, int maxValue) {
         mX = x;
         mY = y;
         mWidth = width;
@@ -38,7 +44,7 @@ public class ProgressBar {
         mColor = color;
         mAlpha = alpha;
         mMaxValue = maxValue;
-        mCurValue = mMaxValue;
+        mCurValue = curValue;
         
         Graphics.beginLoad("gfx/panels/", TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT);
         mBackground = Graphics.createSprite("progress_bar.png", 0, 0, mAlpha);

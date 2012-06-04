@@ -1,7 +1,5 @@
 package com.cburrows.android.roguelike.TmxMap;
 
-import java.util.List;
-
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 
@@ -48,19 +46,9 @@ public class Layer {
     public void setHeight(int height) {
         this.height = height;
     }
-
-    public List<Tile> getData() { return data.getTile(); }
-    public void setData(Data data) {
-        this.data = data;
-    }
-    public void setData(int index, int gid) {
-        this.data.setTile(index, gid);
-    }
-    public void setData(int x, int y, int gid) {
-        this.data.setTile(width, x, y, gid);
-    }
+    
     public void setData(int[] data) {
-        //this.data.setValue(data);
+        this.data.setValue(data);
     }
 
 }

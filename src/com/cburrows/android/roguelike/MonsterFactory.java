@@ -6,6 +6,7 @@ import java.util.Random;
 import junit.framework.Assert;
 
 import android.util.Log;
+import base.Graphics;
 
 import com.cburrows.android.roguelike.xml.DungeonMonsterTemplate;
 

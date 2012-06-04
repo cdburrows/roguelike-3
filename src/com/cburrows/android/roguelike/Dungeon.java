@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXLayer;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXTiledMap;
 
+import base.RoguelikeActivity;
+
 import com.cburrows.android.roguelike.TmxMap.Map;
 import com.cburrows.android.roguelike.xml.DungeonDefinition;
 import com.cburrows.android.roguelike.xml.DungeonFloor;

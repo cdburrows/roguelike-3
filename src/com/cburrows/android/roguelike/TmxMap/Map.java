@@ -2,29 +2,19 @@ package com.cburrows.android.roguelike.TmxMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXLoader;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXTiledMap;
-import org.anddev.andengine.opengl.texture.TextureManager;
 import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.AttributesImpl;
-
-import com.cburrows.android.roguelike.RoguelikeActivity;
-
-import android.content.Context;
-import android.util.Log;
+import base.RoguelikeActivity;
 
 @Root
 public class Map {
@@ -47,17 +37,11 @@ public class Map {
     @Attribute
     protected int tileheight;
     
-    //@ElementList(required=false)
-    //private List<Properties> properties;
-    
     @ElementList(inline = true, required=false)
     protected List<Tileset> tileset;
     
     @ElementList(inline = true, required=false)
     protected List<Layer> layer;
-    
-    //@ElementList(required=false)
-    //private List<ObjectGroup> objectgroup;
     
     public Map() {
         version = 1.0f;
@@ -112,24 +96,11 @@ public class Map {
     public void addLayer(String name) { this.layer.add(new Layer(name, width, height)); }
     public void addLayer(Layer layer) { this.layer.add(layer); }
     
-    public boolean setTile(int layer, int x, int y, int gid) {
-        if (layer >= 0 && layer < this.layer.size() && 
-                x >= 0 && x < width && y > 0 && y < height) {
-            this.layer.get(layer).setData(x, y, gid);
-            return true;
-        }
-        return false;
-    }
-    
     public void build(int[] data) {
-        
         this.layer = new ArrayList<Layer>();                         
         for (int l = 0; l < 1; l++) {                 // layer
             Layer newLayer = new Layer("layer_" + l, width, height);
-            //newLayer.setData(data);
-            for (int i = 0; i < width * height; i++) {
-                newLayer.setData(i, data[i]);
-            }
+            newLayer.setData(data);
             layer.add(newLayer);
         }
     }
@@ -159,9 +130,6 @@ public class Map {
 
         try {
             Map map = serializer.read(Map.class, source);
-                        
-            Log.d("MAP", map.version + ", " + map.orientation + ", " + map.width + ", " + map.height + ", " + map.layer.get(0).getData().size());
-            
             return map;
         } catch (Exception e) {
             

@@ -8,7 +8,7 @@ import org.anddev.andengine.entity.text.ChangeableText;
 import org.anddev.andengine.opengl.font.Font;
 import org.anddev.andengine.util.modifier.IModifier;
 
-import com.cburrows.android.roguelike.Graphics;
+import base.Graphics;
 
 public class FloatingText {
     private static final float DURATION = 2.0f;

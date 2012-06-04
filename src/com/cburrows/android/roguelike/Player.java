@@ -8,6 +8,11 @@ import java.util.Random;
 
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
 
+import base.RoguelikeActivity;
+
+import skills.Skill;
+import skills.SkillManager;
+
 public class Player {
     
     public static final float MOVE_SPEED = 768;
