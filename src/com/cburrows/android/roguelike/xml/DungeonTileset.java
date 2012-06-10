@@ -9,10 +9,10 @@ import org.simpleframework.xml.Root;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import base.RoguelikeActivity;
 
 import com.cburrows.android.roguelike.TmxMap.Image;
 import com.cburrows.android.roguelike.TmxMap.Tileset;
+import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 
 @Root(name="tileset")
 public class DungeonTileset {

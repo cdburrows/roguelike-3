@@ -14,7 +14,8 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
-import base.RoguelikeActivity;
+
+import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 
 @Root
 public class Map {

@@ -6,8 +6,9 @@ import org.anddev.andengine.entity.modifier.EntityModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier;
 import org.anddev.andengine.entity.sprite.Sprite;
 
-import base.Graphics;
-import base.RoguelikeActivity;
+import com.cdburrows.android.roguelike.base.Graphics;
+import com.cdburrows.android.roguelike.base.RoguelikeActivity;
+
 
 
 import android.graphics.Color;

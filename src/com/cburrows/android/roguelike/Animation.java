@@ -7,9 +7,9 @@ import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.anddev.andengine.entity.sprite.TiledSprite;
-import org.anddev.andengine.ui.activity.BaseGameActivity;
 
-import base.Graphics;
+import com.cdburrows.android.roguelike.base.Graphics;
+import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 
 public class Animation {
     private static final int TEXTURE_ATLAS_WIDTH = 512;
@@ -74,8 +74,8 @@ public class Animation {
         if (mKeyFrames.size() > 0) mNextKeyFrameTime = mKeyFrames.get(0).mTime;
     }
     
-    public TiledSprite loadAnimation(BaseGameActivity context) {
-        mEngine = context.getEngine();
+    public TiledSprite loadAnimation() {
+        mEngine = RoguelikeActivity.getContext().getEngine();
 
         Graphics.beginLoad("gfx/", TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT);
         mAnimationSprite = Graphics.createTiledSprite(mAnimationName, mFramesX, mFramesY, mStartX, mStartY);

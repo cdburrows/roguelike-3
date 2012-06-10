@@ -2,6 +2,8 @@ package com.cburrows.android.roguelike;
 
 import org.anddev.andengine.entity.sprite.TiledSprite;
 
+import com.cdburrows.android.roguelike.base.RoguelikeActivity;
+
 public class Item {
     public static int ITEM_TYPE_WEAPON = 0;
     public static int ITEM_TYPE_ARMOUR = 1;
@@ -101,7 +103,8 @@ public class Item {
     }
     
     public TiledSprite copySprite() {
-        return ItemFactory.createItem(mName, mFontColor, mImageIndex, mItemType, mAttack, mDefense, mMagic).getSprite();
+        TiledSprite sprite = ItemFactory.createItem(mName, mFontColor, mImageIndex, mItemType, mAttack, mDefense, mMagic).getSprite();
+        return sprite;
     }
         
 }

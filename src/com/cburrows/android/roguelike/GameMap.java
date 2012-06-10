@@ -1,12 +1,14 @@
 package com.cburrows.android.roguelike;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.simpleframework.xml.Root;
 
 import android.util.Log;
 
 import com.cburrows.android.roguelike.TmxMap.Map;
+import com.cburrows.android.roguelike.components.Minimap;
 import com.cburrows.android.roguelike.xml.DungeonFloor;
 
 @Root(name="map")
@@ -23,6 +25,9 @@ public class GameMap extends Map {
     private ArrayList<Room> mRooms;
     private int mNumRoomsX;
     private int mNumRoomsY;
+    private float mChestSpawnRate;
+    
+    private static Random sRand = new Random(System.currentTimeMillis());
     
     public GameMap(int cols, int rows, int roomWidth, int roomHeight, int roomPadding) {
         super(cols, rows);
@@ -42,6 +47,7 @@ public class GameMap extends Map {
         mRoomPadding = floor.mRoomPadding;
         mNumRoomsX = floor.mCols / mRoomWidth;
         mNumRoomsY = floor.mRows / mRoomHeight;
+        mChestSpawnRate = floor.mChestSpawnRate;
         
     }
     
@@ -52,6 +58,10 @@ public class GameMap extends Map {
         for (int y = 0; y < mNumRoomsY; y++) {
             for (int x = 0; x < mNumRoomsX; x++) {
                 Room room = new Room(x * mRoomWidth, y * mRoomHeight);
+                if (sRand.nextFloat() < mChestSpawnRate) {
+                    room.mHasChest = true;
+                    Log.d("MAP", "Chest " + x + ", " + y);
+                }
                 
                 placeRoom(mData, x * mRoomWidth, y * mRoomHeight);
                 
@@ -94,16 +104,52 @@ public class GameMap extends Map {
         return mRooms.get((roomY * mNumRoomsX) + roomX).isAccessable(direction);
     }
     
+    public int getRoomCols() { return mNumRoomsX; }
+    
+    public int getRoomRows() { return mNumRoomsY; }
+    
+    public void setRoomState(int roomX, int roomY, RoomState roomState) {
+        if (roomX < 0 || roomX >= mNumRoomsX || roomY < 0 || roomY > mNumRoomsY)
+            return;
+        mRooms.get(roomY * mNumRoomsX + roomX).setRoomState(roomState);
+    }
+    
+    public RoomState getRoomState(int roomX, int roomY) {
+        if (roomX < 0 || roomX >= mNumRoomsX || roomY < 0 || roomY > mNumRoomsY)
+            return RoomState.ROOM_HIDDEN;
+        return mRooms.get(roomY * mNumRoomsX + roomX).mRoomState;
+    }
+    
+    public void occupyRoom(int x, int y) {
+        setRoomState(x, y, RoomState.ROOM_OCCUPIED);
+        if (x-1 >= 0) setRoomState(x-1, y, RoomState.ROOM_SPOTTED);
+        if (x+1 < getRoomCols()) setRoomState(x+1, y, RoomState.ROOM_SPOTTED);
+        if (y-1 >= 0) setRoomState(x, y-1, RoomState.ROOM_SPOTTED);
+        if (y+1 < getRoomRows()) setRoomState(x, y+1, RoomState.ROOM_SPOTTED);
+    }
+    
+    public boolean hasChest(int roomX, int roomY) {
+        return mRooms.get(roomY * mNumRoomsX + roomX).mHasChest;
+    }
+    
+    public void setChest(int roomX, int roomY, boolean value) {
+        mRooms.get(roomY * mNumRoomsX + roomX).mHasChest = value;
+    }
+    
     private class Room {
         
         public int mX = 0;
         public int mY = 0;
         public boolean[] mAccessable = new boolean[4];
+        public boolean mHasChest;
+        private RoomState mRoomState;
         
         public Room(int x, int y) {
             mX = x;
             mY = y;
             for (int i = 0; i < 4; i++) mAccessable[i] = true;
+            mRoomState = RoomState.ROOM_HIDDEN;
+            mHasChest = false;
         }
         
         public void buildPath(Room dest) {
@@ -162,6 +208,24 @@ public class GameMap extends Map {
         public void setAccessable(Direction direction, boolean value) {
             mAccessable[direction.getValue()] = value;
         }
+        
+        public void setRoomState(RoomState roomState) {
+            if (mRoomState == RoomState.ROOM_OCCUPIED && roomState.value != RoomState.ROOM_OCCUPIED.value) {
+                mRoomState = RoomState.ROOM_VISITED;
+                return;
+            }
+            if (roomState.value < mRoomState.getValue()) return;
+            
+            mRoomState = roomState;
+        }
     }
-
+    
+    public enum RoomState {
+        ROOM_HIDDEN(0), ROOM_SPOTTED(1), ROOM_VISITED(2), ROOM_OCCUPIED(3);
+        
+        private final int value;
+        
+        RoomState(int value) { this.value = value; }
+        public int getValue() { return value; }
+    }
 }

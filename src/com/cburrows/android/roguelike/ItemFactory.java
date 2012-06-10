@@ -15,13 +15,18 @@ import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextur
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
 
-import base.Graphics;
-import base.RoguelikeActivity;
 
 import com.cburrows.android.roguelike.xml.ItemDefinitions;
 import com.cburrows.android.roguelike.xml.ItemRarity;
+import com.cdburrows.android.roguelike.base.Graphics;
+import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 
 public class ItemFactory {
+    
+    // ===========================================================
+    // Constants
+    // ===========================================================
+    
     private static final String ITEM_ICON_PATH = "xml/item_definitions.xml";
     private static final int TEXTURE_ATLAS_WIDTH = 512;
     private static final int TEXTURE_ATLAS_HEIGHT = 512;
@@ -43,8 +48,14 @@ public class ItemFactory {
     private static final int ITEM_ICON_WIDTH = 24;
     private static final int ITEM_ICON_HEIGHT = 24;
     
+    // ===========================================================
+    // Fields
+    // ===========================================================
+    
     private static float sScaleX;
     private static float sScaleY;
+    
+    private static ItemDefinitions mItemDefinitions;
     
     // Image data
     private static TiledTextureRegion sItemIconsTextureRegion;
@@ -52,9 +63,11 @@ public class ItemFactory {
     private static TiledTextureRegion sEquipmentBackgroundTextureRegion;
     private static TextureRegion sPotionTextureRegion;
     
-    static ItemDefinitions mItemDefinitions;
+    private static Random sRand = new Random(System.currentTimeMillis());
     
-    private static Random rand = new Random(System.currentTimeMillis());
+    // ===========================================================
+    // Constructors
+    // ===========================================================
     
     public static void loadResources() {
         RoguelikeActivity context = RoguelikeActivity.getContext();
@@ -85,6 +98,18 @@ public class ItemFactory {
             e.printStackTrace();
         }
     }
+    
+    // ===========================================================
+    // Getter & Setter
+    // ===========================================================
+    
+    // ===========================================================
+    // Inherited Methods
+    // ===========================================================
+    
+    // ===========================================================
+    // Methods
+    // ===========================================================
     
     public static Item createItem(String name, int fontColor, int imageIndex, int itemType, int attack, int defense, int magic) {
         TiledSprite sprite = new TiledSprite(0, 0, 
@@ -161,7 +186,7 @@ public class ItemFactory {
     }
     
     public static Item createRandomItem(int level) {
-        if (rand.nextInt(100) < 50) {
+        if (sRand.nextInt(100) < 50) {
             return createRandomWeapon(level);
         } else {
             return createRandomArmour(level);
@@ -170,8 +195,8 @@ public class ItemFactory {
     
     public static Item createRandomItem(int level, int itemType) {
         int i = 0;
-        if (itemType == Item.ITEM_TYPE_WEAPON) i = rand.nextInt(mItemDefinitions.mFirstArmour); 
-        if (itemType == Item.ITEM_TYPE_ARMOUR) i = rand.nextInt(25) + mItemDefinitions.mFirstArmour;
+        if (itemType == Item.ITEM_TYPE_WEAPON) i = sRand.nextInt(mItemDefinitions.mFirstArmour); 
+        if (itemType == Item.ITEM_TYPE_ARMOUR) i = sRand.nextInt(25) + mItemDefinitions.mFirstArmour;
         
         ItemRarity rarity = mItemDefinitions.getRandomRarity();
         int textColour = rarity.getColour();
@@ -200,4 +225,9 @@ public class ItemFactory {
     public static Sprite getPotionSprite() {
         return new Sprite(0, 0, ITEM_ICON_WIDTH * sScaleX, ITEM_ICON_HEIGHT * sScaleY, sPotionTextureRegion);
     }
+    
+    // ===========================================================
+    // Inner and Anonymous Classes
+    // ===========================================================
+    
 }

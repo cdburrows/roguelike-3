@@ -8,10 +8,13 @@ import java.util.Random;
 
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
 
-import base.RoguelikeActivity;
+import com.cburrows.android.roguelike.GameMap.RoomState;
+import com.cburrows.android.roguelike.components.Minimap;
+import com.cdburrows.android.roguelike.base.RoguelikeActivity;
+import com.cdburrows.android.roguelike.skills.Skill;
+import com.cdburrows.android.roguelike.skills.SkillManager;
 
-import skills.Skill;
-import skills.SkillManager;
+
 
 public class Player {
     
@@ -99,7 +102,7 @@ public class Player {
     public Event update(float elapsed) {
         Event result = Event.EVENT_NO_EVENT;
         if (mMoving) {
-            
+           
             float move = MOVE_SPEED * elapsed;
             mMoveDistance -= move;
             
@@ -110,6 +113,7 @@ public class Player {
                 mSprite.stopAnimation(mDirection.getValue() * 4 + 1);
                 result = Event.EVENT_NEW_ROOM;
                 mPlayerState = PlayerState.IDLE;
+                Minimap.updateFloor();
             }
             
             switch(mDirection) {
@@ -127,6 +131,7 @@ public class Player {
                     break;
             }
             mSprite.setPosition(mPosX, mPosY);
+            Minimap.setCenter(mPosX, mPosY);
         }
         return result;
     }
@@ -159,6 +164,7 @@ public class Player {
                         mRoomX--;
                         break;
                 }
+                mParentMap.occupyRoom(mRoomX, mRoomY);
             }
         }
     }
@@ -244,10 +250,13 @@ public class Player {
     public void setTileHeight(int tileHeight) { this.mTileHeight = tileHeight; }
 
     public void setRoom(int x, int y) {
+       // mParentMap.setRoomState(mRoomX, mRoomY, RoomState.ROOM_VISITED);
         mRoomX = x;
         mRoomY = y;
         setRoomX(x);
         setRoomY(y);
+        mParentMap.occupyRoom(x, y);
+        mParentMap.setChest(x, y, false);
     }
     
     public int getRoomX() { return mRoomX; }
@@ -421,5 +430,9 @@ public class Player {
         sSkills = skills;
         SkillManager.setSkillList(skills);
     }
+    
+    public float getX() { return mPosX; }
+    
+    public float getY() { return mPosY; }
 }
     
