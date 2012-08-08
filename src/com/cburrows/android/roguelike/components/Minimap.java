@@ -16,10 +16,8 @@ import com.cburrows.android.roguelike.Dungeon;
 import com.cburrows.android.roguelike.GameMap.RoomState;
 import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 
-import android.R;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 
 public class Minimap {
     
@@ -54,6 +52,8 @@ public class Minimap {
     private static float sMinimapScaleX;
     private static float sMinimapScaleY;
     private static Dungeon sDungeon;
+    private static float sCenterX;
+    private static float sCenterY;
     
     // ===========================================================
     // Constructors
@@ -255,8 +255,8 @@ public class Minimap {
         
         sMinimapWidth = sDungeon.getRoomCols() * ICON_WIDTH * RoguelikeActivity.sScaleX * 2;
         sMinimapHeight = sDungeon.getRoomRows() * ICON_HEIGHT * RoguelikeActivity.sScaleY * 2;
-        sMinimapScaleX = sMinimapWidth / (sDungeon.getSprite().getWidth() * RoguelikeActivity.sScaleX); 
-        sMinimapScaleY = sMinimapHeight / (sDungeon.getSprite().getHeight() * RoguelikeActivity.sScaleY);
+        sMinimapScaleX = sMinimapWidth / (sDungeon.getSprite(0).getWidth() * RoguelikeActivity.sScaleX); 
+        sMinimapScaleY = sMinimapHeight / (sDungeon.getSprite(0).getHeight() * RoguelikeActivity.sScaleY);
         
         updateFloor();
     }
@@ -270,8 +270,17 @@ public class Minimap {
     }
 
     public static void setCenter(float posX, float posY) {
-       sMinimapEntity.setPosition((RoguelikeActivity.sCameraWidth / 2) - (posX * sMinimapScaleX) + (sDungeon.getTileWidth() / 2) - (16 * RoguelikeActivity.sScaleX / 2),  
-               (RoguelikeActivity.sCameraHeight / 2) - (posY * sMinimapScaleY) + (sDungeon.getTileHeight() / 2) - (16 * RoguelikeActivity.sScaleY / 2));
+       sCenterX = (RoguelikeActivity.sCameraWidth / 2) - (posX * sMinimapScaleX) + 
+               (sDungeon.getTileWidth() / 2) - (16 * RoguelikeActivity.sScaleX / 2);
+       sCenterY = (RoguelikeActivity.sCameraHeight / 2) - (posY * sMinimapScaleY) + 
+               (sDungeon.getTileHeight() / 2) - (16 * RoguelikeActivity.sScaleY / 2);
+       sMinimapEntity.setPosition(sCenterX, sCenterY);
+    }
+    
+    public static void scroll(float offsetX, float offsetY) {
+        sMinimapEntity.setPosition(
+                sCenterX + offsetX,  
+                sCenterY + offsetY);
     }
     
     // ===========================================================

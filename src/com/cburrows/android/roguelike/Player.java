@@ -1,24 +1,20 @@
 package com.cburrows.android.roguelike;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
 
-import com.cburrows.android.roguelike.GameMap.RoomState;
 import com.cburrows.android.roguelike.components.Minimap;
 import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 import com.cdburrows.android.roguelike.skills.Skill;
 import com.cdburrows.android.roguelike.skills.SkillManager;
 
-
-
 public class Player {
     
-    public static final float MOVE_SPEED = 768;
+    public static final float MOVE_SPEED = 256; //768;
     public static final long[] ANIMATE_FRAME_DURATION = { 100, 100, 100, 100};
     public static final int[] ANIMATE_FACE_UP = { 0, 1, 2, 1 };
     public static final int[] ANIMATE_FACE_RIGHT = { 4, 5, 6, 5 };
@@ -324,6 +320,7 @@ public class Player {
             sortWeapons();
         } else if (item.getItemType() == Item.ITEM_TYPE_ARMOUR) {
             mArmourList.add(item);
+            sortArmour();
         }
     }
 

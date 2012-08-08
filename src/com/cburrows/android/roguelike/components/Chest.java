@@ -13,7 +13,6 @@ import org.anddev.andengine.util.modifier.ease.EaseLinear;
 
 import android.view.MotionEvent;
 
-import com.cburrows.android.roguelike.Item;
 import com.cdburrows.android.roguelike.base.Graphics;
 import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 import com.cdburrows.android.roguelike.scenes.MainScene;
@@ -26,19 +25,27 @@ public class Chest {
     
     private static final int ATLAS_WIDTH = 512;
     private static final int ATLAS_HEIGHT = 128;
-    private static final float CHEST_FADE_DURATION = 0.5f;
-    private static final int CHEST_STEP = -32;
-    private static final float ITEM_OFF_Y = 32;   
+    private static final float CHEST_FADE_DURATION = 0.25f;
+    private static final int CHEST_STEP = -16;
+    private static final float ITEM_OFF_Y = 56;   
+    
+    private static final float CHEST_DIALOG_X = 0;
+    private static final float CHEST_DIALOG_Y = -40;
+    private static final float CHEST_DIALOG_WIDTH = 128;
+    private static final float CHEST_DIALOG_HEIGHT  = 32; 
     
     // ===========================================================
     // Fields
     // ===========================================================
     
-    private float mX;
-    private float mY;
+    //private float mX;
+    //private float mY;
     private TiledSprite mChestSprite;
     private TiledSprite mItemSprite;
+    private TextPanel sChestDialog;
     private ChestState mChestState;
+    
+    
     
     private static float sTouchY;
     private static float sTouchOffsetY;
@@ -49,8 +56,8 @@ public class Chest {
     // ===========================================================
     
     public Chest(float x, float y) {
-        mX = x;
-        mY = y;
+        //mX = x;
+        //mY = y;
         
         Graphics.beginLoad("gfx/", ATLAS_WIDTH, ATLAS_HEIGHT);
         mChestSprite = Graphics.createTiledSprite("chest.png", 4, 1);
@@ -63,6 +70,15 @@ public class Chest {
         mChestSprite.setAlpha(0f);
         mChestSprite.setVisible(false);
         mChestState = ChestState.CHEST_CLOSED;
+        /*
+        sChestDialog = new TextPanel(
+                x, 
+                CHEST_DIALOG_Y * RoguelikeActivity.sScaleY, 
+                CHEST_DIALOG_WIDTH * RoguelikeActivity.sScaleX, 
+                CHEST_DIALOG_HEIGHT * RoguelikeActivity.sScaleY, "A chest!");
+        sChestDialog.getSprite().setAlpha(0f);
+        mChestSprite.attachChild(sChestDialog.getSprite());
+        */
         
         fadeInModifier.setRemoveWhenFinished(true);
         fadeOutModifier.setRemoveWhenFinished(true);
@@ -95,17 +111,6 @@ public class Chest {
         {
             sTouchY = pTouchEvent.getMotionEvent().getY();
             sTotalTouchOffsetY = 0;
-            
-            /*
-            else if (mItemSprite.getAlpha() > 0f && mItemSprite.getAlpha() > 0f && mItemSprite.getAlpha() < 1f) {
-                mItemSprite.unregisterEntityModifier(chestFadeInModifier);
-                mItemSprite.setAlpha(1f);
-                for (int i = 0; i < mItemSprite.getChildCount(); i++) {
-                    mItemSprite.getChild(i).setAlpha(1f);
-                    mItemSprite.getChild(i).unregisterEntityModifier(chestFadeInModifier);
-                }
-            }
-            */
                 
         }
         else if(pTouchEvent.getAction() == MotionEvent.ACTION_MOVE)
@@ -129,9 +134,13 @@ public class Chest {
     }
     
     public void show(TiledSprite item) {
+        sTotalTouchOffsetY = 0;
+        mChestState = ChestState.CHEST_CLOSED;
+        mChestSprite.setCurrentTileIndex(0);
         mChestSprite.setAlpha(0f);
         mChestSprite.setVisible(true);
         mChestSprite.registerEntityModifier(fadeInModifier);
+        //sChestDialog.getSprite().registerEntityModifier(fadeInModifier)
         
         mItemSprite = item;
         mItemSprite.setAlpha(0f);
@@ -168,12 +177,15 @@ public class Chest {
     }
     
     private void finish() {
-        mChestSprite.unregisterEntityModifier(fadeInModifier);
-        mChestSprite.registerEntityModifier(fadeOutModifier);
+        fadeOutModifier.reset();
         mItemSprite.registerEntityModifier(fadeOutModifier);
         for (int i = 0; i < mItemSprite.getChildCount(); i++) {
             mItemSprite.getChild(i).registerEntityModifier(fadeOutModifier);
         }
+        
+        mChestSprite.unregisterEntityModifier(fadeInModifier);
+        mChestSprite.registerEntityModifier(fadeOutModifier);
+        
         
         //mChestSprite.setCurrentTileIndex(0);
     }
@@ -186,8 +198,7 @@ public class Chest {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) { }
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
             pItem.unregisterEntityModifier((IEntityModifier)pModifier);
-            mChestSprite.setCurrentTileIndex(0);
-            mChestState = ChestState.CHEST_CLOSED;
+            //mChestSprite.setCurrentTileIndex(0);
             fadeInModifier.reset();
             fadeOutModifier.reset();
             RoguelikeActivity.getContext().runOnUpdateThread(new Runnable() {

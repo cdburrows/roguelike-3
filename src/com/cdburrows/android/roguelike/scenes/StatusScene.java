@@ -22,7 +22,7 @@ import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class StatusScene extends GameScene implements IScrollDetectorListener {
+public class StatusScene extends BaseScene implements IScrollDetectorListener {
     
     // ===========================================================
     // Constants

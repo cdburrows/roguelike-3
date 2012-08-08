@@ -24,9 +24,9 @@ public class SceneManager {
     // Fields
     // ===========================================================
     
-    private static List<GameScene> mScenes  = new ArrayList<GameScene>();;
+    private static List<BaseScene> mScenes  = new ArrayList<BaseScene>();;
     
-    private static GameScene mNextScene = null;
+    private static BaseScene mNextScene = null;
     
     // ===========================================================
     // Constructors
@@ -46,7 +46,7 @@ public class SceneManager {
         return mScenes.size();
     }
     
-    public static GameScene getTopScene() { 
+    public static BaseScene getTopScene() { 
         if (mScenes.size() > 0) { 
             return mScenes.get(mScenes.size()-1); 
         } else {
@@ -64,7 +64,7 @@ public class SceneManager {
     
     public static void load() { getTopScene().loadResources(); }
     
-    public static void pushScene(GameScene scene) {
+    public static void pushScene(BaseScene scene) {
         if (mScenes.size() == 0) {
             mScenes.add(scene);
             setScene();
@@ -74,11 +74,11 @@ public class SceneManager {
         }
     }
     
-    public static GameScene popScene() { return popScene(null); }
+    public static BaseScene popScene() { return popScene(null); }
     
-    public static GameScene popScene(IEntityModifierListener listener) {
+    public static BaseScene popScene(IEntityModifierListener listener) {
         if (mScenes.size() > 0) {
-            GameScene scene = getTopScene();
+            BaseScene scene = getTopScene();
             scene.fadeOut(FADE_DURATION, transitionDown);
             return scene;
         }
@@ -86,7 +86,7 @@ public class SceneManager {
     }
     
     private static void setScene() {
-        GameScene scene = getTopScene();
+        BaseScene scene = getTopScene();
         if (scene != null) {
             if (!scene.isLoaded()) scene.loadResources();
             scene.prepare(prepared); 
@@ -103,7 +103,7 @@ public class SceneManager {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {       
             Log.d("SCENE", "Scene prepared");
-            GameScene scene = getTopScene();
+            BaseScene scene = getTopScene();
             RoguelikeActivity.getContext().getEngine().setScene(scene);
             scene.fadeIn(FADE_DURATION, null);
         }

@@ -43,7 +43,7 @@ import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class BattleScene extends GameScene  {
+public class BattleScene extends BaseScene  {
     
     // ===========================================================
     // Constants
@@ -67,12 +67,18 @@ public class BattleScene extends GameScene  {
     private static final int MONSTER_NAME_TEXT_Y = 8;
     private static final int MONSTER_LEVEL_TEXT_Y = 30;
     
+    private static final int HP_COLOR = Color.RED;
+    private static final float HP_ALPHA = 0.75f;
+    
+    private static final float PLAYER_HP_X = 0;
+    private static final float PLAYER_HP_Y = 24;
+    private static final int PLAYER_HP_WIDTH = 160;
+    private static final int PLAYER_HP_HEIGHT = 16;
+    
     private static final float MONSTER_HP_X = 0;
     private static final float MONSTER_HP_Y = 8;
     private static final int MONSTER_HP_WIDTH = 192;
     private static final int MONSTER_HP_HEIGHT = 6;
-    private static final int MONSTER_HP_COLOR = Color.RED;
-    private static final float MONSTER_HP_ALPHA = 0.75f;
     
     private static final float CAMERA_SHAKE_INTENSITY = 10.0f;
     private static final float CAMERA_SHAKE_DURATON = 0.35f;
@@ -106,13 +112,13 @@ public class BattleScene extends GameScene  {
     private static float sScaleX;
     private static float sScaleY;
     
-    private static HUD mHud;
+    private static HUD sHud;
     
     private static Sprite mMonsterSprite;
     private static Sprite mBackgroundSprite;
     private static Sprite mPopupTitleSprite;
-    private static Sprite mHPBar;
-    private static Sprite mHPBarFill;
+    //private static Sprite mHPBar;
+    //private static Sprite mHPBarFill;
     //private Sprite mSpoilsSprite;
     private static Sprite mXpBarSprite;
     private static Sprite mXpBarFillSprite;    
@@ -123,6 +129,7 @@ public class BattleScene extends GameScene  {
     private static ChangeableText mMonsterLevelText;
     private static Text mNoSpoilsText;
     private static Text mPlusText;
+    private static ProgressBar mPlayerHp;
     private static ProgressBar mMonsterHp;
     
     private static FloatingText[] mDamageNumber;
@@ -157,7 +164,7 @@ public class BattleScene extends GameScene  {
     private static MediaPlayer mMonsterEvadeEffect;
     private static MediaPlayer mVictoryEffect;
     
-    private static GameScene sScene;
+    private static BaseScene sScene;
     
     // ===========================================================
     // Constructors
@@ -173,7 +180,7 @@ public class BattleScene extends GameScene  {
     // Getter & Setter
     // ===========================================================
     
-    public static GameScene getScene() { return sScene; }
+    public static BaseScene getScene() { return sScene; }
     
     // ===========================================================
     // Inherited Methods
@@ -183,7 +190,7 @@ public class BattleScene extends GameScene  {
     public void loadResources() {
         long timeStart = System.currentTimeMillis();
 
-        mHud = new HUD();
+        sHud = new HUD();
         
         Graphics.beginLoad("gfx/", TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT);
         
@@ -206,6 +213,7 @@ public class BattleScene extends GameScene  {
         mPopupTitleSprite.attachChild(mMonsterLevelText);
         
         // The HP bar
+        /*
         mHPBar = Graphics.createSprite("panels/hp_bar.png", 0, 0, HP_OPACITY * 1.5f);
         mHPBar.setPosition(
                 (mCameraWidth / 2) - (mHPBar.getWidth() / 2), 
@@ -215,6 +223,7 @@ public class BattleScene extends GameScene  {
         mHPBarFill.setPosition(
                 (mCameraWidth / 2) - (mHPBarFill.getWidth() / 2), 
                 mCameraHeight - (24 * sScaleY));
+        */
                
         // The spoils panel
         /*
@@ -251,8 +260,13 @@ public class BattleScene extends GameScene  {
         mPlusText = Graphics.createText( (mCameraWidth / 2) - (mPotionIconSprite.getWidth() / 2) - (20 * sScaleX), 
                 (NO_SPOILS_TEXT_Y + 4) * sScaleY, Graphics.LargeFont, "+");
         
+        mPlayerHp = new ProgressBar(
+                (mCameraWidth / 2) - (PLAYER_HP_WIDTH * RoguelikeActivity.sScaleX / 2),
+                mCameraHeight - (PLAYER_HP_Y * RoguelikeActivity.sScaleY), PLAYER_HP_WIDTH, PLAYER_HP_HEIGHT, 
+                HP_COLOR, HP_ALPHA, 100);
+        
         mMonsterHp = new ProgressBar(MONSTER_HP_X, MONSTER_HP_Y, MONSTER_HP_WIDTH, MONSTER_HP_HEIGHT, 
-                MONSTER_HP_COLOR, MONSTER_HP_ALPHA, 100);
+                HP_COLOR, HP_ALPHA, 100);
         mMonsterHp.setPosition((mCameraWidth / 2) - (mMonsterHp.getWidth() / 2),
                 MONSTER_HP_Y * sScaleY);
  
@@ -337,15 +351,13 @@ public class BattleScene extends GameScene  {
         attachChild(mPotionIconSprite);
         attachChild(mXpBarSprite);
         attachChild(mXpBarFillSprite);
+        attachChild(mPlayerHp.getEntity());
         attachChild(mMonsterHp.getEntity());
-        
-        mHud.attachChild(mHPBar);
-        mHud.attachChild(mHPBarFill);
         
         mDamageNumber = new FloatingText[NUM_DAMAGE_TEXTS];
         for (int i = 0; i < NUM_DAMAGE_TEXTS; i++) {
             mDamageNumber[i] = new FloatingText(Graphics.Font, Color.WHITE, 0, 0, "00");
-            mHud.attachChild(mDamageNumber[i].getEntity());
+            sHud.attachChild(mDamageNumber[i].getEntity());
         }
         
         mPlayer = RoguelikeActivity.getPlayer();
@@ -393,6 +405,9 @@ public class BattleScene extends GameScene  {
     public void prepare(IEntityModifierListener preparedListener) {
         mSceneReady = false;
         
+        updateHP();
+        updateXP();
+        
         //mSpoilsSprite.setAlpha(0f);
         mVictoryText.setAlpha(0f);
         mLevelText.setAlpha(0f);
@@ -430,10 +445,7 @@ public class BattleScene extends GameScene  {
         mMonsterLevelText.setPosition((mPopupTitleSprite.getWidth() / 2) - (mMonsterLevelText.getWidth() / 2), 
                 MONSTER_LEVEL_TEXT_Y * sScaleY);
         
-        updateHP();
-        updateXP();
-        
-        mCamera.setHUD(mHud);
+        mCamera.setHUD(sHud);
         mCamera.setChaseEntity(null);
         mCamera.setCenter(mCameraWidth / 2,  mCameraHeight / 2);
         
@@ -562,7 +574,8 @@ public class BattleScene extends GameScene  {
     }
     
     private static void updateHP() {
-        mHPBarFill.setWidth( ((float)mHPBar.getWidth()) * mPlayer.getHPFraction());
+        mPlayerHp.setMaxValue(mPlayer.getMaxHP());
+        mPlayerHp.setCurValue(mPlayer.getCurHP());
     }
     
     private static void updateXP() {

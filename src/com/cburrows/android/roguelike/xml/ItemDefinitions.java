@@ -53,9 +53,7 @@ public class ItemDefinitions {
 
         try {
             ItemDefinitions col = serializer.read(ItemDefinitions.class, stream);
-                        
-            
-            
+
             col.build();
             return col;
         } catch (Exception e) {

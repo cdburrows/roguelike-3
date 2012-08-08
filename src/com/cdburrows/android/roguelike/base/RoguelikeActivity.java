@@ -1,5 +1,6 @@
 package com.cdburrows.android.roguelike.base;
 
+import android.content.res.AssetManager;
 import android.widget.Toast;
 
 import org.anddev.andengine.engine.Engine;
@@ -11,7 +12,7 @@ import com.cburrows.android.roguelike.Dungeon;
 import com.cburrows.android.roguelike.ItemFactory;
 import com.cburrows.android.roguelike.Player;
 import com.cdburrows.android.roguelike.scenes.BattleScene;
-import com.cdburrows.android.roguelike.scenes.GameScene;
+import com.cdburrows.android.roguelike.scenes.BaseScene;
 import com.cdburrows.android.roguelike.scenes.MainScene;
 import com.cdburrows.android.roguelike.scenes.SceneManager;
 import com.cdburrows.android.roguelike.scenes.StatusScene;
@@ -26,6 +27,21 @@ public class RoguelikeActivity extends LoadingGameActivity implements
     
     public static final int DESIRED_WIDTH = 320;
     public static final int DESIRED_HEIGHT = 240;
+    
+    public static final int ICON_STATUS_UP = 0;
+    public static final int ICON_STATUS_DOWN = 1;
+    public static final int ICON_MINIMAP_UP = 2;
+    public static final int ICON_MINIMAP_DOWN = 3;
+    public static final int ICON_BACK_UP = 4;
+    public static final int ICON_BACK_DOWN = 5;
+    public static final int ICON_POTION_UP = 6;
+    public static final int ICON_POTION_DOWN = 7;
+    public static final int ICON_WEAPON_UP = 8;
+    public static final int ICON_WEAPON_DOWN = 9;
+    public static final int ICON_ARMOUR_UP = 10;
+    public static final int ICON_ARMOUR_DOWN = 11;
+    public static final int ICON_SKILL_UP = 12;
+    public static final int ICON_SKILL_DOWN = 13;
 
     // ===========================================================
     // Fields
@@ -42,10 +58,10 @@ public class RoguelikeActivity extends LoadingGameActivity implements
     
     private static Player sPlayer;
     
-    public static GameScene sMainScene;
-    public static GameScene sBattleScene;
-    public static GameScene sStatusScene;
-    public static GameScene sMinimapScene;
+    public static BaseScene sMainScene;
+    public static BaseScene sBattleScene;
+    public static BaseScene sStatusScene;
+    public static BaseScene sMinimapScene;
     
     public static Dungeon sDungeon;
     
@@ -93,7 +109,6 @@ public class RoguelikeActivity extends LoadingGameActivity implements
     @Override
     protected Scene onAssetsLoaded() {
         SceneManager.pushScene(sMainScene);
-        //SceneManager.pushScene(sMinimapScene);
         return SceneManager.getTopScene();
     }
 
@@ -123,12 +138,7 @@ public class RoguelikeActivity extends LoadingGameActivity implements
         Graphics.endLoad();
         sPlayer.equipWeapon(ItemFactory.createRandomWeapon(2));
         sPlayer.equipArmour(ItemFactory.createRandomArmour(2));
-        
-        // Setup all of the main panels used in the game
-        LoadingGameActivity.setLoadingText("Main scene");
-        sMainScene = new MainScene();
-        sMainScene.loadResources();
-        
+         
         LoadingGameActivity.setLoadingText("Battle scene");
         sBattleScene = new BattleScene();
         sBattleScene.loadResources();
@@ -136,6 +146,11 @@ public class RoguelikeActivity extends LoadingGameActivity implements
         LoadingGameActivity.setLoadingText("Status scene");
         sStatusScene = new StatusScene();
         sStatusScene.loadResources();
+        
+     // Setup all of the main panels used in the game
+        LoadingGameActivity.setLoadingText("Main scene");
+        sMainScene = new MainScene();
+        sMainScene.loadResources();
         
         LoadingGameActivity.setLoadingText("Done!");
     }   

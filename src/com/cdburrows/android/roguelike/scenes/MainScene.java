@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.anddev.andengine.engine.camera.hud.HUD;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
+import org.anddev.andengine.entity.modifier.AlphaModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.entity.sprite.TiledSprite;
@@ -23,6 +24,7 @@ import com.cburrows.android.roguelike.PlayerState;
 import com.cburrows.android.roguelike.components.Chest;
 import com.cburrows.android.roguelike.components.Minimap;
 import com.cburrows.android.roguelike.components.ProgressBar;
+import com.cburrows.android.roguelike.components.TextPanel;
 import com.cdburrows.android.roguelike.base.AudioManager;
 import com.cdburrows.android.roguelike.base.Graphics;
 import com.cdburrows.android.roguelike.base.RoguelikeActivity;
@@ -35,28 +37,30 @@ import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class MainScene extends GameScene {
+public class MainScene extends BaseScene {
     
     // ===========================================================
     // Constants
     // ===========================================================
     
-    public static final float FIGHT_CHANCE = 0.40f;
     private static final float TOUCH_SENSITIVITY = 32.0f;
     private static final int TEXTURE_ATLAS_WIDTH = 512;
     private static final int TEXTURE_ATLAS_HEIGHT = 512;
     private static final float HUD_OPACITY = 0.5f;
+    
     private static final int HP_BAR_WIDTH = 160;
     private static final int HP_BAR_HEIGHT = 16;
     private static final float HP_OFF_Y = 24;
     private static final int HP_BAR_COLOR = Color.RED;
-    private static final float HP_BAR_ALPHA = HUD_OPACITY; 
+    private static final float HP_BAR_ALPHA = HUD_OPACITY;
+    
+    private static final float MINIMAP_SCROLL_FACTOR = 1.5f;
     
     // ===========================================================
     // Fields
     // ===========================================================
     
-    private static GameScene sScene;
+    private static BaseScene sScene;
     private static SceneState sSceneState;
     
     private static HUD sHud;
@@ -83,6 +87,7 @@ public class MainScene extends GameScene {
     
     private static MediaPlayer sBackgroundMusic;
     private static MediaPlayer sPotionEffect;
+    private static boolean sMinimapVisible;
     
     // ===========================================================
     // Constructors
@@ -96,6 +101,14 @@ public class MainScene extends GameScene {
     // ===========================================================
     // Getter & Setter
     // ===========================================================
+    
+    private static void setSceneState(SceneState stateTransition) {
+        sTouchOffsetX = 0;
+        sTouchOffsetY = 0;
+        sTotalTouchOffsetX = 0;
+        sTotalTouchOffsetY = 0;
+        sSceneState = stateTransition;
+    }
     
     // ===========================================================
     // Inherited Methods
@@ -116,6 +129,7 @@ public class MainScene extends GameScene {
         sMapIcon.setPosition(
                 mCameraWidth - sMapIcon.getWidth(),
                 scaleY); 
+        sMapIcon.setCurrentTileIndex(RoguelikeActivity.ICON_MINIMAP_UP);
         
         sPotionIcon = Graphics.createTiledSprite("icons.png", 4, 4, HUD_OPACITY);
         sPotionIcon.setPosition(
@@ -127,17 +141,18 @@ public class MainScene extends GameScene {
                 Graphics.SmallFont, "88x", HUD_OPACITY);
        
         Graphics.endLoad("MAIN");
-        
-        
+              
         sDungeon = RoguelikeActivity.sDungeon;
         MonsterFactory.initialize(sDungeon.getMonsterList());
-        attachChild(RoguelikeActivity.sDungeon.getSprite());
+        attachChild(RoguelikeActivity.sDungeon.getSprite(0));
         
         sPlayer = RoguelikeActivity.getPlayer();
         sPlayer.setParentMap(sDungeon.getGameMap());
-        sPlayer.setRoom(1, 2);
+        sPlayer.setRoom(0, 0);
         sPlayer.setCurHP(80);
         attachChild(sPlayer.getAnimatedSprite());
+        
+        attachChild(RoguelikeActivity.sDungeon.getSprite(1));
         
         sHPBar = new ProgressBar(
                 (mCameraWidth / 2) - (HP_BAR_WIDTH * scaleX / 2),
@@ -161,7 +176,7 @@ public class MainScene extends GameScene {
 
         Minimap.initialize(RoguelikeActivity.getDungeon());
         Minimap.setCenter(sPlayer.getX(), sPlayer.getY());
-        
+
         sHud = new HUD();
         sHud.attachChild(Minimap.getSprite());
         sHud.attachChild(sStatusIcon);
@@ -204,9 +219,9 @@ public class MainScene extends GameScene {
     public void prepare(IEntityModifierListener preparedListener) {
         setSceneState(SceneState.STATE_TRANSITION);
         
-        sStatusIcon.setCurrentTileIndex(0);
-        sMapIcon.setCurrentTileIndex(2);
-        sPotionIcon.setCurrentTileIndex(6);
+        sStatusIcon.setCurrentTileIndex(RoguelikeActivity.ICON_STATUS_UP);
+        //sMapIcon.setCurrentTileIndex(2);
+        sPotionIcon.setCurrentTileIndex(RoguelikeActivity.ICON_POTION_UP);
         sPotionText.setText(String.format("%02d", sPlayer.getNumPotions()) + "x");
         sChest.setVisible(false);
         
@@ -236,42 +251,26 @@ public class MainScene extends GameScene {
     
     @Override
     public boolean onSceneTouchEvent(TouchEvent pTouchEvent) {
+        if (sMinimapVisible && pTouchEvent.getMotionEvent().getPointerCount() == 2) {
+            sSceneState = SceneState.STAT_MINIMAP_SCROLL;
+        }
+        
         if (sSceneState == SceneState.STATE_TRANSITION) { 
             return true;
+            
         } else if (sSceneState == SceneState.STATE_CHEST) {
             sTotalTouchOffsetX = 0;
             sTotalTouchOffsetY = 0;
             return sChest.handleTouchEvent(pTouchEvent);
-        } else if (sSceneState == SceneState.STATE_READY) {
-            if(pTouchEvent.getAction() == MotionEvent.ACTION_DOWN)
-            {
+            
+        } else if (sSceneState == SceneState.STAT_MINIMAP_SCROLL) {
+            if(pTouchEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 sTouchX = pTouchEvent.getMotionEvent().getX();
                 sTouchY = pTouchEvent.getMotionEvent().getY();
                 sTotalTouchOffsetX = 0;
                 sTotalTouchOffsetY = 0;
-                
-                if (sStatusIcon.contains(sTouchX, sTouchY)) {
-                    sStatusIcon.setCurrentTileIndex(1);
-                    AudioManager.playClick();
-                    openStatus();
-                }
-                
-                if (sMapIcon.contains(sTouchX, sTouchY)) {
-                    sMapIcon.setCurrentTileIndex(3);
-                    AudioManager.playClick();
-                    openMiniMap();
-                }
-                
-                if (sPotionIcon.contains(sTouchX, sTouchY)) {
-                    if (RoguelikeActivity.sSoundEnabled) sPotionEffect.start();
-                    sPotionIcon.setCurrentTileIndex(7);
-                    usePotion();
-                }
-                
-                Log.d("MAIN", "Down X " + sTouchX + " Y " + sTouchY);
             }
-            else if(pTouchEvent.getAction() == MotionEvent.ACTION_MOVE)
-            {    
+            else if(pTouchEvent.getAction() == MotionEvent.ACTION_MOVE) {    
                 float newX = pTouchEvent.getMotionEvent().getX();
                 float newY = pTouchEvent.getMotionEvent().getY();
                
@@ -280,7 +279,44 @@ public class MainScene extends GameScene {
                 sTotalTouchOffsetX += sTouchOffsetX;
                 sTotalTouchOffsetY += sTouchOffsetY;
                 
-                Log.d("MAIN", "X " + sTotalTouchOffsetX + " Y " + sTotalTouchOffsetY);
+                Minimap.scroll(sTotalTouchOffsetX * MINIMAP_SCROLL_FACTOR, 
+                        sTotalTouchOffsetY * MINIMAP_SCROLL_FACTOR);
+                
+                sTouchX = newX;
+                sTouchY = newY;
+            } else if (pTouchEvent.getAction() == MotionEvent.ACTION_UP) {
+                
+                sTotalTouchOffsetX = 0;
+                sTotalTouchOffsetY = 0;
+                
+                Minimap.scroll(sTotalTouchOffsetX, sTotalTouchOffsetY);
+                sSceneState = SceneState.STATE_READY;
+            }
+            return true;
+            
+        } else if (sSceneState == SceneState.STATE_READY) {
+            if(pTouchEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                sTouchX = pTouchEvent.getMotionEvent().getX();
+                sTouchY = pTouchEvent.getMotionEvent().getY();
+                sTotalTouchOffsetX = 0;
+                sTotalTouchOffsetY = 0;
+                
+                if (sStatusIcon.contains(sTouchX, sTouchY)) {
+                    openStatus();
+                } else if (sMapIcon.contains(sTouchX, sTouchY)) {
+                    openMiniMap();
+                } else if (sPotionIcon.contains(sTouchX, sTouchY)) {
+                    usePotion();
+                }
+            }
+            else if(pTouchEvent.getAction() == MotionEvent.ACTION_MOVE) {    
+                float newX = pTouchEvent.getMotionEvent().getX();
+                float newY = pTouchEvent.getMotionEvent().getY();
+               
+                sTouchOffsetX = (newX - sTouchX);
+                sTouchOffsetY = (newY - sTouchY);
+                sTotalTouchOffsetX += sTouchOffsetX;
+                sTotalTouchOffsetY += sTouchOffsetY;
                                                
                 if (Math.abs(sTotalTouchOffsetX) >= TOUCH_SENSITIVITY) {
                     if (sTotalTouchOffsetX < 0) {
@@ -299,11 +335,9 @@ public class MainScene extends GameScene {
                 sTouchX = newX;
                 sTouchY = newY;
             } else if (pTouchEvent.getAction() == MotionEvent.ACTION_UP) {
-                sStatusIcon.setCurrentTileIndex(0);
-                sMapIcon.setCurrentTileIndex(2);
-                sPotionIcon.setCurrentTileIndex(6);
-                
-                Log.d("MAIN", "Up");
+                sStatusIcon.setCurrentTileIndex(RoguelikeActivity.ICON_STATUS_UP);
+                //sMapIcon.setCurrentTileIndex(RoguelikeActivity.ICON_STATUS_UP);
+                sPotionIcon.setCurrentTileIndex(RoguelikeActivity.ICON_POTION_UP);
                 
                 sTotalTouchOffsetX = 0;
                 sTotalTouchOffsetY = 0;
@@ -324,11 +358,6 @@ public class MainScene extends GameScene {
     // Methods
     // ===========================================================
     
-    public static void closeChest() {
-        sScene.fadeTo(0.5f, 0.5f, 0f);
-        setSceneState(SceneState.STATE_READY);
-    }
-    
     private static class UpdateHandler implements IUpdateHandler {
         public void onUpdate(float pSecondsElapsed) {
             sEvent = sPlayer.update(pSecondsElapsed);
@@ -340,14 +369,7 @@ public class MainScene extends GameScene {
                 case EVENT_NEW_ROOM:
                     if (sDungeon.hasChest(sPlayer.getRoomX(), sPlayer.getRoomY())) {
                         
-                        setSceneState(SceneState.STATE_CHEST);
-                        
-                        sScene.fadeTo(0.5f, 0f, 0.5f);
-                        
-                        Item item = ItemFactory.createRandomItem(sDungeon.getCurrentFloorLevel());
-                        sPlayer.addItem(item);
-                        sChest.show(item.copySprite());
-                        sDungeon.setChest(sPlayer.getRoomX(), sPlayer.getRoomY(), false);
+                        findChest();
                         
                     } else if (sRand.nextFloat() <= sDungeon.getCurrentFloor().mMonsterSpawnRate) {
                         
@@ -364,14 +386,22 @@ public class MainScene extends GameScene {
     }
     
     private static void openStatus() {
+        sStatusIcon.setCurrentTileIndex(RoguelikeActivity.ICON_STATUS_DOWN);
+        AudioManager.playClick();
         RoguelikeActivity.openStatus();
     }
     
     private static void openMiniMap() {
+        sMapIcon.setCurrentTileIndex(RoguelikeActivity.ICON_MINIMAP_DOWN);
+        AudioManager.playClick();
+        
         if (Minimap.isVisible()) {
             Minimap.setVisible(false);
+            sMinimapVisible = false;
+            sMapIcon.setCurrentTileIndex(RoguelikeActivity.ICON_MINIMAP_UP);
         } else {
             Minimap.setVisible(true);
+            sMinimapVisible = true;
         }
     }
     
@@ -381,23 +411,36 @@ public class MainScene extends GameScene {
     }
     
     private static void usePotion() {
+        if (RoguelikeActivity.sSoundEnabled) sPotionEffect.start();
+        sPotionIcon.setCurrentTileIndex(RoguelikeActivity.ICON_POTION_DOWN);
         sPlayer.usePotion();
         sPotionText.setText(String.format("%02d", sPlayer.getNumPotions()) + "x");
         updateHP();
     }
     
-    private static void setSceneState(SceneState stateTransition) {
-        sTouchOffsetX = 0;
-        sTouchOffsetY = 0;
-        sTotalTouchOffsetX = 0;
-        sTotalTouchOffsetY = 0;
-        sSceneState = stateTransition;
+    private static void findChest() {
+        setSceneState(SceneState.STATE_CHEST);
+        
+        sScene.fadeTo(0.5f, 0f, 0.5f);
+        
+        Item item = ItemFactory.createRandomItem(sDungeon.getCurrentFloorLevel());
+        sPlayer.addItem(item);
+        sChest.show(item.copySprite());
+        
+        sDungeon.setChest(sPlayer.getRoomX(), sPlayer.getRoomY(), false);
+    }
+    
+    public static void closeChest() {
+        if (sSceneState == SceneState.STATE_CHEST) {
+            sScene.fadeTo(0.5f, 0.5f, 0f);
+            setSceneState(SceneState.STATE_READY);
+        }
     }
     
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
     
-    private enum SceneState { STATE_TRANSITION, STATE_READY, STATE_CHEST }
+    private enum SceneState { STATE_TRANSITION, STATE_READY, STATE_CHEST, STAT_MINIMAP_SCROLL }
    
 }

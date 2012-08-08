@@ -18,10 +18,10 @@ import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 public class DungeonDefinition {
     
     @ElementList(name="tileset", inline=true)
-    public ArrayList<DungeonTileset> mTilesets;
+    private ArrayList<DungeonTileset> mTilesets;
     
     @ElementList(name="floor", inline=true)
-    public ArrayList<DungeonFloor> mFloors;
+    private ArrayList<DungeonFloor> mFloors;
     
     public DungeonDefinition() {
         mTilesets = new ArrayList<DungeonTileset>();
@@ -39,12 +39,28 @@ public class DungeonDefinition {
         return null;        
     }
     
-    public Tileset getTileset(DungeonFloor floor) {
+    public ArrayList<DungeonTileset> getDungeonTilesets() {
+        return mTilesets;
+    }
+    
+    public DungeonTileset getDungeonTileset(DungeonFloor floor) {
+        String id = floor.mTilesetName;
+        for (DungeonTileset t : mTilesets) {
+            if (t.mName.equals(id)) return t;
+        }
+        return null;
+    }
+    
+    public Tileset getTmxTileset(DungeonFloor floor) {
         String id = floor.mTilesetName;
         for (DungeonTileset t : mTilesets) {
             if (t.mName.equals(id)) return t.toTmx();
         }
         return null;
+    }
+
+    public DungeonFloor getFloor(int floor) {
+       return mFloors.get(floor);
     }
 }
 

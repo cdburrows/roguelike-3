@@ -3,14 +3,7 @@ package com.cdburrows.android.roguelike.skills;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import org.anddev.andengine.entity.sprite.TiledSprite;
-
-import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 import com.cdburrows.android.roguelike.scenes.BattleScene;
-
-
-
-import android.util.Log;
 
 public class SkillManager {
     
@@ -38,9 +31,9 @@ public class SkillManager {
     }
     
     private static void checkActions() {
-        for (SkillDirection s : sActionQueue) Log.d("Skill Manager", "Action " + s.toString());
+        //for (SkillDirection s : sActionQueue) Log.d("Skill Manager", "Action " + s.toString());
         
-        for (SkillContainer s : sValidCombos) Log.d("Skill Manager", "Skill " + s.toString());
+        //for (SkillContainer s : sValidCombos) Log.d("Skill Manager", "Skill " + s.toString());
         
         for (Skill skill : sSkills) {
             if (skill.getFirstDirection() == sActionQueue.getFirst()) {

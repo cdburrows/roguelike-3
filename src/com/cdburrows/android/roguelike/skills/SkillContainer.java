@@ -4,7 +4,6 @@ import org.anddev.andengine.entity.sprite.TiledSprite;
 
 import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 
-
 public  class SkillContainer {
     public Skill mSkill;
     public TiledSprite mSprite;

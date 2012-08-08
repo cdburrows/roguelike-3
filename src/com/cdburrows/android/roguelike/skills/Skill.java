@@ -3,14 +3,9 @@ package com.cdburrows.android.roguelike.skills;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import org.anddev.andengine.entity.Entity;
 import org.anddev.andengine.entity.sprite.TiledSprite;
-import org.simpleframework.xml.Text;
-
 import com.cdburrows.android.roguelike.base.Graphics;
 import com.cdburrows.android.roguelike.base.RoguelikeActivity;
-
-
 
 public class Skill {
     private static final int ATLAS_WIDTH = 128;

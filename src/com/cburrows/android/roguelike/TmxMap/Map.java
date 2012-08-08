@@ -15,6 +15,8 @@ import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
+import android.util.Log;
+
 import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 
 @Root
@@ -97,13 +99,14 @@ public class Map {
     public void addLayer(String name) { this.layer.add(new Layer(name, width, height)); }
     public void addLayer(Layer layer) { this.layer.add(layer); }
     
-    public void build(int[] data) {
+    public void build(ArrayList<int[]> data) {
         this.layer = new ArrayList<Layer>();                         
-        for (int l = 0; l < 1; l++) {                 // layer
+        for (int l = 0; l < data.size(); l++) {                 
             Layer newLayer = new Layer("layer_" + l, width, height);
-            newLayer.setData(data);
+            newLayer.setData(data.get(l));
             layer.add(newLayer);
         }
+        Log.d("MAP", "LAYERS: " + data.size());
     }
       
     public static TMXTiledMap getTmxTiledMap(Map map) {

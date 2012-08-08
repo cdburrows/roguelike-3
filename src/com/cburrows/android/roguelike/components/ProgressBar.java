@@ -1,18 +1,13 @@
 package com.cburrows.android.roguelike.components;
 
 import org.anddev.andengine.entity.Entity;
-import org.anddev.andengine.entity.modifier.AlphaModifier;
-import org.anddev.andengine.entity.modifier.EntityModifier;
 import org.anddev.andengine.entity.modifier.IEntityModifier;
 import org.anddev.andengine.entity.sprite.Sprite;
 
 import com.cdburrows.android.roguelike.base.Graphics;
 import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 
-
-
 import android.graphics.Color;
-import android.util.Log;
 
 public class ProgressBar {
     
@@ -53,7 +48,7 @@ public class ProgressBar {
         Graphics.endLoad("Progress bar");
         
         mBackground.setSize(mWidth, mHeight);
-        mBackground.setScaleCenter(0f, 0f);
+        //mBackground.setScaleCenter(0f, 0f);
         //mBackground.setScale(RoguelikeActivity.sScaleX, RoguelikeActivity.sScaleY);
         
         mFill.setSize(mWidth, mHeight);
@@ -90,7 +85,6 @@ public class ProgressBar {
     
     public void setCurValue(int cur) {
         mCurValue = cur;
-        Log.d("Bar", "Cur: " + mCurValue);
         adjustFill();
     }
     

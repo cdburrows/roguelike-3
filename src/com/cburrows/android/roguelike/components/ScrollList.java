@@ -1,14 +1,8 @@
 package com.cburrows.android.roguelike.components;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-
-import org.anddev.andengine.entity.Entity;
-import org.anddev.andengine.entity.IEntity;
 import org.anddev.andengine.entity.scene.Scene;
-import org.anddev.andengine.entity.scene.Scene.IOnSceneTouchListener;
 import org.anddev.andengine.entity.sprite.Sprite;
-import org.anddev.andengine.entity.sprite.TiledSprite;
 import org.anddev.andengine.input.touch.TouchEvent;
 import org.anddev.andengine.input.touch.detector.ScrollDetector;
 
@@ -18,7 +12,6 @@ import com.cdburrows.android.roguelike.base.AudioManager;
 import com.cdburrows.android.roguelike.base.Graphics;
 import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 
-import android.util.Log;
 import android.view.MotionEvent;
 
 public class ScrollList {
@@ -26,6 +19,7 @@ public class ScrollList {
     // The offset of the item buttons into the scroll list
     protected static final float ITEM_OFFSET_X = 2;
     protected static final float ITEM_OFFSET_Y = 2;
+    protected static final float ITEM_HEIGHT = 32;
     private ISelectListener mSelectListener;
     private Sprite mSprite;
     private float mX;
@@ -36,16 +30,13 @@ public class ScrollList {
     private ClippingEntity mClipEntity;
     private Scene mFrame;
     
-    private static float sItemHeight;
+    //private static float sItemHeight = 32;
     private static float sTouchX;
     private static float sTouchY;
-    private static float sTouchOffsetX;
-    private static float sTouchOffsetY;
-    //private float mTotalTouchOffsetX;
-    //private float mTotalTouchOffsetY;  
+    //private static float sTouchOffsetX;
+    //private static float sTouchOffsetY;
     
     private float mOffY;
-    //private int mNumToDisplay = 5;
     private float mMinOffY;
     private float mMaxOffY;
     private Item mSelectedItem;
@@ -85,7 +76,7 @@ public class ScrollList {
                 int y = (int)ITEM_OFFSET_Y; 
                 for (Item e : mData) {
                     e.getSprite().setPosition(0, y);
-                    y += 32 * RoguelikeActivity.sScaleY;
+                    y += ITEM_HEIGHT * RoguelikeActivity.sScaleY;
                     if (e.getSprite().hasParent()) e.getSprite().getParent().detachChild(e.getSprite());
                     mFrame.attachChild(e.getSprite());
                 }
@@ -97,17 +88,8 @@ public class ScrollList {
     }
     
     private void render() {   
-        
-        mMaxOffY = mY + (ITEM_OFFSET_Y * RoguelikeActivity.sScaleX); //+ (32 * RoguelikeActivity.sScaleY);
-        /*
-        if (mData.size() > mNumToDisplay) {
-            mMinOffY = mY - mData.get(mData.size()-1).getY();
-        } else {
-            mMinOffY = mY;
-        }
-        */
-        mMinOffY = mY - (32 * RoguelikeActivity.sScaleY * (mData.size()-1)); //mData.get(mData.size()-1).getY() - mY - (6 * RoguelikeActivity.sScaleY);
-        
+        mMaxOffY = mY + (ITEM_OFFSET_Y * RoguelikeActivity.sScaleX); 
+        mMinOffY = mY - (32 * RoguelikeActivity.sScaleY * (mData.size()-1));  
     }
     
     public Sprite getSprite() { return mSprite; }
@@ -117,7 +99,6 @@ public class ScrollList {
         {
             sTouchX = pTouchEvent.getMotionEvent().getX();
             sTouchY = pTouchEvent.getMotionEvent().getY();
-            //Log.d("SCROLL", "Y : " + sTouchY);
             
             for (Item i : mData) {
                 if (i.getSprite().contains(sTouchX, sTouchY)) {
@@ -126,8 +107,6 @@ public class ScrollList {
                     break;
                 }
             }
-            //mTotalTouchOffsetX = 0;
-            //mTotalTouchOffsetY = 0;     
         }
         else if(pTouchEvent.getAction() == MotionEvent.ACTION_MOVE)
         {     
@@ -150,18 +129,13 @@ public class ScrollList {
     }
 
     public void handleScrollEvent(final ScrollDetector pScollDetector, final TouchEvent pTouchEvent, final float pDistanceX, final float pDistanceY) {
-        //Log.d("SCROLL", "off Y : " + mOffY + " Last Y" +  mData.getLast().getY());
         if (mSelectedItem != null) mSelectedItem.handleTouchUp();
         
         mOffY += pDistanceY;
         
         if (mOffY > mMaxOffY) mOffY = mMaxOffY;
         if (mOffY < mMinOffY) mOffY = mMinOffY;
-        /*
-        if (mData.size() > mNumToDisplay && mOffY < mY - mData.get(mData.size() - mNumToDisplay+1).getY()) {
-            //mOffY = mY - mData.get(mData.size() - mNumToDisplay+1).getY();
-        }
-        */
+
         mFrame.setPosition(mFrame.getX(), mOffY);
     }
     

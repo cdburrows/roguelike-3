@@ -30,7 +30,6 @@ public class Dungeon {
     
     private static DungeonFloor sCurrentFloor;
     private static int sCurrentFloorLevel;
-
     
     // ===========================================================
     // Constructors
@@ -45,7 +44,7 @@ public class Dungeon {
         }
         
         sCurrentFloorLevel = 1;
-        sCurrentFloor = sDungeonDefinition.mFloors.get(sCurrentFloorLevel-1);
+        sCurrentFloor = sDungeonDefinition.getFloor(sCurrentFloorLevel-1);
         sGameMap = generateMap(sCurrentFloor);
     }
     
@@ -58,18 +57,18 @@ public class Dungeon {
     }
     
     public TMXTiledMap getTmxMap() {
-        return Map.getTmxTiledMap(sGameMap);
+        return sGameMap.getTmxTiledMap();
     }
     
     public DungeonFloor getCurrentFloor() { return sCurrentFloor; }
     
     public int getCurrentFloorLevel() { return sCurrentFloorLevel; }
 
-    public TMXLayer getSprite() {
-        TMXLayer layer = Map.getTmxTiledMap(sGameMap).getTMXLayers().get(0);
-        layer.setScaleCenter(0, 0);
-        layer.setScale(RoguelikeActivity.sScaleX, RoguelikeActivity.sScaleY);
-        return layer;
+    public TMXLayer getSprite(int layer) {
+        TMXLayer l = sGameMap.getTmxTiledMap().getTMXLayers().get(layer);
+        l.setScaleCenter(0, 0);
+        l.setScale(RoguelikeActivity.sScaleX, RoguelikeActivity.sScaleY);
+        return l;
     }
     
     public ArrayList<DungeonMonsterTemplate> getMonsterList() { return sCurrentFloor.mMonsters; }
@@ -111,8 +110,8 @@ public class Dungeon {
     // ===========================================================
     
     private static GameMap generateMap(DungeonFloor floor) {
-        GameMap map = new GameMap(floor);
-        map.addTileset(sDungeonDefinition.getTileset(floor));
+        GameMap map = new GameMap(floor, sDungeonDefinition.getDungeonTileset(floor));
+        //map.addTileset(sDungeonDefinition.getTmxTileset(floor));
         map.generateMap();
         return map;
     }

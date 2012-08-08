@@ -38,6 +38,18 @@ public class DungeonFloor {
     @Attribute(name="room_padding")
     public int mRoomPadding;
     
+    @Attribute(name="min_h_path")
+    public int mMinHorizontalPathSize;
+    
+    @Attribute(name="max_h_path")
+    public int mMaxHorizontalPathSize;
+    
+    @Attribute(name="min_v_path")
+    public int mMinVerticalPathSize;
+    
+    @Attribute(name="max_v_path")
+    public int mMaxVerticalPathSize;
+    
     @ElementList(name="rarity", inline=true)
     public ArrayList<DungeonRarityValue> mRarityValues;
     

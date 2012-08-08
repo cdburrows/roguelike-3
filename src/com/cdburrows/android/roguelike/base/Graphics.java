@@ -107,8 +107,7 @@ public class Graphics {
         
         sLastImagePath = imagePath;
         sLastTextureRegion = texture;
-        
-        //Log.d("GRAPHICS", "Image: " + imagePath + " Width: " + texture.getWidth() + ", Height: " + texture.getHeight());
+
         return sprite;
     }
     

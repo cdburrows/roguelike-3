@@ -41,7 +41,7 @@ public class Monster {
     public Monster(DungeonMonsterTemplate template) {
         mSprite = template.getSprite();
         mName = template.getId();
-        mLevel = sRand.nextInt(template.getMaxLevel() - template.getMinLevel()) + template.getMinLevel();
+        mLevel = (int)(sRand.nextFloat() * (template.getMaxLevel() - template.getMinLevel() + 1) + template.getMinLevel());
         mMaxHP = sRand.nextInt(template.getMaxHP() - template.getMinHP()) + template.getMinHP();
         mCurHP = mMaxHP;
         mAttack = sRand.nextInt(template.getMaxAttack() - template.getMinAttack()) + template.getMinAttack();
