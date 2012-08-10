@@ -19,6 +19,14 @@ public class GameMap /*extends Map*/ {
     //private static final int TILE_FLOOR = 31;
     public static final int TILE_STAIRS_DOWN = 34;
     //private static final float MAX_DEPTH = 10;
+    private static final int TILE_NW = 1;
+    private static final int TILE_N = 1;
+    private static final int TILE_NE = 2;
+    private static final int TILE_W = 2;
+    private static final int TILE_E = 4;
+    private static final int TILE_SW = 4;
+    private static final int TILE_S = 8;
+    private static final int TILE_SE = 8;
 
     public int mRoomWidth = 11;
     public int mRoomHeight = 9;
@@ -32,6 +40,7 @@ public class GameMap /*extends Map*/ {
     private int mNumRoomsX;
     private int mNumRoomsY;
     private float mChestSpawnRate;
+    private float mErodeRate;
     //private float mDepth;
     
     private int mMinHorPathSize;
@@ -62,6 +71,7 @@ public class GameMap /*extends Map*/ {
         mNumRoomsX = floor.mCols / mRoomWidth;
         mNumRoomsY = floor.mRows / mRoomHeight;
         mChestSpawnRate = floor.mChestSpawnRate;
+        mErodeRate = floor.getErode();
         //mDepth = floor.mDepth;
         
         mMinHorPathSize = floor.mMinHorizontalPathSize;
@@ -123,47 +133,108 @@ public class GameMap /*extends Map*/ {
         
         // Touch up wall edges
         /*
-        for (int y = 1; y < mMap.getHeight()-1; y++) {
-            for (int x = 1; x < mMap.getWidth()-1; x++) {
-                if (mTileset.isFloorTile(mData.get(0)[y * mMap.getWidth() + x])) {
+        int d = 0, c = 0;
+        for (int y = 0; y < mMap.getHeight(); y++) {
+            for (int x = 0; x < mMap.getWidth(); x++) {
+                if (mTileset.isWallTile(mData.get(0)[y * mMap.getWidth() + x])) {
+                    d = 0;
+                    c = 0;
+                    if (mTileset.isFloorTile(getTile(x, y-1)))   c = (c | TILE_N);
+                    if (mTileset.isFloorTile(getTile(x-1, y)))   c = (c | TILE_W);
+                    if (mTileset.isFloorTile(getTile(x+1, y)))   c = (c | TILE_E);
+                    if (mTileset.isFloorTile(getTile(x, y+1)))   c = (c | TILE_S);
                     
-                    if (mData.get(0)[(y+1) * mMap.getWidth() + x] == mTileset.getWallTile() &&
-                            mData.get(0)[(y) * mMap.getWidth() + (x-1)] == mTileset.getWallTile() &&
-                            mData.get(0)[(y) * mMap.getWidth() + (x+1)] == mTileset.getWallTile()) {
-                        mData.get(1)[y * mMap.getWidth() + x] = mTileset.getWallDownLeftRightTile();
+                    if (mTileset.isFloorTile(getTile(x-1, y-1))) d = (d | TILE_NW);
+                    if (mTileset.isFloorTile(getTile(x+1, y-1))) d = (d | TILE_NE);
+                    if (mTileset.isFloorTile(getTile(x-1, y+1))) d = (d | TILE_SW);
+                    if (mTileset.isFloorTile(getTile(x+1, y+1))) d = (d | TILE_SE);
+
+                    if (c == 0) {                      
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallFillTile();
+                    
+  
+                    } else if (c == (TILE_W | TILE_N | TILE_E) )  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallInNTile();
                         
-                    } else if (mData.get(0)[(y+1) * mMap.getWidth() + x] == mTileset.getWallTile() &&
-                            mData.get(0)[(y) * mMap.getWidth() + (x-1)] == mTileset.getWallTile()) {
-                        mData.get(1)[y * mMap.getWidth() + x] = mTileset.getWallDownLeftTile();
+                    } else if (c == (TILE_S | TILE_N | TILE_E) )  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallInETile();
                         
-                    } else if (mData.get(0)[(y+1) * mMap.getWidth() + x] == mTileset.getWallTile() &&
-                            mData.get(0)[(y) * mMap.getWidth() + (x+1)] == mTileset.getWallTile()) {
-                        mData.get(1)[y * mMap.getWidth() + x] = mTileset.getWallDownRightTile();
+                    } else if (c == (TILE_W | TILE_S | TILE_E) )  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallInSTile();
                         
-                    } else if (mData.get(0)[(y) * mMap.getWidth() + x-1] == mTileset.getWallTile() &&
-                            mData.get(0)[(y) * mMap.getWidth() + (x+1)] == mTileset.getWallTile()) {
-                        mData.get(1)[y * mMap.getWidth() + x] = mTileset.getWallLeftRightTile();
+                    } else if (c == (TILE_W | TILE_N | TILE_S) )  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallInWTile();
                         
-                    } else if (mData.get(0)[(y) * mMap.getWidth() + (x+1)] == mTileset.getWallTile()) {
-                        mData.get(1)[y * mMap.getWidth() + x] = mTileset.getWallLeftTile();
                         
-                    } else if (mData.get(0)[(y) * mMap.getWidth() + (x-1)] == mTileset.getWallTile()) {
-                        mData.get(1)[y * mMap.getWidth() + x] = mTileset.getWallRightTile();
-                    } else if (mData.get(0)[(y+1) * mMap.getWidth() + x] == mTileset.getWallTile()) {
-                        mData.get(1)[y * mMap.getWidth() + x] = mTileset.getWallDownTile();
-                    }
-                
-                    if (mData.get(0)[(y-1) * mMap.getWidth() + x] == mTileset.getWallTile()) {
-                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallUpTile();
+                    } else if (c == (TILE_N | TILE_E) && (d & TILE_NE) == TILE_NE)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallNETile();
+                        
+                    } else if (c == (TILE_S | TILE_E) && (d & TILE_SE) == TILE_SE)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallSETile();
+                    
+                    } else if (c == (TILE_S | TILE_W) && (d & TILE_SW) == TILE_SW)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallSWTile();
+                        
+                    } else if (c == (TILE_N | TILE_W) && (d & TILE_NW) == TILE_NW)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallNWTile();
+                        
+                        
+                    } else if (c == (TILE_N | TILE_E) )  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallNETile();
+                        
+                    } else if (c == (TILE_S | TILE_E) )  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallSETile();
+                    
+                    } else if (c == (TILE_S | TILE_W) )  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallSWTile();
+                        
+                    } else if (c == (TILE_N | TILE_W) )  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallNWTile();
+                        
+                        
+                    } else if (c == TILE_N)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallNTile();
+                    
+                    } else if (c == TILE_E)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallETile();
+                        
+                    } else if (c == TILE_S)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallSTile();
+                        
+                    } else if (c == TILE_W)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallWTile();
+                    
+                        
+                    } else if (d == TILE_SE)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallWTile();
+                    
+                    } else if (d == TILE_SW)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallETile();
+                        
+                    } else if (d == TILE_NE)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallSTile();
+                        
+                    } else if (d == TILE_NW)  {
+                        mData.get(0)[y * mMap.getWidth() + x] = mTileset.getWallWTile();
+                        
                     }
                 }
             }
         }
-        */
+        */           
+                     
         
         mMap.build(mData);
     }
     
+    private int getTile(int x, int y) {
+        if (x < 0) return mTileset.getWallTile();
+        if (y < 0) return mTileset.getWallTile();
+        if (x >= mMap.getWidth()) return mTileset.getWallTile();
+        if (y >= mMap.getHeight()) return mTileset.getWallTile();
+        return mData.get(0)[y * mMap.getWidth() + x];
+    }
+
     /*
     protected void placeRoom(int[] data, int x, int y) {
         for (int i = mRoomPadding; i < mRoomHeight - mRoomPadding; i++) {
@@ -244,7 +315,8 @@ public class GameMap /*extends Map*/ {
             int destY = dest.mY + (mRoomHeight / 2);
             
             for (int i = 0; i < Math.abs(destX - srcX); i++) {             
-                int pathSize = sRand.nextInt(mMaxHorPathSize - mMinHorPathSize)+mMinHorPathSize;
+                int pathSize = 1;
+                if (mMaxHorPathSize - mMinHorPathSize > 0) pathSize = sRand.nextInt(mMaxVertPathSize - mMinVertPathSize) + mMinVertPathSize;
                 int offset = sRand.nextInt(pathSize);
                         
                 if (mData.get(0)[(srcY * mMap.getWidth()) + srcX + i] != mTileset.getFloorTile()) {
@@ -256,11 +328,11 @@ public class GameMap /*extends Map*/ {
                 }
             }
             
-            for (int i = 0; i < Math.abs(destY - srcY); i++) {             
-                int pathSize = sRand.nextInt(mMaxVertPathSize - mMinVertPathSize)+mMinVertPathSize;
-                int offset = 1;
-                if (pathSize > mMinVertPathSize)
-                    offset = sRand.nextInt(pathSize - mMinVertPathSize);
+            for (int i = 0; i < Math.abs(destY - srcY); i++) {     
+                
+                int pathSize = 1;
+                if (mMaxVertPathSize - mMinVertPathSize > 0) pathSize = sRand.nextInt(mMaxVertPathSize - mMinVertPathSize) + mMinVertPathSize;
+                int offset = sRand.nextInt(pathSize);
                         
                 if (mData.get(0)[((srcY+i) * mMap.getWidth()) + srcX] != mTileset.getFloorTile()) {
                     mData.get(0)[((srcY+i) * mMap.getWidth()) + srcX - (pathSize + offset)] = mTileset.getWallTile();
@@ -287,35 +359,34 @@ public class GameMap /*extends Map*/ {
             }
             
             // Degrade walls
-            /*
             for (int k = 0; k < 2; k++) {
                 for (int i = mRoomPadding; i < mRoomHeight - mRoomPadding; i++) {
                     for (int j = mRoomPadding; j < mRoomWidth - mRoomPadding; j++) {
                         if (i == mRoomPadding+k || i == mRoomHeight-1-mRoomPadding-k 
                                 || j == mRoomPadding+k || j == mRoomWidth-1-mRoomPadding-k) {
-                            if (sRand.nextFloat() < (0.5f / k)) {
+                            if (sRand.nextFloat() < (mErodeRate / k)) {
                                 mData.get(0)[(mY+i) * mMap.getWidth() + (mX+j)] = mTileset.getWallTile();
                             }
                         }
                     }
                 }
             }
-            */
             
             // Place features
-            /*
+            int feature;
             for (int i = mRoomPadding; i < mRoomHeight - mRoomPadding; i++) {
                 for (int j = mRoomPadding; j < mRoomWidth - mRoomPadding; j++) {
                     if (mData.get(0)[(mY+i) * mMap.getWidth() + (mX+j)] == mTileset.getFloorTile() &&
                             mData.get(1)[(mY+i) * mMap.getWidth() + (mX+j)] == 0) {
                         if (sRand.nextFloat() < 0.2f) {
                             //ArrayList<Integer> features = mTileset.getFeatures();
-                            mData.get(0)[(mY+i) * mMap.getWidth() + (mX+j)] = mTileset.getRandomFeature();
+                            feature = mTileset.getRandomFeature();
+                            if (feature > 0)
+                                mData.get(0)[(mY+i) * mMap.getWidth() + (mX+j)] = feature;
                         }
                     }
                 }
             }
-            */
             
             /*
             if (mHasStairsDown) {

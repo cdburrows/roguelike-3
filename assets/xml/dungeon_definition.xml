@@ -3,17 +3,20 @@
 <dungeon_definition>
     
     <tileset name="forest_tiles" path="gfx/forest_tiles.png" tile_height="32" tile_width="32" 
-        floor="1" wall="2" wall_up="3" wall_right="4" wall_down="5" wall_left="6" 
-        wall_downright="7" wall_downleft="8" wall_downleftright="9" wall_leftright="10" 
-        feature_start="11" feature_end="16"/>
+        wall="1" feature_start="5" feature_end="8"/>
     
     <tileset name="dungeon_tiles" path="gfx/dungeon_tiles.png" tile_height="32" tile_width="32" 
-        floor="31" wall="0" wall_up="3" wall_right="3" wall_down="3" wall_left="3"
-        wall_downright="3" wall_downleft="3" wall_downleftright="3" wall_leftright="3"/>
-           
-    <floor tileset="forest_tiles" depth="1" cols="88" rows="63" room_width="11" room_height="9" room_padding="1"
-        battle_bg="dungeon_bg_320.png" monster_spawn_rate = "0.0f" chest_spawn_rate = "0.10f"
-        min_v_path="3" max_v_path="5" min_h_path="1" max_h_path="3">
+        wall="1" feature_start="0" feature_end="0"/>
+    
+    <!--  
+    <floor tileset="forest_tiles" depth="1" cols="88" rows="63" room_width="11" room_height="9" room_padding="2"
+        battle_bg="dungeon_bg_320.png" monster_spawn_rate = "0.0f" chest_spawn_rate = "0.00f"
+        min_v_path="1" max_v_path="3" min_h_path="1" max_h_path="3">
+    -->
+        
+    <floor tileset="dungeon_tiles" depth="1" cols="88" rows="63" room_width="11" room_height="9" room_padding="2"
+        battle_bg="dungeon_bg_320.png" monster_spawn_rate = "0.0f" chest_spawn_rate = "0.00f"
+        min_v_path="1" max_v_path="1" min_h_path="1" max_h_path="1" erode="0.1f">
       
         <rarity id="0" rate="20"/>
         <rarity id="1" rate="50"/>

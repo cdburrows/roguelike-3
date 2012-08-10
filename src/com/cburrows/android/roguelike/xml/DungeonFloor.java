@@ -50,6 +50,11 @@ public class DungeonFloor {
     @Attribute(name="max_v_path")
     public int mMaxVerticalPathSize;
     
+    @Attribute(name="erode", required=false)
+    public float mErode = 0.35f;
+    
+    public float getErode() { return mErode; }
+    
     @ElementList(name="rarity", inline=true)
     public ArrayList<DungeonRarityValue> mRarityValues;
     

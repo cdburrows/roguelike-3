@@ -23,6 +23,8 @@ import com.cdburrows.android.roguelike.base.RoguelikeActivity;
 @Root(name="tileset")
 public class DungeonTileset {
     
+    public static final int TILE_COLS = 8;
+    
     static Random sRand = new Random();
     
     @Attribute(name="name")
@@ -37,35 +39,11 @@ public class DungeonTileset {
     @Attribute(name="tile_width")
     public int mTileWidth;   
     
-    @Attribute(name="floor")
-    public int mFloorTile;
+    //@Attribute(name="floor")
+    //public int mFloorTile;
     
     @Attribute(name="wall")
     public int mWallTile;
-    
-    @Attribute(name="wall_up")
-    public int mWallUpTile;
-    
-    @Attribute(name="wall_right")
-    public int mWallRightTile;
-    
-    @Attribute(name="wall_down")
-    public int mWallDownTile;
-    
-    @Attribute(name="wall_left")
-    public int mWallLeftTile;
-    
-    @Attribute(name="wall_downleft")
-    public int mWallDownLeftTile;
-    
-    @Attribute(name="wall_downright")
-    public int mWallDownRightTile;
-    
-    @Attribute(name="wall_downleftright")
-    public int mWallDownLeftRightTile;
-    
-    @Attribute(name="wall_leftright")
-    public int mWallLeftRightTile;
     
     @Attribute(name="feature_start", required=false)
     public int mFeatureStart;
@@ -73,15 +51,67 @@ public class DungeonTileset {
     @Attribute(name="feature_end", required=false)
     public int mFeatureEnd;
     
-    
     public int getFloorTile() {
-        return mFloorTile;
+        return mWallTile + (5 * TILE_COLS) + 1; 
     }
 
     public int getWallTile() {
         return mWallTile;
     }
     
+    public int getWallNWTile() {
+        return mWallTile + (1 * TILE_COLS) + 0;
+    }
+    
+    public int getWallNTile() {
+        return mWallTile + (1 * TILE_COLS) + 1;
+    }
+    
+    public int getWallNETile() {
+        return mWallTile + (1 * TILE_COLS) + 2;
+    }
+    
+    public int getWallWTile() {
+        return mWallTile + (2 * TILE_COLS) + 0;
+    }
+    
+    public int getWallFillTile() {
+        return mWallTile + (2 * TILE_COLS) + 1;
+    }
+    
+    public int getWallETile() {
+        return mWallTile + (2 * TILE_COLS) + 2;
+    }
+    
+    public int getWallSWTile() {
+        return mWallTile + (3 * TILE_COLS) + 0;
+    }
+    
+    public int getWallSTile() {
+        return mWallTile + (3 * TILE_COLS) + 1;
+    }
+    
+    public int getWallSETile() {
+        return mWallTile + (3 * TILE_COLS) + 2;
+    }
+    
+    public int getWallInNTile() {
+        return mWallTile + (4 * TILE_COLS) + 1;
+    }
+    
+    public int getWallInETile() {
+        return mWallTile + (5 * TILE_COLS) + 2;
+    }
+    
+    public int getWallInSTile() {
+        return mWallTile + (6 * TILE_COLS) + 1;
+    }
+    
+    public int getWallInWTile() {
+        return mWallTile + (5 * TILE_COLS) + 0;
+    }
+    
+    /*
     public int getWallUpTile() {
         return mWallUpTile;
     }
@@ -113,8 +143,17 @@ public class DungeonTileset {
     public int getWallLeftRightTile() {
         return mWallLeftRightTile;
     }
+    */
     
-    public int getRandomFeature() { return sRand.nextInt(mFeatureEnd - mFeatureStart) + mFeatureStart; }
+    public void halveTileSize() {
+        mTileHeight /= 2;
+        mTileWidth /= 2;
+    }
+    
+    public int getRandomFeature() { 
+        if (mFeatureEnd < 1) return 0; 
+        return sRand.nextInt(mFeatureEnd - mFeatureStart) + mFeatureStart; 
+    }
     
     public Tileset toTmx() {
         try {
@@ -129,10 +168,16 @@ public class DungeonTileset {
             e.printStackTrace();
         }
         return null;
-    }
-
+    }    
+    
     public boolean isFloorTile(int i) {
-        return (i == mFloorTile || (i >= mFeatureStart && i <= mFeatureEnd));
+        return (i == getFloorTile() || (i >= mFeatureStart && i <= mFeatureEnd));
+    }
+    
+    public boolean isWallTile(int i) {
+        return (i == mWallTile || i == getWallNWTile() || i == getWallNTile() || i == getWallNETile()
+                               || i == getWallWTile() || i == getWallFillTile() || i == getWallETile()
+                               || i == getWallSWTile() || i == getWallSTile() || i == getWallSETile());
     }
 }
     

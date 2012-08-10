@@ -32,6 +32,9 @@ public class DungeonDefinition {
         Serializer serializer = new Persister();
         try {
             DungeonDefinition dungeon = serializer.read(DungeonDefinition.class, source);
+            
+            for (DungeonTileset 
+            
             return dungeon;
         } catch (Exception e) {
             e.printStackTrace();
