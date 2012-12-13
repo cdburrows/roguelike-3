@@ -5,7 +5,7 @@
 	<classpathentry kind="src" path="assets"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="libs/andengine.jar"/>
-	<classpathentry kind="lib" path="libs/simple-xml-2.6.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/andengine.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/simple-xml-2.6.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

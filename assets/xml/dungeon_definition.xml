@@ -8,15 +8,16 @@
     <tileset name="dungeon_tiles" path="gfx/dungeon_tiles.png" tile_height="32" tile_width="32" 
         wall="1" feature_start="0" feature_end="0"/>
     
-    <!--  
+    
     <floor tileset="forest_tiles" depth="1" cols="88" rows="63" room_width="11" room_height="9" room_padding="2"
-        battle_bg="dungeon_bg_320.png" monster_spawn_rate = "0.0f" chest_spawn_rate = "0.00f"
+        battle_bg="dungeon_bg_320.png" monster_spawn_rate = "0.20f" chest_spawn_rate = "0.00f"
         min_v_path="1" max_v_path="3" min_h_path="1" max_h_path="3">
-    -->
-        
+    
+        <!--  
     <floor tileset="dungeon_tiles" depth="1" cols="88" rows="63" room_width="11" room_height="9" room_padding="2"
         battle_bg="dungeon_bg_320.png" monster_spawn_rate = "0.0f" chest_spawn_rate = "0.00f"
         min_v_path="1" max_v_path="1" min_h_path="1" max_h_path="1" erode="0.1f">
+        -->
       
         <rarity id="0" rate="20"/>
         <rarity id="1" rate="50"/>

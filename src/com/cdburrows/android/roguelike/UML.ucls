@@ -1,0 +1,896 @@
+<class-diagram version="1.0.11" icons="true" automaticImage="PNG" always-add-relationships="false" 
+  generalizations="true" realizations="true" associations="true" dependencies="false" nesting-relationships="true">  
+  <enumeration id="1" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.Event" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/Event.java" binary="false">    
+    <position height="-1" width="-1" x="1035" y="656"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <class id="2" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.RoguelikeActivity" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/RoguelikeActivity.java" binary="false">    
+    <position height="-1" width="-1" x="1495" y="498"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <enumeration id="3" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.Direction" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/Direction.java" binary="false">    
+    <position height="-1" width="-1" x="1203" y="1220"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <interface id="4" corner="BOTTOM_RIGHT" language="java" 
+    name="com.cdburrows.android.roguelike.LoadingGameActivity.IAsyncCallback" project="Roguelike" 
+    file="/Roguelike/src/com/cdburrows/android/roguelike/LoadingGameActivity.java" binary="false">    
+    <position height="-1" width="-1" x="1776" y="218"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="5" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.LoadingGameActivity" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/LoadingGameActivity.java" binary="false">    
+    <position height="-1" width="-1" x="1479" y="341"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="6" corner="BOTTOM_RIGHT" language="java" 
+    name="com.cdburrows.android.roguelike.LoadingGameActivity.AsyncTaskLoader" project="Roguelike" 
+    file="/Roguelike/src/com/cdburrows/android/roguelike/LoadingGameActivity.java" binary="false">    
+    <position height="-1" width="-1" x="1692" y="347"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="7" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.audio.AudioManager" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/audio/AudioManager.java" binary="false">    
+    <position height="-1" width="-1" x="203" y="605"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="8" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.graphics.Graphics" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/graphics/Graphics.java" binary="false">    
+    <position height="-1" width="-1" x="205" y="682"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="9" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.item.ItemFactory" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/item/ItemFactory.java" binary="false">    
+    <position height="-1" width="-1" x="220" y="325"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="10" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.item.Item" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/item/Item.java" binary="false">    
+    <position height="-1" width="-1" x="931" y="1331"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="11" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.item.XmlItemDefinitions" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/item/XmlItemDefinitions.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="224" y="419"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="12" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.item.XmlItemDefinition" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/item/XmlItemDefinition.java" binary="false">    
+    <position height="-1" width="-1" x="287" y="520"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="13" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.item.XmlDungeonRarityValue" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/item/XmlDungeonRarityValue.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="2078" y="1168"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="14" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.item.XmlItemRarity" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/item/XmlItemRarity.java" binary="false">    
+    <position height="-1" width="-1" x="111" y="520"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="15" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.map.Dungeon" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/map/Dungeon.java" binary="false">    
+    <position height="-1" width="-1" x="1831" y="624"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="16" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.map.XmlDungeonFloor" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/map/XmlDungeonFloor.java" binary="false">    
+    <position height="-1" width="-1" x="2075" y="1060"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <enumeration id="17" corner="BOTTOM_RIGHT" language="java" 
+    name="com.cdburrows.android.roguelike.map.GameMap.RoomState" project="Roguelike" 
+    file="/Roguelike/src/com/cdburrows/android/roguelike/map/GameMap.java" binary="false">    
+    <position height="-1" width="-1" x="1525" y="894"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <class id="18" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.map.XmlDungeonDefinition" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/map/XmlDungeonDefinition.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1890" y="962"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="19" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.map.GameMap.Room" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/map/GameMap.java" binary="false">    
+    <position height="-1" width="-1" x="1331" y="992"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="20" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.map.GameMap" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/map/GameMap.java" binary="false">    
+    <position height="-1" width="-1" x="1554" y="729"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="21" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.map.XmlDungeonTileset" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/map/XmlDungeonTileset.java" binary="false">    
+    <position height="-1" width="-1" x="1720" y="827"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <enumeration id="22" corner="BOTTOM_RIGHT" language="java" 
+    name="com.cdburrows.android.roguelike.monster.Monster.MonsterState" project="Roguelike" 
+    file="/Roguelike/src/com/cdburrows/android/roguelike/monster/Monster.java" binary="false">    
+    <position height="-1" width="-1" x="936" y="333"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <class id="23" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.monster.MonsterFactory" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/monster/MonsterFactory.java" binary="false">    
+    <position height="-1" width="-1" x="1821" y="1162"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="24" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.monster.Monster" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/monster/Monster.java" binary="false">    
+    <position height="-1" width="-1" x="686" y="341"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="25" corner="BOTTOM_RIGHT" language="java" 
+    name="com.cdburrows.android.roguelike.monster.XmlDungeonMonsterTemplate" project="Roguelike" 
+    file="/Roguelike/src/com/cdburrows/android/roguelike/monster/XmlDungeonMonsterTemplate.java" binary="false">    
+    <position height="-1" width="-1" x="1814" y="1059"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="26" corner="BOTTOM_RIGHT" language="java" 
+    name="com.cdburrows.android.roguelike.player.Animation.UpdateHandler" project="Roguelike" 
+    file="/Roguelike/src/com/cdburrows/android/roguelike/player/Animation.java" binary="false">    
+    <position height="-1" width="-1" x="382" y="111"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="27" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.player.Animation" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/player/Animation.java" binary="false">    
+    <position height="-1" width="-1" x="476" y="291"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="28" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.player.Player" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/player/Player.java" binary="false">    
+    <position height="-1" width="-1" x="909" y="1153"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="29" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.player.Animation.KeyFrame" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/player/Animation.java" binary="false">    
+    <position height="-1" width="-1" x="614" y="110"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <enumeration id="30" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.player.PlayerState" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/player/PlayerState.java" binary="false">    
+    <position height="-1" width="-1" x="1193" y="1141"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <class id="31" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.skill.Skill" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/skill/Skill.java" binary="false">    
+    <position height="-1" width="-1" x="576" y="1150"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <enumeration id="32" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.skill.SkillDirection" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/skill/SkillDirection.java" binary="false">    
+    <position height="-1" width="-1" x="247" y="1170"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <class id="33" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.skill.SkillManager" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/skill/SkillManager.java" binary="false">    
+    <position height="-1" width="-1" x="237" y="1053"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="34" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.skill.SkillContainer" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/skill/SkillContainer.java" binary="false">    
+    <position height="-1" width="-1" x="529" y="999"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="35" corner="BOTTOM_RIGHT" language="java" 
+    name="com.cdburrows.android.roguelike.scene.MainScene.UpdateHandler" project="Roguelike" 
+    file="/Roguelike/src/com/cdburrows/android/roguelike/scene/MainScene.java" binary="false">    
+    <position height="-1" width="-1" x="1004" y="846"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="36" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.scene.SceneManager" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/scene/SceneManager.java" binary="false">    
+    <position height="-1" width="-1" x="783" y="478"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <enumeration id="37" corner="BOTTOM_RIGHT" language="java" 
+    name="com.cdburrows.android.roguelike.scene.MainScene.SceneState" project="Roguelike" 
+    file="/Roguelike/src/com/cdburrows/android/roguelike/scene/MainScene.java" binary="false">    
+    <position height="-1" width="-1" x="1123" y="765"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <class id="38" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.scene.MainScene" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/scene/MainScene.java" binary="false">    
+    <position height="-1" width="-1" x="867" y="708"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="39" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.scene.BaseScene" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/scene/BaseScene.java" binary="false">    
+    <position height="-1" width="-1" x="794" y="611"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="40" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.scene.BattleScene" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/scene/BattleScene.java" binary="false">    
+    <position height="-1" width="-1" x="489" y="610"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="41" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.scene.StatusScene" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/scene/StatusScene.java" binary="false">    
+    <position height="-1" width="-1" x="671" y="704"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="42" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.tmx.TmxTile" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/tmx/TmxTile.java" binary="false">    
+    <position height="-1" width="-1" x="1418" y="1129"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="43" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.tmx.TmxImage" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/tmx/TmxImage.java" binary="false">    
+    <position height="-1" width="-1" x="1621" y="1311"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="44" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.tmx.TmxLayer" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/tmx/TmxLayer.java" binary="false">    
+    <position height="-1" width="-1" x="1418" y="1220"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="45" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.tmx.TmxMap" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/tmx/TmxMap.java" binary="false">    
+    <position height="-1" width="-1" x="1621" y="1129"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="46" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.tmx.TmxData" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/tmx/TmxData.java" binary="false">    
+    <position height="-1" width="-1" x="1418" y="1311"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="47" corner="BOTTOM_RIGHT" language="java" name="com.cdburrows.android.roguelike.tmx.TmxTileset" 
+    project="Roguelike" file="/Roguelike/src/com/cdburrows/android/roguelike/tmx/TmxTileset.java" binary="false">    
+    <position height="-1" width="-1" x="1621" y="1220"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <association id="48">    
+    <bendpoint x="823" y="533"/>    
+    <end type="SOURCE" refId="36" navigable="false">      
+      <attribute id="49" name="mScenes"/>      
+      <multiplicity id="50" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="39" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="51">    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="52" name="sMonsterList"/>      
+      <multiplicity id="53" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="25" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="54">    
+    <end type="SOURCE" refId="38"/>    
+    <end type="TARGET" refId="39"/>  
+  </generalization>  
+  <association id="55">    
+    <bendpoint x="1924" y="1018"/>    
+    <end type="SOURCE" refId="18" navigable="false">      
+      <attribute id="56" name="mFloors"/>      
+      <multiplicity id="57" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="16" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="58">    
+    <end type="SOURCE" refId="44" navigable="false">      
+      <attribute id="59" name="data"/>      
+      <multiplicity id="60" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="46" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="61">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="29"/>  
+  </nesting>  
+  <association id="62">    
+    <end type="SOURCE" refId="38" navigable="false">      
+      <attribute id="63" name="sSceneState"/>      
+      <multiplicity id="64" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="37" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="65">    
+    <end type="SOURCE" refId="38"/>    
+    <end type="TARGET" refId="35"/>  
+  </nesting>  
+  <nesting id="66">    
+    <end type="SOURCE" refId="38"/>    
+    <end type="TARGET" refId="37"/>  
+  </nesting>  
+  <association id="67">    
+    <end type="SOURCE" refId="31" navigable="false">      
+      <attribute id="68" name="mComboList"/>      
+      <multiplicity id="69" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="32" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="70">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="71" name="sMainScene"/>      
+      <multiplicity id="72" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="39" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="73">    
+    <end type="SOURCE" refId="36" navigable="false">      
+      <attribute id="74" name="mNextScene"/>      
+      <multiplicity id="75" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="39" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="76">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="77" name="sDungeon"/>      
+      <multiplicity id="78" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="79">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="80" name="mItemRarityList"/>      
+      <multiplicity id="81" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="82">    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="83" name="mParentMap"/>      
+      <multiplicity id="84" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="20" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="85">    
+    <bendpoint x="905" y="1158"/>    
+    <bendpoint x="885" y="1196"/>    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="86" name="mWeapon"/>      
+      <multiplicity id="87" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="88">    
+    <end type="SOURCE" refId="20" navigable="false">      
+      <attribute id="89" name="mRooms"/>      
+      <multiplicity id="90" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="91">    
+    <end type="SOURCE" refId="38" navigable="false">      
+      <attribute id="92" name="sPlayer"/>      
+      <multiplicity id="93" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="28" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="94">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="4"/>  
+  </nesting>  
+  <association id="95">    
+    <end type="SOURCE" refId="45" navigable="false">      
+      <attribute id="96" name="layer"/>      
+      <multiplicity id="97" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="44" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="98">    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="99" name="mKeyFrames"/>      
+      <multiplicity id="100" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="29" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="101">    
+    <end type="SOURCE" refId="24"/>    
+    <end type="TARGET" refId="22"/>  
+  </nesting>  
+  <association id="102">    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="103" name="sDungeonDefinition"/>      
+      <multiplicity id="104" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="18" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="105">    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="106" name="sSkills"/>      
+      <multiplicity id="107" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="31" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="108">    
+    <bendpoint x="624" y="910"/>    
+    <end type="SOURCE" refId="40" navigable="false">      
+      <attribute id="109" name="mPlayer"/>      
+      <multiplicity id="110" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="28" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="111">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="112" name="sPlayer"/>      
+      <multiplicity id="113" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="28" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="114">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="6"/>  
+  </nesting>  
+  <association id="115">    
+    <end type="SOURCE" refId="40" navigable="false">      
+      <attribute id="116" name="sScene"/>      
+      <multiplicity id="117" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="39" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="118">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="5"/>  
+  </generalization>  
+  <association id="119">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="120" name="mItemList"/>      
+      <multiplicity id="121" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="122">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="123" name="sContext"/>      
+      <multiplicity id="124" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="125">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="126" name="sMinimapScene"/>      
+      <multiplicity id="127" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="39" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="128">    
+    <end type="SOURCE" refId="40" navigable="false">      
+      <attribute id="129" name="mSlash"/>      
+      <multiplicity id="130" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="27" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="131">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="26"/>  
+  </nesting>  
+  <association id="132">    
+    <end type="SOURCE" refId="40" navigable="false">      
+      <attribute id="133" name="mMonster"/>      
+      <multiplicity id="134" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="24" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="135">    
+    <end type="SOURCE" refId="33" navigable="false">      
+      <attribute id="136" name="sToRemove"/>      
+      <multiplicity id="137" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="34" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="138">    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="139" name="mPlayerState"/>      
+      <multiplicity id="140" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="30" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="141">    
+    <end type="SOURCE" refId="41" navigable="false">      
+      <attribute id="142" name="sPlayer"/>      
+      <multiplicity id="143" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="28" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="144">    
+    <end type="SOURCE" refId="38" navigable="false">      
+      <attribute id="145" name="sDungeon"/>      
+      <multiplicity id="146" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="147">    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="148" name="mArmour"/>      
+      <multiplicity id="149" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="150">    
+    <end type="SOURCE" refId="18" navigable="false">      
+      <attribute id="151" name="mTilesets"/>      
+      <multiplicity id="152" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="153">    
+    <end type="SOURCE" refId="33" navigable="false">      
+      <attribute id="154" name="sSkills"/>      
+      <multiplicity id="155" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="31" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="156">    
+    <end type="SOURCE" refId="45" navigable="false">      
+      <attribute id="157" name="tileset"/>      
+      <multiplicity id="158" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="47" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="159">    
+    <end type="SOURCE" refId="33" navigable="false">      
+      <attribute id="160" name="sValidCombos"/>      
+      <multiplicity id="161" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="34" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="162">    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="163" name="sGameMap"/>      
+      <multiplicity id="164" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="20" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="165">    
+    <bendpoint x="854" y="1336"/>    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="166" name="mWeaponList"/>      
+      <multiplicity id="167" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="168">    
+    <end type="SOURCE" refId="47" navigable="false">      
+      <attribute id="169" name="image"/>      
+      <multiplicity id="170" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="43" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="171">    
+    <end type="SOURCE" refId="20" navigable="false">      
+      <attribute id="172" name="mTileset"/>      
+      <multiplicity id="173" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="174">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="175" name="sStatusScene"/>      
+      <multiplicity id="176" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="39" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="177">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="17"/>  
+  </nesting>  
+  <association id="178">    
+    <bendpoint x="1646" y="917"/>    
+    <end type="SOURCE" refId="20" navigable="false">      
+      <attribute id="179" name="mMap"/>      
+      <multiplicity id="180" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="45" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="181">    
+    <end type="SOURCE" refId="38" navigable="false">      
+      <attribute id="182" name="sEvent"/>      
+      <multiplicity id="183" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="184">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="185" name="mItemDefinitions"/>      
+      <multiplicity id="186" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="187">    
+    <end type="SOURCE" refId="24" navigable="false">      
+      <attribute id="188" name="mMonsterState"/>      
+      <multiplicity id="189" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="22" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="190">    
+    <end type="SOURCE" refId="41"/>    
+    <end type="TARGET" refId="39"/>  
+  </generalization>  
+  <association id="191">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="192" name="sBattleScene"/>      
+      <multiplicity id="193" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="39" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="194">    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="195" name="mArmourList"/>      
+      <multiplicity id="196" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="197">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="198" name="mRarityValues"/>      
+      <multiplicity id="199" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="200">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="201" name="_params"/>      
+      <multiplicity id="202" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="203">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="204" name="mRoomState"/>      
+      <multiplicity id="205" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="206">    
+    <end type="SOURCE" refId="38" navigable="false">      
+      <attribute id="207" name="sScene"/>      
+      <multiplicity id="208" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="39" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="209">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="210" name="mMonsters"/>      
+      <multiplicity id="211" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="25" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="212">    
+    <end type="SOURCE" refId="40"/>    
+    <end type="TARGET" refId="39"/>  
+  </generalization>  
+  <association id="213">    
+    <bendpoint x="2075" y="961"/>    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="214" name="sCurrentFloor"/>      
+      <multiplicity id="215" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="16" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="216">    
+    <end type="SOURCE" refId="28" navigable="false">      
+      <attribute id="217" name="mDirection"/>      
+      <multiplicity id="218" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="219">    
+    <end type="SOURCE" refId="34" navigable="false">      
+      <attribute id="220" name="mSkill"/>      
+      <multiplicity id="221" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="31" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="222">    
+    <end type="SOURCE" refId="33" navigable="false">      
+      <attribute id="223" name="sActionQueue"/>      
+      <multiplicity id="224" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="32" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="225">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="19"/>  
+  </nesting>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    visibility="true">    
+    <attributes public="false" package="false" protected="false" private="false"/>    
+    <operations public="false" package="false" protected="false" private="false"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
