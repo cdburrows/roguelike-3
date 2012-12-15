@@ -155,5 +155,23 @@ public class TmxMap {
             e.printStackTrace();
         }
     }
+
+    public void build(int[] data) {
+        this.layer = new ArrayList<TmxLayer>();                         
+        for (int l = 0; l < 1; l++) {                 
+            TmxLayer newLayer = new TmxLayer("layer_" + l, width, height);
+            newLayer.setData(data);
+            layer.add(newLayer);
+        }
+    }
+    
+    public void build(int[][] data) {
+        this.layer = new ArrayList<TmxLayer>();                         
+        for (int l = 0; l < 1; l++) {                 
+            TmxLayer newLayer = new TmxLayer("layer_" + l, width, height);
+            newLayer.setData(data);
+            layer.add(newLayer);
+        }
+    }
     
 }

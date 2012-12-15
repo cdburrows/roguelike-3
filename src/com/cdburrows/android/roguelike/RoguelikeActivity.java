@@ -25,19 +25,33 @@
 
 package com.cdburrows.android.roguelike;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import android.content.res.AssetFileDescriptor;
+import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
+import bsh.EvalError;
+import bsh.Interpreter;
 
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.camera.BoundCamera;
 import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.entity.scene.Scene.IOnSceneTouchListener;
 import org.anddev.andengine.input.touch.TouchEvent;
+import org.mvel2.MVEL;
+import org.mvel2.util.Make;
 
 import com.cdburrows.android.roguelike.audio.Audio;
 import com.cdburrows.android.roguelike.graphics.Graphics;
 import com.cdburrows.android.roguelike.item.ItemFactory;
-import com.cdburrows.android.roguelike.map.Dungeon;
+import com.cdburrows.android.roguelike.map.DungeonManager;
 import com.cdburrows.android.roguelike.player.Player;
 import com.cdburrows.android.roguelike.scene.BaseScene;
 import com.cdburrows.android.roguelike.scene.BattleScene;
@@ -96,7 +110,7 @@ public class RoguelikeActivity extends LoadingGameActivity implements
     
     private static Player sPlayer;
     
-    public static Dungeon sDungeon;
+    public static DungeonManager sDungeon;
     
     public static boolean sMusicEnabled = false;
     public static boolean sSoundEnabled = false;
@@ -117,7 +131,7 @@ public class RoguelikeActivity extends LoadingGameActivity implements
     
     public static void setPlayer(Player player) { sPlayer = player; }
     
-    public static Dungeon getDungeon() { return sDungeon; }
+    public static DungeonManager getDungeon() { return sDungeon; }
     
     // ===========================================================
     // Inherited Methods
@@ -164,7 +178,7 @@ public class RoguelikeActivity extends LoadingGameActivity implements
         
         // Load the dungeon from definition file
         LoadingGameActivity.setLoadingText("Dungeon definition");
-        sDungeon = new Dungeon("dungeon_definition.xml");
+        sDungeon = new DungeonManager("dungeon_definition.xml");
         
         // Prepare our item factory by loading all the assets from
         // which every item is created

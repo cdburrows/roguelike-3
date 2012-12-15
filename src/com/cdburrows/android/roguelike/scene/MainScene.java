@@ -25,7 +25,7 @@ import com.cdburrows.android.roguelike.component.TextPanel;
 import com.cdburrows.android.roguelike.graphics.Graphics;
 import com.cdburrows.android.roguelike.item.Item;
 import com.cdburrows.android.roguelike.item.ItemFactory;
-import com.cdburrows.android.roguelike.map.Dungeon;
+import com.cdburrows.android.roguelike.map.DungeonManager;
 import com.cdburrows.android.roguelike.monster.MonsterFactory;
 import com.cdburrows.android.roguelike.player.Player;
 import com.cdburrows.android.roguelike.player.PlayerState;
@@ -67,7 +67,7 @@ public class MainScene extends BaseScene {
     
     private static HUD sHud;
     private static Player sPlayer;
-    private static Dungeon sDungeon;
+    private static DungeonManager sDungeon;
     private static Chest sChest;
     private static Event sEvent;
     
@@ -146,11 +146,11 @@ public class MainScene extends BaseScene {
               
         sDungeon = RoguelikeActivity.sDungeon;
         MonsterFactory.initialize(sDungeon.getMonsterList());
-        attachChild(RoguelikeActivity.sDungeon.getSprite(0));
+        attachChild(sDungeon.getSprite(0));
         
         sPlayer = RoguelikeActivity.getPlayer();
         sPlayer.setParentMap(sDungeon.getGameMap());
-        sPlayer.setRoom(0, 0);
+        sPlayer.setRoom(sDungeon.getStartX(), sDungeon.getStartY());
         sPlayer.setCurHP(80);
         attachChild(sPlayer.getAnimatedSprite());
         
@@ -322,15 +322,15 @@ public class MainScene extends BaseScene {
                                                
                 if (Math.abs(sTotalTouchOffsetX) >= TOUCH_SENSITIVITY) {
                     if (sTotalTouchOffsetX < 0) {
-                        sPlayer.move(Direction.DIRECTION_RIGHT, sPlayer.getTileWidth() * Dungeon.getRoomWidth());
+                        sPlayer.move(Direction.DIRECTION_RIGHT, sPlayer.getTileWidth() * DungeonManager.getRoomWidth());
                     } else if (sTotalTouchOffsetX > 0) {
-                        sPlayer.move(Direction.DIRECTION_LEFT, sPlayer.getTileWidth() * Dungeon.getRoomWidth());
+                        sPlayer.move(Direction.DIRECTION_LEFT, sPlayer.getTileWidth() * DungeonManager.getRoomWidth());
                     }
                 } else if (Math.abs(sTotalTouchOffsetY) >= TOUCH_SENSITIVITY) {
                     if (sTotalTouchOffsetY < 0) {
-                        sPlayer.move(Direction.DIRECTION_DOWN, sPlayer.getTileHeight() * Dungeon.getRoomHeight());
+                        sPlayer.move(Direction.DIRECTION_DOWN, sPlayer.getTileHeight() * DungeonManager.getRoomHeight());
                     } else if (sTotalTouchOffsetY > 0) {
-                        sPlayer.move(Direction.DIRECTION_UP, sPlayer.getTileHeight() * Dungeon.getRoomHeight());
+                        sPlayer.move(Direction.DIRECTION_UP, sPlayer.getTileHeight() * DungeonManager.getRoomHeight());
                     }
                 }
                 

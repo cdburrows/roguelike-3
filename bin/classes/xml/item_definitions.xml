@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<item_definitions image_path="weapon_icons.png" first_weapon="0" first_armour="25">
+    <item_rarity name="Broken">
+        <probability>10</probability>
+        <colour>gray</colour>
+        <num_properties>0</num_properties>
+        <stat_multiplier_min>0.4f</stat_multiplier_min>
+        <stat_multiplier_max>0.8f</stat_multiplier_max>
+    </item_rarity>     
+    <item_rarity name="">
+        <probability>70</probability>
+        <colour>white</colour>
+        <num_properties>0</num_properties>
+        <stat_multiplier_min>1.0f</stat_multiplier_min>
+        <stat_multiplier_max>1f</stat_multiplier_max>
+    </item_rarity>
+    <item_rarity name="Runed">
+        <probability>14</probability>
+        <colour>green</colour>
+        <num_properties>1</num_properties>
+        <stat_multiplier_min>1.5f</stat_multiplier_min>
+        <stat_multiplier_max>2.0f</stat_multiplier_max>
+    </item_rarity>
+    <item_rarity name="Magical">
+        <probability>5</probability>
+        <colour>blue</colour>
+        <num_properties>2</num_properties>
+        <stat_multiplier_min>2.0</stat_multiplier_min>
+        <stat_multiplier_max>3.0</stat_multiplier_max>
+    </item_rarity>
+    <item_rarity name="Epic">
+        <probability>1</probability>
+        <colour>yellow</colour>
+        <num_properties>3</num_properties>
+        <stat_multiplier_min>3.0f</stat_multiplier_min>
+        <stat_multiplier_max>5.0f</stat_multiplier_max>
+    </item_rarity>
+    
+    <item_definition name="Knife" index="0">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Dagger" index="1">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Blade" index="2">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Deadly Knife" index="3">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Assassin's Dagger" index="4">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Short Sword" index="5">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Long Sword" index="6">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Broadsword" index="7">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Holy Sword" index="8">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Deamon Sword" index="9">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Javalin" index="10">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Spear" index="11">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Glaive" index="12">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Hunter's Spear" index="13">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Trident" index="14">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Hatchet" index="15">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Double Axe" index="16">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Butcher's Axe" index="17">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Heavy Axe" index="18">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Gladiator" index="19">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Club" index="20">
+        <attack>16</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="CLudgel" index="21">
+        <attack>2</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Hammer" index="22">
+        <attack>4</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Mace" index="23">
+        <attack>7</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Heavy Mace" index="24">
+        <attack>11</attack>
+        <defense>0</defense>
+        <magic>0</magic>
+    </item_definition>
+    
+    
+    <item_definition name="Buckler" index="25">
+        <attack>0</attack>
+        <defense>2</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Copper Shield" index="26">
+        <attack>0</attack>
+        <defense>4</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Iron Shield" index="27">
+        <attack>0</attack>
+        <defense>7</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Steel Shield" index="28">
+        <attack>0</attack>
+        <defense>11</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Tower Shield" index="29">
+        <attack>0</attack>
+        <defense>16</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Cloth Armour" index="30">
+        <attack>0</attack>
+        <defense>2</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Leather Armour" index="31">
+        <attack>0</attack>
+        <defense>4</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Chain Mail" index="32">
+        <attack>0</attack>
+        <defense>8</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Plate Mail" index="33">
+        <attack>0</attack>
+        <defense>16</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Mithril Armour" index="34">
+        <attack>0</attack>
+        <defense>32</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Cap" index="35">
+        <attack>0</attack>
+        <defense>2</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Helmet" index="36">
+        <attack>0</attack>
+        <defense>4</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Helmet" index="37">
+        <attack>0</attack>
+        <defense>7</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Helmet" index="38">
+        <attack>0</attack>
+        <defense>11</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Helmet" index="39">
+        <attack>0</attack>
+        <defense>16</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Boot" index="40">
+        <attack>0</attack>
+        <defense>2</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Boot" index="41">
+        <attack>0</attack>
+        <defense>4</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Boot" index="42">
+        <attack>0</attack>
+        <defense>7</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Boot" index="43">
+        <attack>0</attack>
+        <defense>11</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Boot" index="44">
+        <attack>0</attack>
+        <defense>16</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Gauntlet" index="45">
+        <attack>0</attack>
+        <defense>2</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Gauntlet" index="46">
+        <attack>0</attack>
+        <defense>4</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Gauntlet" index="47">
+        <attack>0</attack>
+        <defense>7</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Gauntlet" index="48">
+        <attack>0</attack>
+        <defense>11</defense>
+        <magic>0</magic>
+    </item_definition>
+    <item_definition name="Gauntlet" index="49">
+        <attack>0</attack>
+        <defense>16</defense>
+        <magic>0</magic>
+    </item_definition>
+</item_definitions>

@@ -51,12 +51,56 @@ public class TmxData {
             byte[] buffer = bytesOut.toByteArray();
             gzin.close();
             
-            Log.d("MAP", "Encoding: " + Base64.encodeToString(buffer, Base64.DEFAULT)); //Base64.encode(buffer, Base64.DEFAULT));
+            Log.d("MAP", "Encoding: " + Base64.encodeToString(buffer, Base64.DEFAULT)); 
             value =  Base64.encodeToString(buffer, Base64.DEFAULT);
             
         } catch (IOException e1) {
             e1.printStackTrace();
         }  
+    }
+
+    public void setValue(int[][] data) {
+        Log.d("TMXDATA", "Flattening");
+        int[] tmp = new int[data.length * data[0].length];
+        int k = 0;
+        for (int i = 0; i < data[0].length; i++) { // y
+            for (int j = 0; j < data.length; j++) { // x
+                tmp[k++] = data[j][i];
+                //k++;
+            }
+        }
+        setValue(tmp);
+        
+        /*
+        byte[] array = new byte[data.length * data[0].length * 4];
+        int k = 0;
+        for (int i = 0; i < data[0].length; i++) { // y
+            for (int j = 0; j < data.length; j++) { // x
+                array[k*4] = (byte)(data[j][i]);
+                array[k*4+1] = (byte)(data[j][i] >> 8);
+                array[k*4+2] = (byte)(data[j][i] >> 16);
+                array[k*4+3] = (byte)(data[j][i] >> 24);
+                k++;
+            }
+        }
+        
+        try {
+            ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+            GZIPOutputStream gzin = new GZIPOutputStream(bytesOut);
+            gzin.write(array);
+            gzin.finish();
+            bytesOut.close();
+            
+            byte[] buffer = bytesOut.toByteArray();
+            gzin.close();
+            
+            Log.d("MAP", "Encoding: " + Base64.encodeToString(buffer, Base64.DEFAULT)); 
+            value =  Base64.encodeToString(buffer, Base64.DEFAULT);
+            
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }  
+        */
     }
 
 }

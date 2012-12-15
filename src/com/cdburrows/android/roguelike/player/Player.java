@@ -7,13 +7,15 @@ import java.util.Random;
 
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
 
+import android.util.Log;
+
 import com.cdburrows.android.roguelike.Direction;
 import com.cdburrows.android.roguelike.Event;
 import com.cdburrows.android.roguelike.RoguelikeActivity;
 import com.cdburrows.android.roguelike.component.Minimap;
 import com.cdburrows.android.roguelike.item.Item;
 import com.cdburrows.android.roguelike.item.ItemFactory;
-import com.cdburrows.android.roguelike.map.Dungeon;
+import com.cdburrows.android.roguelike.map.DungeonManager;
 import com.cdburrows.android.roguelike.map.GameMap;
 import com.cdburrows.android.roguelike.skill.Skill;
 import com.cdburrows.android.roguelike.skill.SkillManager;
@@ -21,7 +23,7 @@ import com.cdburrows.android.roguelike.skill.SkillManager;
 
 public class Player {
     
-    public static final float MOVE_SPEED = 256; //768;
+    public static final float MOVE_SPEED = 768;
     public static final long[] ANIMATE_FRAME_DURATION = { 100, 100, 100, 100};
     public static final int[] ANIMATE_FACE_UP = { 0, 1, 2, 1 };
     public static final int[] ANIMATE_FACE_RIGHT = { 4, 5, 6, 5 };
@@ -91,8 +93,8 @@ public class Player {
         mArmourList = new ArrayList<Item>();
         
         for (int i = 0; i < 3; i++) {
-            mWeaponList.add(ItemFactory.createRandomWeapon(1));
-            mArmourList.add(ItemFactory.createRandomArmour(1));
+            mWeaponList.add(ItemFactory.createRandomWeapon(5));
+            mArmourList.add(ItemFactory.createRandomArmour(5));
         }
         
         sSkills = new ArrayList<Skill>();
@@ -116,7 +118,7 @@ public class Player {
                 mSprite.stopAnimation(mDirection.getValue() * 4 + 1);
                 result = Event.EVENT_NEW_ROOM;
                 mPlayerState = PlayerState.IDLE;
-                Minimap.updateFloor();
+                Minimap.updateMinimap();
             }
             
             switch(mDirection) {
@@ -196,8 +198,8 @@ public class Player {
     }
     
     public void updatePositionFromRoom() {
-        mPosX = ((mRoomX * Dungeon.getRoomWidth()) + (Dungeon.getRoomWidth() / 2)) * (mTileWidth * mScaleX); 
-        mPosY = ((mRoomY * Dungeon.getRoomHeight()) + (Dungeon.getRoomHeight() / 2)) * (mTileHeight * mScaleY);
+        mPosX = ((mRoomX * DungeonManager.getRoomWidth()) + (DungeonManager.getRoomWidth() / 2)) * (mTileWidth * mScaleX); 
+        mPosY = ((mRoomY * DungeonManager.getRoomHeight()) + (DungeonManager.getRoomHeight() / 2)) * (mTileHeight * mScaleY);
         mSprite.setPosition(mPosX, mPosY);
     }
     

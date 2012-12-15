@@ -1,0 +1,5 @@
+import android.widget.Toast
+ 
+foo = 5
+
+Toast.makeText(foo, 5000).show();

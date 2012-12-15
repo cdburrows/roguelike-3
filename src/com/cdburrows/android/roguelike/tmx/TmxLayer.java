@@ -53,4 +53,9 @@ public class TmxLayer {
         this.data.setValue(data);
     }
 
+    public void setData(int[][] data) {
+        this.data.setValue(data);
+        
+    }
+
 }
