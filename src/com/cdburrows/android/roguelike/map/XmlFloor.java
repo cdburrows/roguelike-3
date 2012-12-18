@@ -10,7 +10,7 @@ import com.cdburrows.android.roguelike.item.XmlDungeonRarityValue;
 import com.cdburrows.android.roguelike.monster.XmlDungeonMonsterTemplate;
 
 @Root(name="floor")
-public class XmlDungeonFloor {
+public class XmlFloor {
     @Attribute(name="depth")
     public int mDepth;
     
@@ -25,12 +25,9 @@ public class XmlDungeonFloor {
     
     @Attribute(name="chest_spawn_rate")
     public float mChestSpawnRate;
-    
-    @Attribute(name="cols")
-    public int mCols;
-    
-    @Attribute(name="rows")
-    public int mRows;
+   
+    @Attribute(name="num_rooms", required = false)
+    public int mNumRooms;
     
     @Attribute(name="room_width")
     public int mRoomWidth;
@@ -54,13 +51,13 @@ public class XmlDungeonFloor {
     public int mMaxVerticalPathSize;
     
     @Attribute(name="erode", required=false)
-    public float mErode = 0.35f;
-    
-    public float getErode() { return mErode; }
+    public float mErodeRate = 0.0f;
     
     @ElementList(name="rarity", inline=true)
     public ArrayList<XmlDungeonRarityValue> mRarityValues;
     
     @ElementList(name="monster", inline=true)
     public ArrayList<XmlDungeonMonsterTemplate> mMonsters;
+    
+    public float getErode() { return mErodeRate; }
 }

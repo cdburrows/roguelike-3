@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cdburrows.android.roguelike.component;
+package com.cdburrows.android.roguelike.map;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -38,12 +38,16 @@ import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
 
 import com.cdburrows.android.roguelike.Direction;
 import com.cdburrows.android.roguelike.RoguelikeActivity;
-import com.cdburrows.android.roguelike.map.DungeonManager;
 import com.cdburrows.android.roguelike.map.Room.RoomState;
 
 import android.content.Context;
 import android.graphics.Color;
 
+/**
+ * Creates and displays an abstract representation of a map.
+ * @author cburrows
+ *
+ */
 public class Minimap {
     
     // ===========================================================
@@ -55,7 +59,7 @@ public class Minimap {
     private static final String MINIMAP_IMAGE_PATH = "minimap_icons.png";
     private static final int MINIMAP_IMAGE_COLS = 4;
     private static final int MINIMAP_IMAGE_ROWS = 2;
-    private static final float FLASH_DURATION = 5f;
+    //private static final float FLASH_DURATION = 5f;
     private static final int ICON_WIDTH = 16;
     private static final int ICON_HEIGHT = 16;
     private static final float MINIMAP_ALPHA = 0.4f;
@@ -69,9 +73,9 @@ public class Minimap {
     private static TextureRegion sHorizontalPassageTileRegion;
     private static TextureRegion sVerticalPassageTileRegion;
     private static Entity sMinimapEntity;
-    private static Sprite[] sRoomSprite;
-    private static Sprite[] sHorizontalPassageSprite;
-    private static Sprite[] sVerticalPassageSprite;
+    private static Sprite[][] sRoomSprite;
+    private static Sprite[][] sHorizontalPassageSprite;
+    private static Sprite[][] sVerticalPassageSprite;
     private static float sMinimapWidth;
     private static float sMinimapHeight;
     private static float sMinimapScaleX;
@@ -79,13 +83,18 @@ public class Minimap {
     private static float sCenterX;
     private static float sCenterY;
     
-    private static DungeonManager sMap;
+    private static GameMap sMap;
     
     // ===========================================================
     // Constructors
     // ===========================================================
     
-    public static void initialize(DungeonManager map) {
+    /**
+     * Loads graphics and builds sprite
+     * 
+     * @param map the map to represent
+     */
+    public static void initialize(GameMap map) {
         loadGraphics();
         loadMap(map);
     }
@@ -108,7 +117,13 @@ public class Minimap {
     public static void setVisible(boolean visible) {
         sMinimapEntity.setVisible(visible);
     }
-
+    
+    /**
+     * Centers the minimap on a coordinate.
+     * 
+     * @param posX the X coordinate
+     * @param posY the Y coordinate
+     */
     public static void setCenter(float posX, float posY) {
        sCenterX = (RoguelikeActivity.sCameraWidth / 2) - (posX * sMinimapScaleX) + 
                (sMap.getTileWidth() / 2) - (16 * RoguelikeActivity.sScaleX / 2);
@@ -118,27 +133,27 @@ public class Minimap {
     }
     
     private static Sprite getRoomSprite(int x, int y) {
-        return sRoomSprite[y * sMap.getRoomCols() + x];
+        return sRoomSprite[x][y];
     }
     
     private static void setRoomSprite(int x, int y, Sprite s) {
-        sRoomSprite[y * sMap.getRoomCols() + x] = s;
+        sRoomSprite[x][y] = s;
     }
     
     private static Sprite getHorizontalPassageSprite(int x, int y) {
-        return sHorizontalPassageSprite[y * sMap.getRoomCols() + x];
+        return sHorizontalPassageSprite[x][y];
     }
     
     private static void setHorizontalPassageSprite(int x, int y, Sprite s) {
-        sHorizontalPassageSprite[y * sMap.getRoomCols() + x] = s;
+        sHorizontalPassageSprite[x][y] = s;
     }
     
     private static Sprite getVerticalPassageSprite(int x, int y) {
-        return sVerticalPassageSprite[y * sMap.getRoomCols() + x];
+        return sVerticalPassageSprite[x][y];
     }
     
     private static void setVerticalPassageSprite(int x, int y, Sprite s) {
-        sVerticalPassageSprite[y * sMap.getRoomCols() + x] = s;
+        sVerticalPassageSprite[x][y] = s;
     }
     
     // ===========================================================
@@ -149,31 +164,9 @@ public class Minimap {
     // Methods
     // ===========================================================
     
-    private static void updatePassages(int x, int y, RoomState minActivationState, float activeAlpha, float activeColor, float inactiveAlpha) {
-        updatePassages(x, y, minActivationState, activeAlpha, activeColor, inactiveAlpha, 0.0f);
-    }
-    
-    private static void updatePassages(int x, int y, RoomState minActivationState, float activeAlpha, float activeColor, float inactiveAlpha, float inactiveColor) {
-        if (x < sMap.getRoomCols()-1 && sMap.getRoomAccess(x, y, Direction.DIRECTION_RIGHT)) {
-            if (sMap.getRoomState(x+1, y).getValue() >= minActivationState.getValue()) {
-                getHorizontalPassageSprite(x, y).setAlpha(activeAlpha);
-                getHorizontalPassageSprite(x, y).setColor(activeColor, activeColor, activeColor);
-            } else {
-                getHorizontalPassageSprite(x, y).setAlpha(inactiveAlpha);
-                getHorizontalPassageSprite(x, y).setColor(inactiveColor, inactiveColor, inactiveColor);
-            }
-        }
-        if (y < sMap.getRoomRows()-1 && sMap.getRoomAccess(x, y, Direction.DIRECTION_DOWN)) {
-            if (sMap.getRoomState(x, y+1).getValue() >= minActivationState.getValue()) {
-                getVerticalPassageSprite(x, y).setAlpha(activeAlpha);
-                getVerticalPassageSprite(x, y).setColor(activeColor, activeColor, activeColor);
-            } else {
-                getVerticalPassageSprite(x, y).setAlpha(inactiveAlpha);
-                getVerticalPassageSprite(x, y).setColor(inactiveColor, inactiveColor, inactiveColor);
-            }
-        }
-    }
-    
+    /**
+     * Updates minimap sprites according to their RoomState
+     */
     public static void updateMinimap() {
         if (sMinimapEntity == null) return;
         
@@ -202,21 +195,35 @@ public class Minimap {
                 }
             }
         }
-    }  
+    }
+    
+    /**
+     * Offsets the minimap sprite.
+     * 
+     * @param offsetX the value to offset the minimap horizontally
+     * @param offsetY the value to offset the minimap vertically
+     */
+    public static void scroll(float offsetX, float offsetY) {
+        sMinimapEntity.setPosition(
+                sCenterX + offsetX,  
+                sCenterY + offsetY);
+    }
     
     /**
      * Creates the minimap sprite for a map
+     * 
+     * @param map the map to represent
      */
-    public static void loadMap(DungeonManager map) {
+    public static void loadMap(GameMap map) {
         sMap = map;
         sMinimapWidth = sMap.getRoomCols() * ICON_WIDTH * RoguelikeActivity.sScaleX * 2;
         sMinimapHeight = sMap.getRoomRows() * ICON_HEIGHT * RoguelikeActivity.sScaleY * 2;
         sMinimapScaleX = sMinimapWidth / (sMap.getSprite(0).getWidth() * RoguelikeActivity.sScaleX); 
         sMinimapScaleY = sMinimapHeight / (sMap.getSprite(0).getHeight() * RoguelikeActivity.sScaleY);
         
-        sRoomSprite = new Sprite[sMap.getRoomRows() * sMap.getRoomCols()];
-        sHorizontalPassageSprite = new Sprite[sMap.getRoomRows() * sMap.getRoomCols()];
-        sVerticalPassageSprite = new Sprite[sMap.getRoomRows() * sMap.getRoomCols()];
+        sRoomSprite = new Sprite[sMap.getRoomCols()][sMap.getRoomRows()];
+        sHorizontalPassageSprite = new Sprite[sMap.getRoomCols()][sMap.getRoomRows()];
+        sVerticalPassageSprite = new Sprite[sMap.getRoomCols()][sMap.getRoomRows()];
         
         for (int i = 0; i < sMap.getRoomRows(); i++) {
             for (int j = 0; j < sMap.getRoomCols(); j++) {
@@ -241,12 +248,9 @@ public class Minimap {
         updateMinimap();
     }
     
-    public static void scroll(float offsetX, float offsetY) {
-        sMinimapEntity.setPosition(
-                sCenterX + offsetX,  
-                sCenterY + offsetY);
-    }
-    
+    /**
+     * Loads the sprite assets and creates the minimap image.
+     */
     private static void loadGraphics() {
         BitmapTextureAtlas bitmapTextureAtlas = new BitmapTextureAtlas(MINIMAP_ATLAS_WIDTH, MINIMAP_ATLAS_HEIGHT, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
@@ -254,7 +258,7 @@ public class Minimap {
         IconRegion =  BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(bitmapTextureAtlas, (Context)RoguelikeActivity.getContext(),
                 MINIMAP_IMAGE_PATH, 0, 0, MINIMAP_IMAGE_COLS, MINIMAP_IMAGE_ROWS);
         
-        RoguelikeActivity.getContext().getEngine().getTextureManager().loadTexture(bitmapTextureAtlas);
+        RoguelikeActivity.loadTexture(bitmapTextureAtlas);
         
         sRoomTileRegion = TextureRegionFactory.extractFromTexture(IconRegion.getTexture(), 0, 0, 16, 16, true);
         sHorizontalPassageTileRegion = TextureRegionFactory.extractFromTexture(IconRegion.getTexture(), 0, 16, 16, 16, true);
@@ -264,6 +268,15 @@ public class Minimap {
         sMinimapEntity.setVisible(false);
     }
     
+    /**
+     * 
+     * @param textureRegion
+     * @param x
+     * @param y
+     * @param offX
+     * @param offY
+     * @return
+     */
     private static Sprite generateMinimapSprite(TextureRegion textureRegion, int x, int y, int offX, int offY) {
         Sprite s = new Sprite
                 ((2 * ICON_WIDTH * x + offX) * RoguelikeActivity.sScaleX, 
@@ -276,10 +289,44 @@ public class Minimap {
         return s;
     }
     
+    private static void updatePassages(int x, int y, RoomState minActivationState, float activeAlpha, float activeColor, float inactiveAlpha) {
+        updatePassages(x, y, minActivationState, activeAlpha, activeColor, inactiveAlpha, 0.0f);
+    }
+    
+    /**
+     * Modifies the alpha and color properties of adjacent passages 
+     * according to their connected RoomState.
+     * 
+     * @param x the X coordinate of the base room
+     * @param y the Y coordinate of the base room
+     * @param minActivationState the minimum RoomState for the connected passages to be considered active, otherwise they are inactive
+     * @param activeAlpha the alpha value of active passages
+     * @param activeColor the color value of active passages
+     * @param inactiveAlpha the alpha value of inactive passages
+     * @param inactiveColor the color value of inactive passages
+     */
+    private static void updatePassages(int x, int y, RoomState minActivationState, float activeAlpha, float activeColor, float inactiveAlpha, float inactiveColor) {
+        if (x < sMap.getRoomCols()-1 && sMap.getRoomAccess(x, y, Direction.DIRECTION_RIGHT)) {
+            if (sMap.getRoomState(x+1, y).getValue() >= minActivationState.getValue()) {
+                getHorizontalPassageSprite(x, y).setAlpha(activeAlpha);
+                getHorizontalPassageSprite(x, y).setColor(activeColor, activeColor, activeColor);
+            } else {
+                getHorizontalPassageSprite(x, y).setAlpha(inactiveAlpha);
+                getHorizontalPassageSprite(x, y).setColor(inactiveColor, inactiveColor, inactiveColor);
+            }
+        }
+        if (y < sMap.getRoomRows()-1 && sMap.getRoomAccess(x, y, Direction.DIRECTION_DOWN)) {
+            if (sMap.getRoomState(x, y+1).getValue() >= minActivationState.getValue()) {
+                getVerticalPassageSprite(x, y).setAlpha(activeAlpha);
+                getVerticalPassageSprite(x, y).setColor(activeColor, activeColor, activeColor);
+            } else {
+                getVerticalPassageSprite(x, y).setAlpha(inactiveAlpha);
+                getVerticalPassageSprite(x, y).setColor(inactiveColor, inactiveColor, inactiveColor);
+            }
+        }
+    }
+    
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
-
-    
-    
 }

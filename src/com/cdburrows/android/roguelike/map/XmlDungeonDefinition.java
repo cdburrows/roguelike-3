@@ -8,24 +8,20 @@ import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
-import android.util.Log;
-
-import com.cdburrows.android.roguelike.RoguelikeActivity;
-import com.cdburrows.android.roguelike.tmx.TmxMap;
 import com.cdburrows.android.roguelike.tmx.TmxTileset;
 
 @Root(name="dungeon_definition")
 public class XmlDungeonDefinition {
     
     @ElementList(name="tileset", inline=true)
-    private ArrayList<XmlDungeonTileset> mTilesets;
+    private ArrayList<XmlTileset> mTilesets;
     
     @ElementList(name="floor", inline=true)
-    private ArrayList<XmlDungeonFloor> mFloors;
+    private ArrayList<XmlFloor> mFloors;
     
     public XmlDungeonDefinition() {
-        mTilesets = new ArrayList<XmlDungeonTileset>();
-        mFloors = new ArrayList<XmlDungeonFloor>();
+        mTilesets = new ArrayList<XmlTileset>();
+        mFloors = new ArrayList<XmlFloor>();
     }
     
     public static XmlDungeonDefinition inflate(InputStream source) {
@@ -40,28 +36,32 @@ public class XmlDungeonDefinition {
         return null;        
     }
     
-    public ArrayList<XmlDungeonTileset> getDungeonTilesets() {
+    public ArrayList<XmlTileset> getDungeonTilesets() {
         return mTilesets;
     }
     
-    public XmlDungeonTileset getDungeonTileset(XmlDungeonFloor floor) {
+    public XmlTileset getDungeonTileset(XmlFloor floor) {
         String id = floor.mTilesetName;
-        for (XmlDungeonTileset t : mTilesets) {
+        for (XmlTileset t : mTilesets) {
             if (t.mName.equals(id)) return t;
         }
         return null;
     }
     
-    public TmxTileset getTmxTileset(XmlDungeonFloor floor) {
+    public TmxTileset getTmxTileset(XmlFloor floor) {
         String id = floor.mTilesetName;
-        for (XmlDungeonTileset t : mTilesets) {
+        for (XmlTileset t : mTilesets) {
             if (t.mName.equals(id)) return t.toTmx();
         }
         return null;
     }
 
-    public XmlDungeonFloor getFloor(int floor) {
+    public XmlFloor getFloor(int floor) {
        return mFloors.get(floor);
+    }
+
+    public int getMaxDepth() {
+        return mFloors.size();
     }
 }
 

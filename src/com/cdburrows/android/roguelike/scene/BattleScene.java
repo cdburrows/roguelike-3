@@ -54,6 +54,7 @@ import com.cdburrows.android.roguelike.component.ProgressBar;
 import com.cdburrows.android.roguelike.graphics.Graphics;
 import com.cdburrows.android.roguelike.item.Item;
 import com.cdburrows.android.roguelike.item.ItemFactory;
+import com.cdburrows.android.roguelike.map.DungeonManager;
 import com.cdburrows.android.roguelike.monster.Monster;
 import com.cdburrows.android.roguelike.monster.MonsterFactory;
 import com.cdburrows.android.roguelike.monster.Monster.MonsterState;
@@ -196,6 +197,7 @@ public class BattleScene extends BaseScene  {
     // ===========================================================
     
     public BattleScene() {
+        super();
         sScene = this;
         sScaleX = RoguelikeActivity.sScaleX;
         sScaleY = RoguelikeActivity.sScaleY;
@@ -207,6 +209,18 @@ public class BattleScene extends BaseScene  {
     
     public static BaseScene getScene() { return sScene; }
     
+    public static void refreshBattleBackground() {
+        if (sScene == null) return;
+        
+        if (mBackgroundSprite != null) mBackgroundSprite.detachSelf();
+        
+        Graphics.beginLoad("gfx/", 512, 512);
+        mBackgroundSprite = Graphics.createSprite(DungeonManager.getBattleBackground());
+        Graphics.endLoad("Refresh Battle BG");
+        
+        ((BattleScene)sScene).reloadUI();
+    }
+    
     // ===========================================================
     // Inherited Methods
     // ===========================================================
@@ -214,15 +228,110 @@ public class BattleScene extends BaseScene  {
     @Override
     public void loadResources() {
         long timeStart = System.currentTimeMillis();
-
-        sHud = new HUD();
         
+        loadPlayer();
+        
+        loadAnimations();
+        
+        loadGraphics();      
+        
+        loadUI();     
+        
+        loadHud();
+        
+        loadAudio();
+        
+        this.registerUpdateHandler(updateHandler);
+        
+        mLoaded = true;
+        
+        Log.d("BATTLE", "Load time: " + (System.currentTimeMillis() - timeStart));
+    }
+
+    private void loadPlayer() {
+        mPlayer = RoguelikeActivity.getPlayer();
+    }
+
+    private void loadAnimations() {
+        // The slash animations
+           mSlash = new Animation[8];
+           for (int i = 0; i < 8; i++) {
+               switch (i) {            
+                   case SWIPE_DOWN_LEFT:
+                       mSlash[SWIPE_DOWN_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY()-48,
+                               mCamera.getCenterX()-48, mCamera.getCenterY()+48);
+                       mSlash[SWIPE_DOWN_LEFT].setScale(sScaleX);
+                       mSlash[SWIPE_DOWN_LEFT].loadAnimation();
+                       mSlash[SWIPE_DOWN_LEFT].attachOnFinishListener(onAnimationDone);
+                       break;
+                   case SWIPE_DOWN_RIGHT:
+                       mSlash[SWIPE_DOWN_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY()-48,
+                               mCamera.getCenterX()+48, mCamera.getCenterY()+48);
+                       mSlash[SWIPE_DOWN_RIGHT].setScale(sScaleX);
+                       mSlash[SWIPE_DOWN_RIGHT].setFlippedHorizontal(true);
+                       mSlash[SWIPE_DOWN_RIGHT].loadAnimation();
+                       mSlash[SWIPE_DOWN_RIGHT].attachOnFinishListener(onAnimationDone);
+                       break;
+                   case SWIPE_UP_RIGHT:
+                       mSlash[SWIPE_UP_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY()+48,
+                               mCamera.getCenterX()+48, mCamera.getCenterY()-48);
+                       mSlash[SWIPE_UP_RIGHT].setScale(sScaleX);
+                       mSlash[SWIPE_UP_RIGHT].setFlippedHorizontal(true);
+                       mSlash[SWIPE_UP_RIGHT].setFlippedVertical(true);
+                       mSlash[SWIPE_UP_RIGHT].loadAnimation();
+                       mSlash[SWIPE_UP_RIGHT].attachOnFinishListener(onAnimationDone);
+                       break;
+                   case SWIPE_UP_LEFT:
+                       mSlash[SWIPE_UP_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY()+48,
+                               mCamera.getCenterX()-48, mCamera.getCenterY()-48);
+                       mSlash[SWIPE_UP_LEFT].setScale(sScaleX);
+                       mSlash[SWIPE_UP_LEFT].setFlippedVertical(true);
+                       mSlash[SWIPE_UP_LEFT].loadAnimation();
+                       mSlash[SWIPE_UP_LEFT].attachOnFinishListener(onAnimationDone);
+                       break;
+                   case SWIPE_LEFT:
+                       mSlash[SWIPE_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY(),
+                               mCamera.getCenterX()-48, mCamera.getCenterY());
+                       mSlash[SWIPE_LEFT].setScale(sScaleX);
+                       mSlash[SWIPE_LEFT].setRotation(45.0f);
+                       mSlash[SWIPE_LEFT].loadAnimation();
+                       mSlash[SWIPE_LEFT].attachOnFinishListener(onAnimationDone);
+                       break;
+                   case SWIPE_RIGHT:
+                       mSlash[SWIPE_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY(),
+                               mCamera.getCenterX()+48, mCamera.getCenterY());
+                       mSlash[SWIPE_RIGHT].setScale(sScaleX);
+                       mSlash[SWIPE_RIGHT].setRotation(-135.0f);
+                       mSlash[SWIPE_RIGHT].loadAnimation();
+                       mSlash[SWIPE_RIGHT].attachOnFinishListener(onAnimationDone);
+                       break;
+                   case SWIPE_UP:
+                       mSlash[SWIPE_UP] = new Animation(mCamera.getCenterX(), mCamera.getCenterY()+48,
+                               mCamera.getCenterX(), mCamera.getCenterY()-48);
+                       mSlash[SWIPE_UP].setScale(sScaleX);
+                       mSlash[SWIPE_UP].setRotation(135.0f);
+                       mSlash[SWIPE_UP].loadAnimation();
+                       mSlash[SWIPE_UP].attachOnFinishListener(onAnimationDone);
+                       break;
+                   case SWIPE_DOWN:
+                       mSlash[SWIPE_DOWN] = new Animation(mCamera.getCenterX(), mCamera.getCenterY()-48,
+                               mCamera.getCenterX(), mCamera.getCenterY()+48);
+                       mSlash[SWIPE_DOWN].setScale(sScaleX);
+                       mSlash[SWIPE_DOWN].setRotation(-45.0f);
+                       mSlash[SWIPE_DOWN].loadAnimation();
+                       mSlash[SWIPE_DOWN].attachOnFinishListener(onAnimationDone);
+                       break;
+               }
+           }
+       }
+    
+    private void loadGraphics() {
         Graphics.beginLoad("gfx/", TEXTURE_ATLAS_WIDTH, TEXTURE_ATLAS_HEIGHT);
         
         // The background
-        mBackgroundSprite = Graphics.createSprite("dungeon_bg_320.png");
+        mBackgroundSprite = Graphics.createSprite(DungeonManager.getBattleBackground());
         
-        // The monster name popup panel
+        // The monster name pop-up panel
         mPopupTitleSprite = Graphics.createSprite("panels/popup_title.png", 0, 0);
         mPopupTitleSprite.setSize(MONSTER_NAME_FRAME_WIDTH * sScaleX, MONSTER_NAME_FRAME_HEIGHT * sScaleY);
         mPopupTitleSprite.setPosition(
@@ -294,78 +403,9 @@ public class BattleScene extends BaseScene  {
                 HP_COLOR, HP_ALPHA, 100);
         mMonsterHp.setPosition((mCameraWidth / 2) - (mMonsterHp.getWidth() / 2),
                 MONSTER_HP_Y * sScaleY);
- 
-        // The slash animations
-        mSlash = new Animation[8];
-        for (int i = 0; i < 8; i++) {
-            switch (i) {            
-                case SWIPE_DOWN_LEFT:
-                    mSlash[SWIPE_DOWN_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY()-48,
-                            mCamera.getCenterX()-48, mCamera.getCenterY()+48);
-                    mSlash[SWIPE_DOWN_LEFT].setScale(sScaleX);
-                    mSlash[SWIPE_DOWN_LEFT].loadAnimation();
-                    mSlash[SWIPE_DOWN_LEFT].attachOnFinishListener(onAnimationDone);
-                    break;
-                case SWIPE_DOWN_RIGHT:
-                    mSlash[SWIPE_DOWN_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY()-48,
-                            mCamera.getCenterX()+48, mCamera.getCenterY()+48);
-                    mSlash[SWIPE_DOWN_RIGHT].setScale(sScaleX);
-                    mSlash[SWIPE_DOWN_RIGHT].setFlippedHorizontal(true);
-                    mSlash[SWIPE_DOWN_RIGHT].loadAnimation();
-                    mSlash[SWIPE_DOWN_RIGHT].attachOnFinishListener(onAnimationDone);
-                    break;
-                case SWIPE_UP_RIGHT:
-                    mSlash[SWIPE_UP_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY()+48,
-                            mCamera.getCenterX()+48, mCamera.getCenterY()-48);
-                    mSlash[SWIPE_UP_RIGHT].setScale(sScaleX);
-                    mSlash[SWIPE_UP_RIGHT].setFlippedHorizontal(true);
-                    mSlash[SWIPE_UP_RIGHT].setFlippedVertical(true);
-                    mSlash[SWIPE_UP_RIGHT].loadAnimation();
-                    mSlash[SWIPE_UP_RIGHT].attachOnFinishListener(onAnimationDone);
-                    break;
-                case SWIPE_UP_LEFT:
-                    mSlash[SWIPE_UP_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY()+48,
-                            mCamera.getCenterX()-48, mCamera.getCenterY()-48);
-                    mSlash[SWIPE_UP_LEFT].setScale(sScaleX);
-                    mSlash[SWIPE_UP_LEFT].setFlippedVertical(true);
-                    mSlash[SWIPE_UP_LEFT].loadAnimation();
-                    mSlash[SWIPE_UP_LEFT].attachOnFinishListener(onAnimationDone);
-                    break;
-                case SWIPE_LEFT:
-                    mSlash[SWIPE_LEFT] = new Animation(mCamera.getCenterX()+48, mCamera.getCenterY(),
-                            mCamera.getCenterX()-48, mCamera.getCenterY());
-                    mSlash[SWIPE_LEFT].setScale(sScaleX);
-                    mSlash[SWIPE_LEFT].setRotation(45.0f);
-                    mSlash[SWIPE_LEFT].loadAnimation();
-                    mSlash[SWIPE_LEFT].attachOnFinishListener(onAnimationDone);
-                    break;
-                case SWIPE_RIGHT:
-                    mSlash[SWIPE_RIGHT] = new Animation(mCamera.getCenterX()-48, mCamera.getCenterY(),
-                            mCamera.getCenterX()+48, mCamera.getCenterY());
-                    mSlash[SWIPE_RIGHT].setScale(sScaleX);
-                    mSlash[SWIPE_RIGHT].setRotation(-135.0f);
-                    mSlash[SWIPE_RIGHT].loadAnimation();
-                    mSlash[SWIPE_RIGHT].attachOnFinishListener(onAnimationDone);
-                    break;
-                case SWIPE_UP:
-                    mSlash[SWIPE_UP] = new Animation(mCamera.getCenterX(), mCamera.getCenterY()+48,
-                            mCamera.getCenterX(), mCamera.getCenterY()-48);
-                    mSlash[SWIPE_UP].setScale(sScaleX);
-                    mSlash[SWIPE_UP].setRotation(135.0f);
-                    mSlash[SWIPE_UP].loadAnimation();
-                    mSlash[SWIPE_UP].attachOnFinishListener(onAnimationDone);
-                    break;
-                case SWIPE_DOWN:
-                    mSlash[SWIPE_DOWN] = new Animation(mCamera.getCenterX(), mCamera.getCenterY()-48,
-                            mCamera.getCenterX(), mCamera.getCenterY()+48);
-                    mSlash[SWIPE_DOWN].setScale(sScaleX);
-                    mSlash[SWIPE_DOWN].setRotation(-45.0f);
-                    mSlash[SWIPE_DOWN].loadAnimation();
-                    mSlash[SWIPE_DOWN].attachOnFinishListener(onAnimationDone);
-                    break;
-            }
-        }
-        
+    }
+
+    private void loadUI() {
         attachChild(mBackgroundSprite);
         attachChild(mPopupTitleSprite);
         
@@ -378,17 +418,19 @@ public class BattleScene extends BaseScene  {
         attachChild(mXpBarFillSprite);
         attachChild(mPlayerHp.getEntity());
         attachChild(mMonsterHp.getEntity());
+    }
+    
+    private void loadHud() {
+        sHud = new HUD();
         
         mDamageNumber = new FloatingText[NUM_DAMAGE_TEXTS];
         for (int i = 0; i < NUM_DAMAGE_TEXTS; i++) {
             mDamageNumber[i] = new FloatingText(Graphics.Font, Color.WHITE, 0, 0, "00");
             sHud.attachChild(mDamageNumber[i].getEntity());
         }
-        
-        mPlayer = RoguelikeActivity.getPlayer();
-        
-        this.registerUpdateHandler(updateHandler);
-        
+    }
+    
+    private void loadAudio() {
         try {
             if (RoguelikeActivity.sMusicEnabled) {
                 AssetFileDescriptor afd = RoguelikeActivity.getContext().getAssets().openFd("sfx/music/Insidia.aac");
@@ -420,12 +462,8 @@ public class BattleScene extends BaseScene  {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        mLoaded = true;
-        
-        Log.d("BATTLE", "Load time: " + (System.currentTimeMillis() - timeStart));
     }
-
+    
     @Override
     public void prepare(IEntityModifierListener preparedListener) {
         mSceneReady = false;
@@ -568,6 +606,11 @@ public class BattleScene extends BaseScene  {
     // ===========================================================
     // Methods
     // ===========================================================
+    
+    public void reloadUI() {
+        detachChildren();
+        loadUI();
+    }
     
     private static void checkHit() {
         //Line line = new Line(mTouchX, mTouchY, mTouchUpX, mTouchUpY);
@@ -844,5 +887,11 @@ public class BattleScene extends BaseScene  {
             pItem.registerEntityModifier(delayMod);
         }
     };
+
+    @Override
+    public void resume() {
+        // TODO Auto-generated method stub
+        
+    }
     
 }

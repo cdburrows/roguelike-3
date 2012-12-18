@@ -1,16 +1,27 @@
 package com.cdburrows.android.roguelike.map;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
+import org.anddev.andengine.entity.IEntity;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXLayer;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXTiledMap;
+import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
+import org.anddev.andengine.util.modifier.IModifier;
 
+import android.util.Log;
 
 import com.cdburrows.android.roguelike.Direction;
 import com.cdburrows.android.roguelike.RoguelikeActivity;
 import com.cdburrows.android.roguelike.map.Room.RoomState;
 import com.cdburrows.android.roguelike.monster.XmlDungeonMonsterTemplate;
+import com.cdburrows.android.roguelike.scene.BattleScene;
+import com.cdburrows.android.roguelike.scene.LoadingScene;
+import com.cdburrows.android.roguelike.scene.MainScene;
+import com.cdburrows.android.roguelike.scene.SceneManager;
 
 public class DungeonManager {
     
@@ -23,80 +34,76 @@ public class DungeonManager {
     // ===========================================================
     
     private static XmlDungeonDefinition sDungeonDefinition;
-    
     private static GameMap sGameMap;
+    private static long[] sMapSeeds;
     
-    private static XmlDungeonFloor sCurrentFloor;
-    private static int sCurrentFloorLevel;
+    private static XmlFloor sCurrentFloor;
+    private static int sCurrentFloorLevel = 0;
+    private static XmlMap[] sSavedFloors;
     
     // ===========================================================
     // Constructors
     // ===========================================================
     
-    public DungeonManager(String definitionPath) {
-        try {
-            sDungeonDefinition = XmlDungeonDefinition.inflate(
-                    RoguelikeActivity.getContext().getAssets().open("xml/dungeon_definition.xml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        sCurrentFloorLevel = 1;
-        sCurrentFloor = sDungeonDefinition.getFloor(sCurrentFloorLevel-1);
-        sGameMap = generateMap(sCurrentFloor);
-    }
-    
     // ===========================================================
     // Getter & Setter
     // ===========================================================
     
-    public GameMap getGameMap() { 
+    public static GameMap getGameMap() { 
         return sGameMap;
     }
     
-    public TMXTiledMap getTmxMap() {
+    public static TMXTiledMap getTmxMap() {
         return sGameMap.getTmxTiledMap();
     }
     
-    public XmlDungeonFloor getCurrentFloor() { return sCurrentFloor; }
+    public static XmlFloor getCurrentFloor() { return sCurrentFloor; }
     
-    public int getCurrentFloorLevel() { return sCurrentFloorLevel; }
+    public static int getCurrentDepth() { return sCurrentFloorLevel; }
+    
+    public static int getMaxDepth() {
+        return sDungeonDefinition.getMaxDepth();
+    }
 
-    public TMXLayer getSprite(int layer) {
+    public static TMXLayer getSprite(int layer) {
         TMXLayer l = sGameMap.getTmxTiledMap().getTMXLayers().get(layer);
         l.setScaleCenter(0, 0);
         l.setScale(RoguelikeActivity.sScaleX, RoguelikeActivity.sScaleY);
         return l;
     }
     
-    public ArrayList<XmlDungeonMonsterTemplate> getMonsterList() { return sCurrentFloor.mMonsters; }
+    public static ArrayList<XmlDungeonMonsterTemplate> getMonsterList() { return sCurrentFloor.mMonsters; }
     
     public static int getRoomWidth() { return sCurrentFloor.mRoomWidth; }
 
     public static int getRoomHeight() { return sCurrentFloor.mRoomHeight; }
 
-    public int getRoomCols() { return sCurrentFloor.mCols / sCurrentFloor.mRoomWidth; }
+    public static int getRoomCols() { return sGameMap.getRoomCols(); }
     
-    public int getRoomRows() { return sCurrentFloor.mRows / sCurrentFloor.mRoomHeight; }
+    public static int getRoomRows() { return sGameMap.getRoomRows() / sCurrentFloor.mRoomHeight; }
     
-    public boolean getRoomAccess(int roomX, int roomY, Direction direction) {
+    public static boolean getRoomAccess(int roomX, int roomY, Direction direction) {
         return sGameMap.getRoomAccess(roomX, roomY, direction);
     }
 
-    public RoomState getRoomState(int roomX, int roomY) {
+    public static RoomState getRoomState(int roomX, int roomY) {
         return sGameMap.getRoomState(roomX, roomY);
     }
     
-    public float getTileWidth() { return 32 * RoguelikeActivity.sScaleX; }
+    public static float getTileWidth() { return 32 * RoguelikeActivity.sScaleX; }
     
-    public float getTileHeight() { return 32 * RoguelikeActivity.sScaleY; }
+    public static float getTileHeight() { return 32 * RoguelikeActivity.sScaleY; }
 
-    public boolean hasChest(int roomX, int roomY) {
+    public static boolean hasChest(int roomX, int roomY) {
         return sGameMap.hasChest(roomX, roomY);
     }
     
-    public void setChest(int roomX, int roomY, boolean value) {
+    public static void setChest(int roomX, int roomY, boolean value) {
         sGameMap.setChest(roomX, roomY, value);
+    }
+    
+    public static XmlTileset getTileset(XmlFloor floor) {
+        return sDungeonDefinition.getDungeonTileset(floor);
     }
     
     // ===========================================================
@@ -107,19 +114,115 @@ public class DungeonManager {
     // Methods
     // ===========================================================
     
-    private static GameMap generateMap(XmlDungeonFloor floor) {
-        GameMap map = new GameMap(floor, sDungeonDefinition.getDungeonTileset(floor));
-        //map.addTileset(sDungeonDefinition.getTmxTileset(floor));
-        map.generateMap();
-        return map;
+    public static void initialize(String definitionPath) {
+        try {
+            sDungeonDefinition = XmlDungeonDefinition.inflate(
+                    RoguelikeActivity.getContext().getAssets().open(definitionPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        Random rand = new Random(0); // put seed here?
+        sSavedFloors = new XmlMap[sDungeonDefinition.getMaxDepth()];
+        
+        sMapSeeds = new long[sDungeonDefinition.getMaxDepth()];
+        
+        for (int i = 0; i < sDungeonDefinition.getMaxDepth(); i++) {
+            sMapSeeds[i] = rand.nextLong();
+        }
+        
+        loadFloor(0, true);
     }
 
-    public int getStartX() {
+    public static int getStartX() {
         return sGameMap.getStartX();
     }
     
-    public int getStartY() {
+    public static int getStartY() {
         return sGameMap.getStartY();
+    }
+    
+    private static GameMap generateMap(XmlFloor floor, long seed, boolean goingDown) {
+        return  DungeonFactory.generateMap(floor, seed, goingDown);
+    }
+
+    public static boolean interact(int roomX, int roomY) {
+        if (sGameMap.hasStairsUp(roomX, roomY)) {
+            travelUpStairs();
+            return true;
+        } else if (sGameMap.hasStairsDown(roomX, roomY)) {
+            travelDownStairs();
+            return true;
+        }
+        return false;
+    }
+
+    private static void travelUpStairs() {
+        if (sCurrentFloorLevel == 0) return;
+        
+        RoguelikeActivity.pause();
+        saveMap();
+        sCurrentFloorLevel--;
+        loadFloor(sCurrentFloorLevel, false);
+        RoguelikeActivity.resume();
+    }
+
+    private static void travelDownStairs() {
+        if (sCurrentFloorLevel == sDungeonDefinition.getMaxDepth()) return;
+        
+        RoguelikeActivity.pause();
+        saveMap();
+        sCurrentFloorLevel++;
+        loadFloor(sCurrentFloorLevel, true);
+        RoguelikeActivity.resume();
+    }
+    
+    private static void saveMap() {
+        if (sGameMap != null) {
+            //FileOutputStream fos;
+            //try {
+                //Log.d("DUNGEON MANAGER", "Saving " + sCurrentFloorLevel);
+                sSavedFloors[sCurrentFloorLevel] = new XmlMap(sGameMap.getRooms()); // "map_"+sCurrentFloorLevel+".map";
+                //fos = RoguelikeActivity.getOutputStream("map_"+sCurrentFloorLevel+".map");
+                //XmlMap.deflate(sGameMap.getRooms(), fos);
+            //} catch (IOException e) {
+                // TODO Auto-generated catch block
+            //    e.printStackTrace();
+           // } 
+        }
+    }
+    
+    private static void loadFloor(int floorLevel, boolean goingDown){
+        if (floorLevel < 0 || floorLevel >= sDungeonDefinition.getMaxDepth()) {
+            return;
+        }
+        
+        Log.d("DUNGEON MANAGER", "Current floor = " + sCurrentFloorLevel + " Loading '" + sSavedFloors[floorLevel] + "'");
+        
+        boolean firstLoad = sGameMap == null;
+        
+        if (!firstLoad) {
+            //SceneManager.pushScene(new LoadingScene());
+            sGameMap.unload();
+            Log.d("DUNGEON MANAGER", "FIRST LOAD");
+        }
+        
+        sCurrentFloorLevel = floorLevel;
+        sCurrentFloor = sDungeonDefinition.getFloor(sCurrentFloorLevel);
+        sGameMap = generateMap(sCurrentFloor, sMapSeeds[sCurrentFloorLevel], goingDown);
+        
+        if (sSavedFloors[floorLevel] != null) {
+            sGameMap.setRooms(sSavedFloors[sCurrentFloorLevel].mRooms);
+        }
+        
+        BattleScene.refreshBattleBackground();
+        
+        //if (!firstLoad) SceneManager.popScene();
+        
+    }
+
+    public static String getBattleBackground() {
+        return sCurrentFloor.mBattleBackgroundName;
     }
     
     // ===========================================================

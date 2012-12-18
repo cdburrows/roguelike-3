@@ -25,33 +25,24 @@
 
 package com.cdburrows.android.roguelike;
 
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import android.content.res.AssetFileDescriptor;
-import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
-import bsh.EvalError;
-import bsh.Interpreter;
-
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.camera.BoundCamera;
 import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.entity.scene.Scene.IOnSceneTouchListener;
 import org.anddev.andengine.input.touch.TouchEvent;
-import org.mvel2.MVEL;
-import org.mvel2.util.Make;
-
+import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import com.cdburrows.android.roguelike.audio.Audio;
 import com.cdburrows.android.roguelike.graphics.Graphics;
 import com.cdburrows.android.roguelike.item.ItemFactory;
 import com.cdburrows.android.roguelike.map.DungeonManager;
+import com.cdburrows.android.roguelike.map.GameMap;
 import com.cdburrows.android.roguelike.player.Player;
 import com.cdburrows.android.roguelike.scene.BaseScene;
 import com.cdburrows.android.roguelike.scene.BattleScene;
@@ -110,8 +101,6 @@ public class RoguelikeActivity extends LoadingGameActivity implements
     
     private static Player sPlayer;
     
-    public static DungeonManager sDungeon;
-    
     public static boolean sMusicEnabled = false;
     public static boolean sSoundEnabled = false;
     
@@ -131,7 +120,9 @@ public class RoguelikeActivity extends LoadingGameActivity implements
     
     public static void setPlayer(Player player) { sPlayer = player; }
     
-    public static DungeonManager getDungeon() { return sDungeon; }
+    public static Display getDisplay() {
+        return sContext.getWindowManager().getDefaultDisplay();
+    }
     
     // ===========================================================
     // Inherited Methods
@@ -178,7 +169,7 @@ public class RoguelikeActivity extends LoadingGameActivity implements
         
         // Load the dungeon from definition file
         LoadingGameActivity.setLoadingText("Dungeon definition");
-        sDungeon = new DungeonManager("dungeon_definition.xml");
+        DungeonManager.initialize("xml/dungeon_definition.xml");
         
         // Prepare our item factory by loading all the assets from
         // which every item is created
@@ -258,8 +249,35 @@ public class RoguelikeActivity extends LoadingGameActivity implements
         });
     }
 
-    public static Display getDisplay() {
-        return sContext.getWindowManager().getDefaultDisplay();
+    public static void loadTexture(BitmapTextureAtlas atlas) {
+        getContext().getEngine().getTextureManager().loadTexture(atlas);
     }
 
+    public static GameMap getCurrentGameMap() {
+        return DungeonManager.getGameMap();
+    }
+
+    public static void pause() {
+        SceneManager.pauseScene();
+        
+    }
+
+    public static void resume() {
+        SceneManager.resumeScene();
+    }
+
+    public static void reloadUI() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public static FileOutputStream getOutputStream(String filePath) throws IOException {
+        RoguelikeActivity.getContext();
+        return sContext.openFileOutput(filePath, RoguelikeActivity.MODE_PRIVATE);
+    }
+
+    public static FileInputStream getInputStream(String filePath) throws IOException {
+        RoguelikeActivity.getContext();
+        return sContext.openFileInput(filePath);
+    }
 }

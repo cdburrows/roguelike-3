@@ -120,6 +120,16 @@ public class SceneManager {
         return null;
     }
     
+    public static void pauseScene() {
+        if (getTopScene() == null) return;
+        getTopScene().pause();
+    }
+    
+    public static void resumeScene() {
+        if (getTopScene() == null) return;
+        getTopScene().resume();
+    }
+    
     /**
      * Loads the top scene and displays it, or ends application if 
      * scene stack is empty.
@@ -132,6 +142,7 @@ public class SceneManager {
         } else {
             if (!scene.isLoaded()) scene.loadResources();
             scene.prepare(prepared);
+            scene.resume();
         }
     }
     
@@ -162,7 +173,7 @@ public class SceneManager {
             if (mNextScene != null) {
                 mScenes.add(mNextScene);
                 mNextScene = null;
-                Log.d("SCENE", "Load next scene");
+                //Log.d("SCENE", "Load next scene");
             } else {
                 
             }
@@ -184,5 +195,19 @@ public class SceneManager {
             setScene();
         }
     };
+
+    public static void fadeSceneOut(float f, IEntityModifierListener listener) {
+        BaseScene scene = getTopScene();
+        if (scene == null) return;
+        
+        scene.fadeOut(f, listener);
+    }
+    
+    public static void fadeSceneIn(float f, IEntityModifierListener listener) {
+        BaseScene scene = getTopScene();
+        if (scene == null) return;
+        
+        scene.fadeIn(f, listener);
+    }
     
 }

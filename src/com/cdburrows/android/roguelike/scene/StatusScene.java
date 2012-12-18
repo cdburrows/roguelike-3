@@ -231,7 +231,8 @@ public class StatusScene extends BaseScene implements IScrollDetectorListener {
         Log.d("STATUS", "Load time: " + (System.currentTimeMillis() - timeStart));
     }
 
-    public void prepare(IEntityModifierListener preparedListener) {        
+    public void prepare(IEntityModifierListener preparedListener) {
+        Log.d("STATUS", "Start prepare");
         mCamera.setHUD(sHud);
         mCamera.setChaseEntity(null);
         mCamera.setCenter(mCameraWidth / 2,  mCameraHeight / 2);
@@ -251,6 +252,7 @@ public class StatusScene extends BaseScene implements IScrollDetectorListener {
         sCurrentPanel.setVisible(true);
         mPrepared = true;
         preparedListener.onModifierFinished(null, this);
+        Log.d("STATUS", "End prepare");
     }
     
     public void pause() {
@@ -439,6 +441,12 @@ public class StatusScene extends BaseScene implements IScrollDetectorListener {
         } if (item.getItemType() == Item.ITEM_TYPE_ARMOUR) {
             sPlayer.equipArmour(item);
         }
+    }
+
+    @Override
+    public void resume() {
+        // TODO Auto-generated method stub
+        
     }
     
     // ===========================================================

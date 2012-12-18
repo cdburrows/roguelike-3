@@ -7,16 +7,14 @@ import java.util.Random;
 
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
 
-import android.util.Log;
-
 import com.cdburrows.android.roguelike.Direction;
 import com.cdburrows.android.roguelike.Event;
 import com.cdburrows.android.roguelike.RoguelikeActivity;
-import com.cdburrows.android.roguelike.component.Minimap;
 import com.cdburrows.android.roguelike.item.Item;
 import com.cdburrows.android.roguelike.item.ItemFactory;
 import com.cdburrows.android.roguelike.map.DungeonManager;
 import com.cdburrows.android.roguelike.map.GameMap;
+import com.cdburrows.android.roguelike.map.Minimap;
 import com.cdburrows.android.roguelike.skill.Skill;
 import com.cdburrows.android.roguelike.skill.SkillManager;
 
@@ -270,7 +268,7 @@ public class Player {
     public int getRoomY() { return mRoomY; }
     public void setRoomY(int roomY) { this.mRoomY = roomY; updatePositionFromRoom(); }
     
-  //********************************
+   //********************************
     // Equipment accessors
     //********************************
     

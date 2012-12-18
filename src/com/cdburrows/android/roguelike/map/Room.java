@@ -25,8 +25,12 @@
 
 package com.cdburrows.android.roguelike.map;
 
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.ElementArray;
+import org.simpleframework.xml.Root;
 import com.cdburrows.android.roguelike.Direction;
 
+@Root(name="room")
 public class Room {
 
     // ===========================================================
@@ -37,21 +41,32 @@ public class Room {
     // Fields
     // ===========================================================
     
-    protected GameMap mParentMap;
+    @Attribute(name="x")
     protected int mX = 0;
+    
+    @Attribute(name="y")
     protected int mY = 0;
+    
+    @ElementArray(name="accessable")
     protected boolean[] mAccessable = new boolean[Direction.values().length];
+    
+    @Attribute(name="chest")
     protected boolean mChest;
+    
+    @Attribute(name="stairs_up")
     protected boolean mStairsUp;
+    
+    @Attribute(name="stairs_down")
     protected boolean mStairsDown;
+    
+    @Attribute(name="room_state")
     protected RoomState mRoomState;
     
     // ===========================================================
     // Constructors
     // ===========================================================
     
-    public Room(GameMap parent, int x, int y) {
-        mParentMap = parent;
+    public Room(int x, int y) {
         mX = x;
         mY = y;
         for (int i = 0; i < 4; i++) mAccessable[i] = false;
@@ -143,14 +158,23 @@ public class Room {
     // Methods
     // ===========================================================
     
+    public void translateMZRoom(net.bytten.metazelda.Room room) {
+        if (room.isStart()) setStairsUp(true);
+        
+        if (room.isGoal()) setStairsDown(true);
+        
+        // Set room accessibility
+        for (net.bytten.metazelda.Direction d: net.bytten.metazelda.Direction.values()) {
+            if (!(room.getEdge(d) == null)) {
+                setAccessable(d, true);
+            }
+        } 
+    }
+    
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
-    
-    
-        
-    
-    
+
     public enum RoomState {
         ROOM_HIDDEN(0), ROOM_SPOTTED(1), ROOM_VISITED(2), ROOM_OCCUPIED(3);
         

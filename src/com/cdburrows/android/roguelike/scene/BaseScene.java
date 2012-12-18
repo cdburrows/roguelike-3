@@ -47,6 +47,7 @@ import org.anddev.andengine.util.modifier.ease.EaseLinear;
 import com.cdburrows.android.roguelike.RoguelikeActivity;
 
 
+import android.util.Log;
 import android.view.Display;
 
 /**
@@ -70,7 +71,8 @@ public abstract class BaseScene extends Scene {
     
     protected boolean mLoaded;
     protected boolean mPrepared;
-    protected boolean mTransitionOver;
+    protected boolean mTransitioning;
+    protected static boolean mPaused;
     
     private BitmapTextureAtlas mBitmapTextureAtlas;
     private TextureRegion mFadeTextureRegion;
@@ -103,7 +105,7 @@ public abstract class BaseScene extends Scene {
     
     public float getCenterY() { return mCameraHeight / 2; }
     
-    protected void setTransitioning(boolean value) { mTransitionOver = true; }
+    protected void setTransitioning(boolean value) { mTransitioning = value; Log.d("SCENE", "Transitioning: " + value); }
     
     // ===========================================================
     // Inherited Methods
@@ -114,6 +116,8 @@ public abstract class BaseScene extends Scene {
     public abstract void prepare(IEntityModifierListener preparedListener);
     
     public abstract void pause();
+    
+    public abstract void resume();
     
     public abstract void destroy();
     
@@ -128,47 +132,91 @@ public abstract class BaseScene extends Scene {
     /**
      * Fades a scene out
      */
-    public void fadeOut(float duration, IEntityModifierListener listener) {
+    public void fadeOut(float duration, final IEntityModifierListener listener) {
+        if (mTransitioning) {
+            Log.d("SCENE", "ERROR: Fade out canceled!");
+            return;
+        }
+        
+        Log.d("SCENE", "FADE OUT CALLED");
+        
+        setTransitioning(true);
+        
         mCamera.updateChaseEntity();
         fadeSprite.setPosition(mCamera.getMinX(), mCamera.getMinY());
-        AlphaModifier prFadeOutModifier = new FadeInModifier(duration, listener, EaseLinear.getInstance());
+        
+        IEntityModifierListener fadeListener = new IEntityModifierListener() {
+            public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+                if (listener != null) listener.onModifierStarted(pModifier, pItem);
+                Log.d("SCENE", "FADE OUT STARTED");
+            }
+            public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+                if (listener != null)  listener.onModifierFinished(pModifier, pItem);
+                Log.d("SCENE", "FADE OUT FINISHED");
+                setTransitioning(false);
+            }
+        };
+        
+        AlphaModifier prFadeOutModifier = new FadeInModifier(duration, fadeListener, EaseLinear.getInstance());
         prFadeOutModifier.setRemoveWhenFinished(true);
+        
         fadeSprite.setAlpha(0.0f);
         if (!fadeSprite.hasParent()) this.attachChild(fadeSprite);
         fadeSprite.registerEntityModifier(prFadeOutModifier);
     }
     
-    // Broken?
+    IEntityModifierListener fadeInListener = new IEntityModifierListener() {
+        public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+            Log.d("SCENE", "FADE IN STARTED");
+            //if (listener != null) listener.onModifierStarted(pModifier, pItem);
+        }
+        public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+            Log.d("SCENE", "FADE IN FINISHED");
+            //if (listener != null)  listener.onModifierFinished(pModifier, pItem);
+            setTransitioning(false);
+            //listener.onModifierFinished(null, null);
+        }
+    };
+    
+    /**
+     * Fades a scene in
+     */
+    public void fadeIn(float duration, final IEntityModifierListener listener) {
+        if (mTransitioning) {
+            Log.d("SCENE", "ERROR: Fade in canceled!");
+            return;
+        }
+        
+        setTransitioning(true);
+        
+        mCamera.updateChaseEntity();
+        fadeSprite.setPosition(mCamera.getMinX(), mCamera.getMinY());
+        
+        Log.d("SCENE", "FADE IN START");
+        
+
+        AlphaModifier prFadeOutModifier = new FadeOutModifier(duration, fadeInListener, EaseLinear.getInstance());
+        prFadeOutModifier.setRemoveWhenFinished(true);
+        
+        fadeSprite.setAlpha(1.0f);
+        if (!fadeSprite.hasParent()) attachChild(fadeSprite);
+        fadeSprite.registerEntityModifier(prFadeOutModifier);
+        
+        Log.d("SCENE", "FADE IN EXIT");
+    }
+    
+    /**
+     * Dims a scene
+     * @param duration
+     * @param from
+     * @param to
+     */
     public void fadeTo(float duration, float from, float to) {
         mCamera.updateChaseEntity();
         fadeSprite.setPosition(mCamera.getMinX(), mCamera.getMinY());
         AlphaModifier fadeModifier = new AlphaModifier(duration, from, to, EaseLinear.getInstance());
         fadeModifier.setRemoveWhenFinished(true);
         fadeSprite.registerEntityModifier(fadeModifier);
-    }
-    
-    /**
-     * Fades a scene in
-     */
-    public void fadeIn(float duration, final IEntityModifierListener listener) {
-        mCamera.updateChaseEntity();
-        fadeSprite.setPosition(mCamera.getMinX(), mCamera.getMinY());
-        
-
-        IEntityModifierListener fadeListener = new IEntityModifierListener() {
-            public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) { }
-            public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
-                setTransitioning(false);
-                //listener.onModifierFinished(null, null);
-            }
-        };
-
-        AlphaModifier prFadeOutModifier = new FadeOutModifier(duration, fadeListener, EaseLinear.getInstance());
-        prFadeOutModifier.setRemoveWhenFinished(true);
-        
-        fadeSprite.setAlpha(1.0f);
-        if (!fadeSprite.hasParent()) attachChild(fadeSprite);
-        fadeSprite.registerEntityModifier(prFadeOutModifier);
     }
     
     /**

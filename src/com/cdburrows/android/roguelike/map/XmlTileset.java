@@ -21,7 +21,7 @@ import com.cdburrows.android.roguelike.tmx.TmxImage;
 import com.cdburrows.android.roguelike.tmx.TmxTileset;
 
 @Root(name="tileset")
-public class XmlDungeonTileset {
+public class XmlTileset {
     
     public static final int TILE_COLS = 8;
     
@@ -51,8 +51,22 @@ public class XmlDungeonTileset {
     @Attribute(name="feature_end", required=false)
     public int mFeatureEnd;
     
+    @Attribute(name="stairs_up", required=false)
+    public int mStairsUp;
+    
+    @Attribute(name="stairs_down", required=false)
+    public int mStairsDown;
+    
     public int getFloorTile() {
         return mWallTile + (5 * TILE_COLS) + 1; 
+    }
+
+    public int getStairsDown() {
+        return mStairsDown;
+    }
+    
+    public int getStairsUp() {
+        return mStairsUp;
     }
 
     public int getWallTile() {
@@ -171,7 +185,11 @@ public class XmlDungeonTileset {
     }    
     
     public boolean isFloorTile(int i) {
-        return (i == getFloorTile() || (i >= mFeatureStart && i <= mFeatureEnd));
+        return (isWalkableTile(i) || (i >= mFeatureStart && i <= mFeatureEnd)) ;
+    }
+    
+    public boolean isWalkableTile(int i) {
+        return (i == getFloorTile() || i == mStairsDown || i == mStairsUp) ;
     }
     
     public boolean isWallTile(int i) {
