@@ -27,7 +27,6 @@ public class TmxData {
     public TmxData() {}
     
     public TmxData(int width, int height) {
-        
         encoding = "base64";
         compression = "gzip";
     }

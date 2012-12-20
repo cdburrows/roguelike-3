@@ -25,13 +25,8 @@
 
 package com.cdburrows.android.roguelike.map;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXLayer;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXTiledMap;
-
-import android.util.Log;
 
 import com.cdburrows.android.roguelike.Direction;
 import com.cdburrows.android.roguelike.RoguelikeActivity;
@@ -162,6 +157,14 @@ public class GameMap {
     
     public void setRooms(Room[][] rooms) {
         mRooms = rooms;
+    }
+
+    public float getSpriteWidth() {
+        return mTmxMap.getWidth() * mTmxMap.getTileWidth();
+    }
+    
+    public float getSpriteHeight() {
+        return mTmxMap.getHeight() * mTmxMap.getTileHeight();
     }
     
     // ===========================================================

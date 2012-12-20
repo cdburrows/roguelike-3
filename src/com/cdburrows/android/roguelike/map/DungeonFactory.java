@@ -42,16 +42,6 @@ public class DungeonFactory {
     // Constants
     // ===========================================================
     
-    private static final int TILE_NW = 1;
-    private static final int TILE_N = 1;
-    private static final int TILE_NE = 2;
-    private static final int TILE_W = 2;
-    private static final int TILE_E = 4;
-    private static final int TILE_SW = 4;
-    private static final int TILE_S = 8;
-    private static final int TILE_SE = 8;
-    private static final float FEATURE_RATE = 0.02f;
-    
     // ===========================================================
     // Fields
     // ===========================================================
@@ -108,7 +98,7 @@ public class DungeonFactory {
         // Fill in the map with walls
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-               tiles[y][x] = tileset.getWallTile();
+               tiles[y][x] = tileset.getRoofTile();
             }
         }
         
@@ -142,116 +132,17 @@ public class DungeonFactory {
                 Room room = rooms[y][x];
                 if (room.isAccessable(Direction.DIRECTION_DOWN)) buildPath(tiles, floor, room, rooms[y+1][x]);
                 if (room.isAccessable(Direction.DIRECTION_RIGHT)) buildPath(tiles, floor, room, rooms[y][x+1]);
+                if (floor.mHasWalls) buildWalls(tiles, floor, rooms[y][x]);
             }
         }
-             
-        dynamicTiles(tiles, tileset);
         
         TmxMap tmxMap = new TmxMap(width, height);
         tmxMap.addTileset(DungeonManager.getTileset(floor).toTmx());
-        tmxMap.build(tiles);
+        tmxMap.buildDynamicMap(tiles, floor.mDepth);
         
         sRand = null;
         return new GameMap(tmxMap, rooms, startX, startY);
-    }
-    
-    /**
-     * Applies dynamic tiling methods to a map.
-     * 
-     * @param tiles
-     * @param tileset
-     */
-    private static void dynamicTiles(int[][] tiles, XmlTileset tileset) {
-            // Touch up wall edges
-           int d = 0, c = 0;
-           for (int y = 0; y < tiles.length; y++) {
-               for (int x = 0; x < tiles[0].length; x++) {
-                   if (tileset.isWallTile(tiles[y][x])) {
-                       d = 0;
-                       c = 0;
-                       if (y > 0 && tileset.isFloorTile(tiles[y-1][x]))  c = (c | TILE_N);
-                       if (x > 0 && tileset.isFloorTile(tiles[y][x-1]))  c = (c | TILE_W);
-                       if (y < tiles.length-1 && tileset.isFloorTile(tiles[y+1][x]))  c = (c | TILE_S);
-                       if (x < tiles[0].length-1 && tileset.isFloorTile(tiles[y][x+1]))  c = (c | TILE_E);
-                       
-                       if (x > 0 && y > 0 && tileset.isFloorTile(tiles[y-1][x-1])) d = (d | TILE_NW);
-                       if (x < tiles[0].length-1 && y > 0 && tileset.isFloorTile(tiles[y-1][x+1])) d = (d | TILE_NE);
-                       if (x < 0 && y < tiles.length-1 && tileset.isFloorTile(tiles[y+1][x-1])) d = (d | TILE_SW);
-                       if (x < tiles[0].length-1 && y < tiles.length-1 && tileset.isFloorTile(tiles[y+1][x+1])) d = (d | TILE_SE);
-
-                       if (c == 0) {                      
-                           tiles[y][x] = tileset.getWallFillTile();
-                       
-     
-                       } else if (c == (TILE_W | TILE_N | TILE_E) )  {
-                           tiles[y][x] = tileset.getWallInNTile();
-                           
-                       } else if (c == (TILE_S | TILE_N | TILE_E) )  {
-                           tiles[y][x] = tileset.getWallInETile();
-                           
-                       } else if (c == (TILE_W | TILE_S | TILE_E) )  {
-                           tiles[y][x] = tileset.getWallInSTile();
-                           
-                       } else if (c == (TILE_W | TILE_N | TILE_S) )  {
-                           tiles[y][x] = tileset.getWallInWTile();
-                           
-                           
-                       } else if (c == (TILE_N | TILE_E) && (d & TILE_NE) == TILE_NE)  {
-                           tiles[y][x] = tileset.getWallNETile();
-                           
-                       } else if (c == (TILE_S | TILE_E) && (d & TILE_SE) == TILE_SE)  {
-                           tiles[y][x] = tileset.getWallSETile();
-                       
-                       } else if (c == (TILE_S | TILE_W) && (d & TILE_SW) == TILE_SW)  {
-                           tiles[y][x] = tileset.getWallSWTile();
-                           
-                       } else if (c == (TILE_N | TILE_W) && (d & TILE_NW) == TILE_NW)  {
-                           tiles[y][x] = tileset.getWallNWTile();
-                           
-                           
-                       } else if (c == (TILE_N | TILE_E) )  {
-                           tiles[y][x] = tileset.getWallNETile();
-                           
-                       } else if (c == (TILE_S | TILE_E) )  {
-                           tiles[y][x] = tileset.getWallSETile();
-                       
-                       } else if (c == (TILE_S | TILE_W) )  {
-                           tiles[y][x] = tileset.getWallSWTile();
-                           
-                       } else if (c == (TILE_N | TILE_W) )  {
-                           tiles[y][x] = tileset.getWallNWTile();
-                           
-                           
-                       } else if (c == TILE_N)  {
-                           tiles[y][x] = tileset.getWallNTile();
-                       
-                       } else if (c == TILE_E)  {
-                           tiles[y][x] = tileset.getWallETile();
-                           
-                       } else if (c == TILE_S)  {
-                           tiles[y][x] = tileset.getWallSTile();
-                           
-                       } else if (c == TILE_W)  {
-                           tiles[y][x] = tileset.getWallWTile();
-                       
-                           
-                       } else if (d == TILE_SE)  {
-                           tiles[y][x] = tileset.getWallWTile();
-                       
-                       } else if (d == TILE_SW)  {
-                           tiles[y][x] = tileset.getWallETile();
-                           
-                       } else if (d == TILE_NE)  {
-                           tiles[y][x] = tileset.getWallSTile();
-                           
-                       } else if (d == TILE_NW)  {
-                           tiles[y][x] = tileset.getWallWTile();
-                           
-                       }
-                   }
-               }
-           }
-       }    
+    }  
        
    /**
     * Creates a path between two adjacent Rooms.
@@ -276,8 +167,8 @@ public class DungeonFactory {
            int offset = sRand.nextInt(pathSize);   // how offset the path is
                    
            if (!tileset.isWalkableTile(tiles[srcY][srcX+i])) {
-               tiles[srcY-(pathSize + offset)][srcX+i] = tileset.getWallTile();
-               tiles[srcY + (offset+1)][srcX+i] = tileset.getWallTile();
+               tiles[srcY-(pathSize + offset)][srcX+i] = tileset.getRoofTile();
+               tiles[srcY + (offset+1)][srcX+i] = tileset.getRoofTile();
                for (int j = 0; j < pathSize; j++) {
                   tiles[srcY - (pathSize - offset - (j+1))][srcX+i] = tileset.getFloorTile();
                }  
@@ -292,8 +183,8 @@ public class DungeonFactory {
            int offset = sRand.nextInt(pathSize);
                    
            if (!tileset.isWalkableTile(tiles[srcY+i][srcX])) {
-               tiles[srcY+i][srcX - (pathSize + offset)] = tileset.getWallTile();
-               tiles[srcY+i][srcX + (offset+1)] = tileset.getWallTile();
+               tiles[srcY+i][srcX - (pathSize + offset)] = tileset.getRoofTile();
+               tiles[srcY+i][srcX + (offset+1)] = tileset.getRoofTile();
                for (int j = 0; j < pathSize; j++) {
                    tiles[srcY+i][srcX - (pathSize - offset - (j+1))] = tileset.getFloorTile();
                }  
@@ -314,7 +205,7 @@ public class DungeonFactory {
            for (int j = floor.mRoomPadding; j < floor.mRoomWidth - floor.mRoomPadding; j++) {
                if (i == floor.mRoomPadding || i == floor.mRoomHeight-1-floor.mRoomPadding 
                        || j == floor.mRoomPadding || j == floor.mRoomWidth-1-floor.mRoomPadding) {
-                   tiles[room.getY()+i][room.getX()+j] = tileset.getWallTile();
+                   tiles[room.getY()+i][room.getX()+j] = tileset.getRoofTile();
                } else {
                    tiles[room.getY()+i][room.getX()+j] = tileset.getFloorTile();
                }
@@ -328,19 +219,29 @@ public class DungeonFactory {
                    if (i == floor.mRoomPadding+k || i == floor.mRoomHeight-1-floor.mRoomPadding-k 
                            || j == floor.mRoomPadding+k || j == floor.mRoomWidth-1-floor.mRoomPadding-k) {
                        if (sRand.nextFloat() < (floor.mErodeRate / k)) {
-                           tiles[room.getY()+i][room.getX()+j] = tileset.getWallTile();
+                           tiles[room.getY()+i][room.getX()+j] = tileset.getRoofTile();
                        }
                    }
                }
            }
        }
        
+       /*
+       for (int i = 0; i < floor.mRoomHeight; i++) {
+           for (int j = 0; j < floor.mRoomWidth; j++) {
+               if (tileset.isWallTile(tiles[room.getY()+i][room.getX()+j]) && sRand.nextFloat() < (0.015f)) {
+                   tiles[room.getY()+i][room.getX()+j] = tileset.getFloorTile();
+               }
+           }
+       }
+       */
+       
        // Place features
        int feature;
        for (int i = floor.mRoomPadding; i < floor.mRoomHeight - floor.mRoomPadding; i++) {
            for (int j = floor.mRoomPadding; j < floor.mRoomWidth - floor.mRoomPadding; j++) {
                if (tiles[room.getY()+i][room.getX()+j] == tileset.getFloorTile()) {
-                   if (sRand.nextFloat() < FEATURE_RATE) {
+                   if (sRand.nextFloat() < floor.mFeatureRate) {
                        feature = tileset.getRandomFeature();
                        if (feature > 0) {
                            tiles[room.getY()+i][room.getX()+j] = feature;
@@ -360,6 +261,18 @@ public class DungeonFactory {
            Log.d("MAP", "stairs up " + (room.getX()/floor.mRoomWidth)  + ", " + (room.getY()/floor.mRoomHeight));
        }
 
+   }
+   
+   private static void buildWalls(int[][] tiles, XmlFloor floor, Room room) {
+       XmlTileset tileset = DungeonManager.getTileset(floor);
+       for (int i = 0; i < floor.mRoomHeight; i++) {
+           for (int j = 0; j < floor.mRoomWidth; j++) {
+               if (tileset.isFloorTile(tiles[room.getY()+i][room.getX()+j]) && 
+                       !tileset.isFloorTile(tiles[room.getY()+i-1][room.getX()+j])) {
+                   tiles[room.getY()+i-1][room.getX()+j] = tileset.getWallTile();
+               }
+           }
+       }
    }
     
     // ===========================================================

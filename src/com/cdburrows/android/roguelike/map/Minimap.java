@@ -218,8 +218,8 @@ public class Minimap {
         sMap = map;
         sMinimapWidth = sMap.getRoomCols() * ICON_WIDTH * RoguelikeActivity.sScaleX * 2;
         sMinimapHeight = sMap.getRoomRows() * ICON_HEIGHT * RoguelikeActivity.sScaleY * 2;
-        sMinimapScaleX = sMinimapWidth / (sMap.getSprite(0).getWidth() * RoguelikeActivity.sScaleX); 
-        sMinimapScaleY = sMinimapHeight / (sMap.getSprite(0).getHeight() * RoguelikeActivity.sScaleY);
+        sMinimapScaleX = sMinimapWidth / (sMap.getSpriteWidth() * RoguelikeActivity.sScaleX); 
+        sMinimapScaleY = sMinimapHeight / (sMap.getSpriteHeight() * RoguelikeActivity.sScaleY);
         
         sRoomSprite = new Sprite[sMap.getRoomCols()][sMap.getRoomRows()];
         sHorizontalPassageSprite = new Sprite[sMap.getRoomCols()][sMap.getRoomRows()];

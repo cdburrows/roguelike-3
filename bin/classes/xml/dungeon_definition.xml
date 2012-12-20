@@ -2,14 +2,17 @@
 
 <dungeon_definition>
     
-    <tileset name="forest_tiles" path="gfx/forest_tiles.png" tile_height="32" tile_width="32" 
-        wall="1" feature_start="5" feature_end="8" stairs_up="12" stairs_down="13"/>
+    <tileset name="forest_tiles" path="gfx/forest_tiles.png" tile_height="32" tile_width="32" simple="true" 
+        floor="8" roof="1" feature_start="4" feature_end="7" stairs_up="12" stairs_down="13"/>
     
     <tileset name="dungeon_tiles" path="gfx/dungeon_tiles.png" tile_height="32" tile_width="32" 
-        wall="1" feature_start="0" feature_end="0" stairs_up="12" stairs_down="13"/>
+        floor="8" roof="1" wall="7" feature_start="0" feature_end="0" stairs_up="12" stairs_down="13"/>
+    
+    <tileset name="cavern_tiles" path="gfx/cavern_tiles.png" tile_height="32" tile_width="32" 
+        floor="8" roof="1" wall="7" feature_start="0" feature_end="0" stairs_up="12" stairs_down="13"/>
     
     <floor tileset="forest_tiles" depth="0" num_rooms="10" room_width="11" room_height="9" room_padding="2"
-        battle_bg="forest_bg_320.png" monster_spawn_rate = "0.20f" chest_spawn_rate = "0.10f"
+        battle_bg="forest_bg_320.png" has_walls="false" monster_spawn_rate = "0.10f" chest_spawn_rate = "0.20f" feature_rate="0.5f"
         min_v_path="1" max_v_path="3" min_h_path="1" max_h_path="3" erode="0.35f">
       
         <rarity id="0" rate="20"/>
@@ -48,7 +51,7 @@
     
     
     <floor tileset="dungeon_tiles" depth="1" num_rooms="20" room_width="11" room_height="9" room_padding="2"
-        battle_bg="dungeon_bg_320.png" monster_spawn_rate = "0.20f" chest_spawn_rate = "0.15f"
+        battle_bg="dungeon_bg_320.png" has_walls="true" monster_spawn_rate = "0.15f" chest_spawn_rate = "0.15f"
         min_v_path="1" max_v_path="1" min_h_path="1" max_h_path="1" erode="0.0f">
       
         <rarity id="0" rate="20"/>
@@ -82,6 +85,44 @@
             <min_speed>50.0f</min_speed>
             <max_speed>70.0f</max_speed>
             <xp>12</xp>
+        </monster>
+    </floor>
+    
+    <floor tileset="cavern_tiles" depth="2" num_rooms="30" room_width="9" room_height="7" room_padding="1"
+        battle_bg="dungeon_bg_320.png" has_walls="true" monster_spawn_rate = "0.20f" chest_spawn_rate = "0.15f"
+        min_v_path="1" max_v_path="2" min_h_path="1" max_h_path="2" erode="0.1f">
+      
+        <rarity id="0" rate="20"/>
+        <rarity id="1" rate="50"/>
+        <rarity id="2" rate="20"/>
+        <rarity id="3" rate="8"/>
+        <rarity id="4" rate="2"/>
+        
+        <monster id="Slime" rate="50" sprite_path="slime.png">
+            <min_level>5</min_level>
+            <max_level>7</max_level>
+            <min_hp>90</min_hp>
+            <max_hp>140</max_hp>
+            <min_attack>6</min_attack>
+            <max_attack>10</max_attack>
+            <min_defense>2</min_defense>
+            <max_defense>6</max_defense>
+            <min_speed>3.0f</min_speed>
+            <max_speed>4.0f</max_speed>
+            <xp>8</xp>
+        </monster>
+        <monster id="Bat" rate="50"sprite_path="bat.png" offY ="0f">
+            <min_level>7</min_level>
+            <max_level>40</max_level>
+            <min_hp>75</min_hp>
+            <max_hp>115</max_hp>
+            <min_attack>4</min_attack>
+            <max_attack>8</max_attack>
+            <min_defense>2</min_defense>
+            <max_defense>5</max_defense>
+            <min_speed>50.0f</min_speed>
+            <max_speed>70.0f</max_speed>
+            <xp>120</xp>
         </monster>
     </floor>
 </dungeon_definition>

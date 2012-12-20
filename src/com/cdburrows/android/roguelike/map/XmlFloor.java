@@ -20,12 +20,18 @@ public class XmlFloor {
     @Attribute(name="battle_bg")
     public String mBattleBackgroundName;
     
+    @Attribute(name="has_walls", required=false)
+    public boolean mHasWalls = false;
+    
     @Attribute(name="monster_spawn_rate")
     public float mMonsterSpawnRate;
     
     @Attribute(name="chest_spawn_rate")
     public float mChestSpawnRate;
    
+    @Attribute(name="feature_rate", required=false)
+    public float mFeatureRate=0.02f;
+    
     @Attribute(name="num_rooms", required = false)
     public int mNumRooms;
     

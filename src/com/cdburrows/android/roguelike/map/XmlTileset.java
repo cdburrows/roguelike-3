@@ -2,14 +2,9 @@ package com.cdburrows.android.roguelike.map;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementArray;
-import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import android.content.res.AssetManager;
@@ -39,17 +34,26 @@ public class XmlTileset {
     @Attribute(name="tile_width")
     public int mTileWidth;   
     
-    //@Attribute(name="floor")
-    //public int mFloorTile;
+    @Attribute(name="simple", required=false)
+    public boolean mSimple=false; 
     
-    @Attribute(name="wall")
-    public int mWallTile;
+    @Attribute(name="floor")
+    public int mFloorTile;
+    
+    @Attribute(name="roof")
+    public int mRoofTile;
+    
+    @Attribute(name="wall", required=false)
+    public int mWallTile = 0;
+    
+    @Attribute(name="simple_tiles", required=false)
+    public boolean mSimpleTiles=false;
     
     @Attribute(name="feature_start", required=false)
-    public int mFeatureStart;
+    public int mFeatureStart=0;
     
     @Attribute(name="feature_end", required=false)
-    public int mFeatureEnd;
+    public int mFeatureEnd=0;
     
     @Attribute(name="stairs_up", required=false)
     public int mStairsUp;
@@ -58,7 +62,7 @@ public class XmlTileset {
     public int mStairsDown;
     
     public int getFloorTile() {
-        return mWallTile + (5 * TILE_COLS) + 1; 
+        return mFloorTile;
     }
 
     public int getStairsDown() {
@@ -69,99 +73,16 @@ public class XmlTileset {
         return mStairsUp;
     }
 
+    public int getRoofTile() {
+        return mRoofTile;
+    }
+    
     public int getWallTile() {
         return mWallTile;
     }
     
-    public int getWallNWTile() {
-        return mWallTile + (1 * TILE_COLS) + 0;
-    }
-    
-    public int getWallNTile() {
-        return mWallTile + (1 * TILE_COLS) + 1;
-    }
-    
-    public int getWallNETile() {
-        return mWallTile + (1 * TILE_COLS) + 2;
-    }
-    
-    public int getWallWTile() {
-        return mWallTile + (2 * TILE_COLS) + 0;
-    }
-    
-    public int getWallFillTile() {
-        return mWallTile + (2 * TILE_COLS) + 1;
-    }
-    
-    public int getWallETile() {
-        return mWallTile + (2 * TILE_COLS) + 2;
-    }
-    
-    public int getWallSWTile() {
-        return mWallTile + (3 * TILE_COLS) + 0;
-    }
-    
-    public int getWallSTile() {
-        return mWallTile + (3 * TILE_COLS) + 1;
-    }
-    
-    public int getWallSETile() {
-        return mWallTile + (3 * TILE_COLS) + 2;
-    }
-    
-    public int getWallInNTile() {
-        return mWallTile + (4 * TILE_COLS) + 1;
-    }
-    
-    public int getWallInETile() {
-        return mWallTile + (5 * TILE_COLS) + 2;
-    }
-    
-    public int getWallInSTile() {
-        return mWallTile + (6 * TILE_COLS) + 1;
-    }
-    
-    public int getWallInWTile() {
-        return mWallTile + (5 * TILE_COLS) + 0;
-    }
-    
-    /*
-    public int getWallUpTile() {
-        return mWallUpTile;
-    }
-    
-    public int getWallRightTile() {
-        return mWallRightTile;
-    }
-    
-    public int getWallDownTile() {
-        return mWallDownTile;
-    }
-    
-    public int getWallLeftTile() {
-        return mWallLeftTile;
-    }
-    
-    public int getWallDownLeftTile() {
-        return mWallDownLeftTile;
-    }
-    
-    public int getWallDownRightTile() {
-        return mWallDownRightTile;
-    }
-    
-    public int getWallDownLeftRightTile() {
-        return mWallDownLeftRightTile;
-    }
-    
-    public int getWallLeftRightTile() {
-        return mWallLeftRightTile;
-    }
-    */
-    
-    public void halveTileSize() {
-        mTileHeight /= 2;
-        mTileWidth /= 2;
+    public boolean isSimple() {
+        return mSimple;
     }
     
     public int getRandomFeature() { 
@@ -192,10 +113,8 @@ public class XmlTileset {
         return (i == getFloorTile() || i == mStairsDown || i == mStairsUp) ;
     }
     
-    public boolean isWallTile(int i) {
-        return (i == mWallTile || i == getWallNWTile() || i == getWallNTile() || i == getWallNETile()
-                               || i == getWallWTile() || i == getWallFillTile() || i == getWallETile()
-                               || i == getWallSWTile() || i == getWallSTile() || i == getWallSETile());
+    public boolean isRoofTile(int i) {
+        return i == mRoofTile;
     }
 }
     

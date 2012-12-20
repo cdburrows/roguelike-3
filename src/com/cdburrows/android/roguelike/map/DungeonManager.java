@@ -1,17 +1,11 @@
 package com.cdburrows.android.roguelike.map;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import org.anddev.andengine.entity.IEntity;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXLayer;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXTiledMap;
-import org.anddev.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
-import org.anddev.andengine.util.modifier.IModifier;
-
 import android.util.Log;
 
 import com.cdburrows.android.roguelike.Direction;
@@ -19,9 +13,6 @@ import com.cdburrows.android.roguelike.RoguelikeActivity;
 import com.cdburrows.android.roguelike.map.Room.RoomState;
 import com.cdburrows.android.roguelike.monster.XmlDungeonMonsterTemplate;
 import com.cdburrows.android.roguelike.scene.BattleScene;
-import com.cdburrows.android.roguelike.scene.LoadingScene;
-import com.cdburrows.android.roguelike.scene.MainScene;
-import com.cdburrows.android.roguelike.scene.SceneManager;
 
 public class DungeonManager {
     
@@ -66,7 +57,7 @@ public class DungeonManager {
     }
 
     public static TMXLayer getSprite(int layer) {
-        TMXLayer l = sGameMap.getTmxTiledMap().getTMXLayers().get(layer);
+        TMXLayer l = sGameMap.getSprite(0);
         l.setScaleCenter(0, 0);
         l.setScale(RoguelikeActivity.sScaleX, RoguelikeActivity.sScaleY);
         return l;
@@ -131,7 +122,7 @@ public class DungeonManager {
             sMapSeeds[i] = rand.nextLong();
         }
         
-        loadFloor(0, true);
+        loadFloor(sCurrentFloorLevel, true);
     }
 
     public static int getStartX() {
@@ -223,6 +214,10 @@ public class DungeonManager {
 
     public static String getBattleBackground() {
         return sCurrentFloor.mBattleBackgroundName;
+    }
+
+    public static XmlTileset getTileset(int depth) {
+         return getTileset(sDungeonDefinition.getFloor(depth));
     }
     
     // ===========================================================

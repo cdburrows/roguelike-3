@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/padding_medium"
+        android:layout_marginTop="20dp"
+        android:text="Options"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/title_size"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:gravity="left"
+        android:orientation="vertical" >
+
+        <CheckedTextView
+            android:id="@+id/checkedTextView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enable Music" />
+
+        <CheckedTextView
+            android:id="@+id/checkedTextView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enable Sound Effects" />
+
+    </LinearLayout>
+
+</RelativeLayout>
