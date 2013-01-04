@@ -294,7 +294,7 @@ public class StatusScene extends BaseScene implements IScrollDetectorListener {
                 ITEM_SCROLL_WIDTH * sScaleX, ITEM_SCROLL_HEIGHT * sScaleY, new ISelectListener() {
                     public void itemSelected(Item item) {
                         equip(item);
-                        sWeaponsScrollList.setData(sPlayer.getWeaponList());
+                        sWeaponsScrollList.setData(sPlayer.mInventory.getWeaponList());
                         updatePlayerData();
                     }
                 });
@@ -306,7 +306,7 @@ public class StatusScene extends BaseScene implements IScrollDetectorListener {
                 ITEM_SCROLL_WIDTH * sScaleX, ITEM_SCROLL_HEIGHT * sScaleY, new ISelectListener() {
                     public void itemSelected(Item item) {
                         equip(item);
-                        sArmourScrollList.setData(sPlayer.getArmourList());
+                        sArmourScrollList.setData(sPlayer.mInventory.getArmourList());
                         updatePlayerData();
                     }
                 });
@@ -328,10 +328,10 @@ public class StatusScene extends BaseScene implements IScrollDetectorListener {
         updatePlayerData();
         resetIcons();
 
-        if (sPlayer.getWeaponList() != null)
-            sWeaponsScrollList.setData(sPlayer.getWeaponList());
-        if (sPlayer.getArmourList() != null)
-            sArmourScrollList.setData(sPlayer.getArmourList());
+        if (sPlayer.mInventory.getWeaponList() != null)
+            sWeaponsScrollList.setData(sPlayer.mInventory.getWeaponList());
+        if (sPlayer.mInventory.getArmourList() != null)
+            sArmourScrollList.setData(sPlayer.mInventory.getArmourList());
 
         sStatusBackgroundSprite.setVisible(false);
         sWeaponsBackgroundSprite.setVisible(false);
@@ -491,35 +491,35 @@ public class StatusScene extends BaseScene implements IScrollDetectorListener {
 
             public void run() {
                 // Status panel
-                sNameText.setText(sPlayer.getName());
-                sLevelText.setText("Level " + sPlayer.getLevel()); // String.format("%02d",
+                sNameText.setText(sPlayer.mStats.getName());
+                sLevelText.setText("Level " + sPlayer.mStats.getLevel()); // String.format("%02d",
                                                                    // ));
-                sHPText.setText("HP " + String.format("%04d", sPlayer.getCurHP()) + "/"
-                        + String.format("%04d", sPlayer.getMaxHP()));
-                sXPText.setText("XP " + String.format("%04d", sPlayer.getCurXP()) + "/"
-                        + String.format("%04d", sPlayer.getNextXP()));
-                sAttackText.setText("Attack " + String.format("%03d", sPlayer.getTotalAttack()));
-                sDefenseText.setText("Defense " + String.format("%03d", sPlayer.getTotalDefense()));
-                sMagicText.setText("Magic " + String.format("%03d", sPlayer.getTotalMagic()));
-                sPotionText.setText("x" + String.format("%02d", sPlayer.getNumPotions()));
+                sHPText.setText("HP " + String.format("%04d", sPlayer.mStats.getCurHP()) + "/"
+                        + String.format("%04d", sPlayer.mStats.getMaxHP()));
+                sXPText.setText("XP " + String.format("%04d", sPlayer.mStats.getCurXP()) + "/"
+                        + String.format("%04d", sPlayer.mStats.getNextXP()));
+                sAttackText.setText("Attack " + String.format("%03d", sPlayer.mStats.getTotalAttack()));
+                sDefenseText.setText("Defense " + String.format("%03d", sPlayer.mStats.getTotalDefense()));
+                sMagicText.setText("Magic " + String.format("%03d", sPlayer.mStats.getTotalMagic()));
+                sPotionText.setText("x" + String.format("%02d", sPlayer.mInventory.getNumPotions()));
 
                 if (sWeaponSprite != null)
                     sWeaponSprite.detachSelf();
-                sWeaponSprite = sPlayer.getWeapon().copySprite();
+                sWeaponSprite = sPlayer.mInventory.getEquippedWeapon().copySprite();
                 sWeaponSprite.setPosition((int)(WEAPON_SPRITE_X * sScaleX),
                         (int)(WEAPON_SPRITE_Y * sScaleY));
                 sStatusBackgroundSprite.attachChild(sWeaponSprite);
 
                 if (sArmourSprite != null)
                     sArmourSprite.detachSelf();
-                sArmourSprite = sPlayer.getArmour().copySprite();
+                sArmourSprite = sPlayer.mInventory.getEquippedArmour().copySprite();
                 sArmourSprite.setPosition(ARMOUR_SPRITE_X * sScaleX, ARMOUR_SPRITE_Y * sScaleY);
                 sStatusBackgroundSprite.attachChild(sArmourSprite);
 
                 // Weapons panel
                 if (sEquippedWeaponSprite != null)
                     sEquippedWeaponSprite.detachSelf();
-                sEquippedWeaponSprite = sPlayer.getWeapon().copySprite();
+                sEquippedWeaponSprite = sPlayer.mInventory.getEquippedWeapon().copySprite();
                 sEquippedWeaponSprite.setPosition((int)(EQUIPPED_ITEM_X * sScaleX),
                         (int)(EQUIPPED_ITEM_Y * sScaleY));
                 if (!sEquippedWeaponSprite.hasParent())
@@ -528,7 +528,7 @@ public class StatusScene extends BaseScene implements IScrollDetectorListener {
                 // Armour panel
                 if (sEquippedArmourSprite != null)
                     sEquippedArmourSprite.detachSelf();
-                sEquippedArmourSprite = sPlayer.getArmour().copySprite();
+                sEquippedArmourSprite = sPlayer.mInventory.getEquippedArmour().copySprite();
                 sEquippedArmourSprite.setPosition((int)(EQUIPPED_ITEM_X * sScaleX),
                         (int)(EQUIPPED_ITEM_Y * sScaleY));
                 if (!sEquippedArmourSprite.hasParent())

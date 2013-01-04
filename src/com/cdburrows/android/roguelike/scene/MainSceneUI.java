@@ -216,7 +216,7 @@ public class MainSceneUI {
         mStatusIcon.setCurrentTileIndex(ICON_STATUS_UP);
         // sMapIcon.setCurrentTileIndex(2);
         mPotionIcon.setCurrentTileIndex(ICON_POTION_UP);
-        mPotionText.setText(String.format("%02d", mPlayer.getNumPotions()) + "x");
+        mPotionText.setText(String.format("%02d", mPlayer.mInventory.getNumPotions()) + "x");
         mChest.setVisible(false);
         updateHP();
     }
@@ -305,7 +305,7 @@ public class MainSceneUI {
         mHPBar = new ProgressBar((mCameraWidth / 2)
                 - (HP_BAR_WIDTH * RoguelikeActivity.sScaleX / 2), mCameraHeight
                 - (HP_OFF_Y * RoguelikeActivity.sScaleY), HP_BAR_WIDTH, HP_BAR_HEIGHT,
-                HP_BAR_COLOR, HP_BAR_ALPHA, mPlayer.getMaxHP());
+                HP_BAR_COLOR, HP_BAR_ALPHA, mPlayer.mStats.getMaxHP());
 
         mChest = new Chest(mParent, mCameraWidth / 2, mCameraHeight / 2);
     }
@@ -344,8 +344,8 @@ public class MainSceneUI {
      * Updates the player's health bar.
      */
     private void updateHP() {
-        mHPBar.setMaxValue(mPlayer.getMaxHP());
-        mHPBar.setCurValue(mPlayer.getCurHP());
+        mHPBar.setMaxValue(mPlayer.mStats.getMaxHP());
+        mHPBar.setCurValue(mPlayer.mStats.getCurHP());
     }
 
     // ===========================================================
@@ -426,7 +426,7 @@ public class MainSceneUI {
             } else if (mPotionIcon.contains(mTouchX, mTouchY)) {
                 mParent.usePotion();
                 mPotionIcon.setCurrentTileIndex(ICON_POTION_DOWN);
-                mPotionText.setText(String.format("%02d", mPlayer.getNumPotions()) + "x");
+                mPotionText.setText(String.format("%02d", mPlayer.mInventory.getNumPotions()) + "x");
                 updateHP();
             }
 

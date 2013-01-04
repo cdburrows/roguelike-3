@@ -627,13 +627,13 @@ public class BattleSceneUI {
     }
 
     private void updateHPBar(Player player) {
-        mPlayerHp.setMaxValue(player.getMaxHP());
-        mPlayerHp.setCurValue(player.getCurHP());
+        mPlayerHp.setMaxValue(player.mStats.getMaxHP());
+        mPlayerHp.setCurValue(player.mStats.getCurHP());
     }
 
     private void updateXPBar(Player player) {
-        mXpBarFillSprite.setWidth(((float)XP_BAR_WIDTH - 2) * player.getXPFraction());
-        mLevelText.setText("Lvl " + player.getLevel());
+        mXpBarFillSprite.setWidth(((float)XP_BAR_WIDTH - 2) * player.mStats.getXPFraction());
+        mLevelText.setText("Lvl " + player.mStats.getLevel());
     }
 
     // ===========================================================
@@ -792,7 +792,7 @@ public class BattleSceneUI {
             if (mParent.isSceneReady()) {
                 Player player = mParent.getPlayer();
                 xp += dx * pSecondsElapsed;
-                float fraction = (player.getCurXP() + xp) / player.getNextXP();
+                float fraction = (player.mStats.getCurXP() + xp) / player.mStats.getNextXP();
                 if (fraction >= 1f) {
                     // level up !
 
@@ -800,11 +800,11 @@ public class BattleSceneUI {
                     // gets xp,
                     // and the UI works of other variables.
 
-                    player.increaseXP((int)xp);
+                    player.mStats.increaseXP((int)xp);
                     mXpGained -= (int)xp;
                     dx = mXpGained / (XP_SCROLL_TIME - this.getSecondsElapsed());
                     xp = 0;
-                    fraction = xp / player.getNextXP();
+                    fraction = xp / player.mStats.getNextXP();
                     updateHPBar(player);
                     updateXPBar(player);
                 }

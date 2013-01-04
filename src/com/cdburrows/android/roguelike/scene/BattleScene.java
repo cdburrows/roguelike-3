@@ -186,7 +186,7 @@ public class BattleScene extends BaseScene {
         // Queue skill
         SkillManager.queueAction(this, SkillDirection.getDirection(swipeDirection));
 
-        int damage = mMonster.hit(mPlayer.getTotalAttack());
+        int damage = mMonster.hit(mPlayer.mStats.getTotalAttack());
 
         mUI.playerAttack(mMonster, swipeDirection, damage);
 
@@ -222,7 +222,7 @@ public class BattleScene extends BaseScene {
 
         } else if (spoils < 20) {
             // A potion
-            mPlayer.increasePotions(1);
+            mPlayer.mInventory.changePotions(1);
             mUI.spoilsPotion();
 
         } else {
@@ -240,7 +240,7 @@ public class BattleScene extends BaseScene {
      */
     public void interruptXpFill(int xpGained) {
         mSceneReady = false;
-        mPlayer.increaseXP(xpGained);
+        mPlayer.mStats.increaseXP(xpGained);
     }
 
     /**
@@ -259,7 +259,7 @@ public class BattleScene extends BaseScene {
     }
 
     public void takeDamage() {
-        mPlayer.decreaseHP(RoguelikeActivity.nextInt(10) + 1);
+        mPlayer.mStats.decreaseCurHP(RoguelikeActivity.nextInt(10) + 1);
     }
 
     // ===========================================================

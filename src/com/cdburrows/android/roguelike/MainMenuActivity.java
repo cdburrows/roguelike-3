@@ -35,6 +35,13 @@ import android.widget.TextView;
 
 import com.cburrows.android.R;
 
+/**
+ * Entry point into application. Allows a user to begin or resume a game,
+ * and to modify the game options.
+ * 
+ * @author cburrows
+ *
+ */
 public class MainMenuActivity extends Activity {
 
     @Override
@@ -45,6 +52,17 @@ public class MainMenuActivity extends Activity {
         // New Game
         TextView newGame = (TextView)findViewById(R.id.tvwNewgame);
         newGame.setOnClickListener(new OnClickListener() {
+
+            public void onClick(View v) {
+                Intent intent = new Intent(MainMenuActivity.this, RoguelikeActivity.class);
+                startActivity(intent);
+            }
+
+        });
+        
+        // Resume Game
+        TextView resumeGame = (TextView)findViewById(R.id.tvwResume);
+        resumeGame.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
                 Intent intent = new Intent(MainMenuActivity.this, RoguelikeActivity.class);

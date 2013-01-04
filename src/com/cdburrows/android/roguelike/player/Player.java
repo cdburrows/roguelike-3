@@ -45,8 +45,18 @@ import com.cdburrows.android.roguelike.skill.Skill;
 import com.cdburrows.android.roguelike.skill.SkillDirection;
 import com.cdburrows.android.roguelike.skill.SkillManager;
 
+/**
+ * The player character data
+ * 
+ * @author cburrows
+ *
+ */
 public class Player {
 
+    // ===========================================================
+    // Constants
+    // ===========================================================
+    
     public static final float MOVE_SPEED = 768;
 
     public static final long[] ANIMATE_FRAME_DURATION = {
@@ -68,7 +78,15 @@ public class Player {
     public static final int[] ANIMATE_FACE_LEFT = {
             12, 13, 14, 13
     };
-
+    
+    // ===========================================================
+    // Fields
+    // ===========================================================
+    
+    public final PlayerStats mStats = new PlayerStats();
+    
+    public final PlayerInventory mInventory = new PlayerInventory();
+    
     private AnimatedSprite mSprite;
 
     private GameMap mParentMap;
@@ -97,47 +115,19 @@ public class Player {
 
     private int mRoomY = 0;
 
-    private String mName;
-
-    private int mLevel;
-
-    private int mMaxHP;
-
-    private int mCurHP;
-
-    private int mNextXP;
-
-    private int mCurXP;
-
-    private int mBaseAttack;
-
-    private int mAttackBonus;
-
-    private int mBaseDefense;
-
-    private int mDefenseBonus;
-
-    private int mBaseMagic;
-
-    private int mMagicBonus;
-
-    private int mPotions;
-
-    private Item mWeapon;
-
-    private Item mArmour;
-
-    private ArrayList<Item> mWeaponList;
-
-    private ArrayList<Item> mArmourList;
-
-    private static Player sPlayer;
-
     private static ArrayList<Skill> sSkills;
-
+    
+    // ===========================================================
+    // Constructors
+    // ===========================================================
+    
+    /**
+     * Constructs the Player object by initializing stats to default values,
+     * adding default equipment, and setting up sprite and skills.
+     * 
+     * @param sprite the graphical representation of the player
+     */
     public Player(AnimatedSprite sprite) {
-        sPlayer = this;
-
         mScaleX = RoguelikeActivity.sScaleX;
         mScaleY = RoguelikeActivity.sScaleY;
         mPlayerState = PlayerState.IDLE;
@@ -145,186 +135,19 @@ public class Player {
         mSprite = sprite;
         mSprite.setCurrentTileIndex(mDirection.getValue() * 4 + 1);
 
-        mName = "Leal";
-        mLevel = 1;
-        mMaxHP = 100;
-        mCurHP = 100;
-        mNextXP = 20;
-        mCurXP = 0;
-
-        mBaseAttack = 4;
-        mBaseDefense = 4;
-        mBaseMagic = 4;
-
-        mPotions = 10;
-        mWeaponList = new ArrayList<Item>();
-        mArmourList = new ArrayList<Item>();
-
         equipWeapon(ItemFactory.createRandomWeapon(6));
         equipArmour(ItemFactory.createRandomArmour(6));
-
-        for (int i = 0; i < 3; i++) {
-            mWeaponList.add(ItemFactory.createRandomWeapon(5));
-            mArmourList.add(ItemFactory.createRandomArmour(5));
-        }
 
         sSkills = new ArrayList<Skill>();
         SkillManager.setSkillList(sSkills);
 
         loadSkills();
-        sortWeapons();
-        sortArmour();
     }
-
-    private void loadSkills() {
-        ArrayList<Skill> skills = new ArrayList<Skill>();
-        skills.add(new Skill("Stab", new ArrayList<SkillDirection>(Arrays.asList(
-                SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_UP))));
-        skills.add(new Skill("Slash", new ArrayList<SkillDirection>(Arrays.asList(
-                SkillDirection.DIRECTION_DOWN_LEFT, SkillDirection.DIRECTION_DOWN_RIGHT))));
-        skills.add(new Skill("Stab", new ArrayList<SkillDirection>(Arrays.asList(
-                SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_UP,
-                SkillDirection.DIRECTION_DOWN, SkillDirection.DIRECTION_UP_RIGHT))));
-        skills.add(new Skill("Lunge", new ArrayList<SkillDirection>(Arrays.asList(
-                SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_DOWN,
-                SkillDirection.DIRECTION_RIGHT))));
-        skills.add(new Skill("Flurry", new ArrayList<SkillDirection>(Arrays.asList(
-                SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_DOWN,
-                SkillDirection.DIRECTION_LEFT, SkillDirection.DIRECTION_RIGHT))));
-        setSkills(skills);
-    }
-
-    public Event update(float elapsed) {
-        Event result = Event.EVENT_NO_EVENT;
-        if (mMoving) {
-
-            float move = MOVE_SPEED * elapsed;
-            mMoveDistance -= move;
-
-            if (mMoveDistance <= 0) {
-                move += mMoveDistance;
-                mMoveDistance = 0;
-                mMoving = false;
-                mSprite.stopAnimation(mDirection.getValue() * 4 + 1);
-                result = Event.EVENT_NEW_ROOM;
-                mPlayerState = PlayerState.IDLE;
-                Minimap.updateMinimap();
-            }
-
-            switch (mDirection) {
-                case DIRECTION_UP:
-                    mPosY -= move;
-                    break;
-                case DIRECTION_RIGHT:
-                    mPosX += move;
-                    break;
-                case DIRECTION_DOWN:
-                    mPosY += move;
-                    break;
-                case DIRECTION_LEFT:
-                    mPosX -= move;
-                    break;
-            }
-            mSprite.setPosition(mPosX, mPosY);
-            Minimap.setCenter(mPosX, mPosY);
-        }
-        return result;
-    }
-
-    public void move(Direction direction, float distance) {
-        if (mPlayerState == PlayerState.IDLE) {
-            face(direction);
-            boolean canMove = mParentMap.getRoomAccess(mRoomX, mRoomY, direction);
-            if (canMove) {
-                mPlayerState = PlayerState.MOVING;
-                mMoving = true;
-                mDirection = direction;
-                mMoveDistance = distance * mScaleX;
-
-                switch (direction) {
-                    case DIRECTION_UP:
-                        mSprite.animate(ANIMATE_FRAME_DURATION, 0, 3, true);
-                        mRoomY--;
-                        break;
-                    case DIRECTION_RIGHT:
-                        mSprite.animate(ANIMATE_FRAME_DURATION, 4, 7, true);
-                        mRoomX++;
-                        break;
-                    case DIRECTION_DOWN:
-                        mSprite.animate(ANIMATE_FRAME_DURATION, 8, 11, true);
-                        mRoomY++;
-                        break;
-                    case DIRECTION_LEFT:
-                        mSprite.animate(ANIMATE_FRAME_DURATION, 12, 15, true);
-                        mRoomX--;
-                        break;
-                }
-                mParentMap.occupyRoom(mRoomX, mRoomY);
-            }
-        }
-    }
-
-    public void levelUp() {
-        mCurXP -= mNextXP;
-        mNextXP *= 1.5f;
-        mLevel++;
-
-        mMaxHP *= 1.2f;
-        // mCurHP = mMaxHP;
-
-        mBaseAttack *= 1.4;
-        mBaseDefense *= 1.4;
-        mBaseMagic *= 1.4;
-
-        // updateStats();
-    }
-
-    public void usePotion() {
-        Random rand = new Random(System.currentTimeMillis());
-        if (mPotions > 0) {
-            increaseCurHP(rand.nextInt(25) + 50);
-            mPotions--;
-        }
-    }
-
-    public void updatePositionFromRoom() {
-        mPosX = ((mRoomX * DungeonManager.getRoomWidth()) + (DungeonManager.getRoomWidth() / 2))
-                * (mTileWidth * mScaleX);
-        mPosY = ((mRoomY * DungeonManager.getRoomHeight()) + (DungeonManager.getRoomHeight() / 2))
-                * (mTileHeight * mScaleY);
-        mSprite.setPosition(mPosX, mPosY);
-    }
-
-    public void face(Direction direction) {
-        mSprite.setCurrentTileIndex(direction.getValue() * 4 + 1);
-    }
-
-    private void sortWeapons() {
-        Collections.sort(mWeaponList, new Comparator<Item>() {
-            public int compare(Item lhs, Item rhs) {
-                if (lhs.getAttack() < rhs.getAttack())
-                    return 1;
-                if (lhs.getAttack() == rhs.getAttack())
-                    return 0;
-                return -1;
-            }
-
-        });
-    }
-
-    private void sortArmour() {
-        Collections.sort(mArmourList, new Comparator<Item>() {
-            public int compare(Item lhs, Item rhs) {
-                if (lhs.getDefense() < rhs.getDefense())
-                    return 1;
-                if (lhs.getDefense() == rhs.getDefense())
-                    return 0;
-                return -1;
-            }
-
-        });
-    }
-
+    
+    // ===========================================================
+    // Getter & Setter
+    // ===========================================================
+    
     public PlayerState getPlayerState() {
         return mPlayerState;
     }
@@ -383,6 +206,13 @@ public class Player {
         this.mTileHeight = tileHeight;
     }
 
+    /**
+     * Teleports the player to a room. No chest will be found
+     * in the resulting room.
+     * 
+     * @param x the column value of the room
+     * @param y the row value of the room
+     */
     public void setRoom(int x, int y) {
         // mParentMap.setRoomState(mRoomX, mRoomY, RoomState.ROOM_VISITED);
         mRoomX = x;
@@ -411,200 +241,6 @@ public class Player {
         updatePositionFromRoom();
     }
 
-    // ********************************
-    // Equipment accessors
-    // ********************************
-
-    public void setNumPotions(int potions) {
-        mPotions = potions;
-    }
-
-    public int getNumPotions() {
-        return mPotions;
-    }
-
-    public void increasePotions(int i) {
-        mPotions += i;
-    }
-
-    private void unequip(Item item) {
-        mAttackBonus -= item.getAttack();
-        mDefenseBonus -= item.getDefense();
-        mMagicBonus -= item.getMagic();
-        if (item.getItemType() == Item.ITEM_TYPE_WEAPON) {
-            mWeaponList.add(item);
-            sortWeapons();
-        } else if (item.getItemType() == Item.ITEM_TYPE_ARMOUR) {
-            mArmourList.add(item);
-            sortArmour();
-        }
-
-    }
-
-    public Item getWeapon() {
-        return mWeapon;
-    }
-
-    public void equipWeapon(Item weapon) {
-        if (mWeapon != null)
-            unequip(mWeapon);
-
-        mWeaponList.remove(weapon);
-        mWeapon = weapon;
-        mAttackBonus += weapon.getAttack();
-        mDefenseBonus += weapon.getDefense();
-        mMagicBonus += weapon.getMagic();
-    }
-
-    public ArrayList<Item> getWeaponList() {
-        return mWeaponList;
-    }
-
-    public Item getArmour() {
-        return mArmour;
-    }
-
-    public void equipArmour(Item armour) {
-        if (mArmour != null)
-            unequip(mArmour);
-
-        mArmourList.remove(armour);
-        mArmour = armour;
-        mAttackBonus += armour.getAttack();
-        mDefenseBonus += armour.getDefense();
-        mMagicBonus += armour.getMagic();
-    }
-
-    public ArrayList<Item> getArmourList() {
-        return mArmourList;
-    }
-
-    public void addItem(Item item) {
-        if (item.getItemType() == Item.ITEM_TYPE_WEAPON) {
-            mWeaponList.add(item);
-            sortWeapons();
-        } else if (item.getItemType() == Item.ITEM_TYPE_ARMOUR) {
-            mArmourList.add(item);
-            sortArmour();
-        }
-    }
-
-    // ********************************
-    // Stat accessors
-    // ********************************
-
-    public String getName() {
-        return mName;
-    }
-
-    public void setName(String mName) {
-        this.mName = mName;
-    }
-
-    public int getLevel() {
-        return mLevel;
-    }
-
-    public void setLevel(int mLevel) {
-        this.mLevel = mLevel;
-    }
-
-    public int getMaxHP() {
-        return mMaxHP;
-    }
-
-    public void setMaxHP(int mMaxHP) {
-        this.mMaxHP = mMaxHP;
-    }
-
-    public int getCurHP() {
-        return mCurHP;
-    }
-
-    public void setCurHP(int mCurHP) {
-        this.mCurHP = mCurHP;
-        if (mCurHP > mMaxHP)
-            mCurHP = mMaxHP;
-    }
-
-    public void increaseCurHP(int value) {
-        mCurHP += value;
-        if (mCurHP > mMaxHP)
-            mCurHP = mMaxHP;
-    }
-
-    public int getNextXP() {
-        return mNextXP;
-    }
-
-    public void setNextXP(int mNextXP) {
-        this.mNextXP = mNextXP;
-    }
-
-    public int getCurXP() {
-        return mCurXP;
-    }
-
-    public void setCurXP(int mCurXP) {
-        this.mCurXP = mCurXP;
-    }
-
-    public void increaseXP(int value) {
-        mCurXP += value;
-        if (mCurXP >= mNextXP)
-            levelUp();
-    }
-
-    public float getHPFraction() {
-        return (float)mCurHP / mMaxHP;
-    }
-
-    public void decreaseHP(int damage) {
-        mCurHP -= damage;
-        if (mCurHP < 0)
-            mCurHP = 0;
-    }
-
-    public float getXPFraction() {
-        return (float)mCurXP / mNextXP;
-    }
-
-    public int getBaseAttack() {
-        return mBaseAttack;
-    }
-
-    public void setBaseAttack(int mAttack) {
-        this.mBaseAttack = mAttack;
-    }
-
-    public int getTotalAttack() {
-        return mBaseAttack + mAttackBonus;
-    }
-
-    public int getBaseDefense() {
-        return mBaseDefense;
-    }
-
-    public void setBaseDefense(int mDefense) {
-        this.mBaseDefense = mDefense;
-    }
-
-    public int getTotalDefense() {
-        return mBaseDefense + mDefenseBonus;
-    }
-
-    public int getBaseMagic() {
-        return mBaseMagic;
-    }
-
-    public void setBaseMagic(int mMagic) {
-        this.mBaseMagic = mMagic;
-    }
-
-    public int getTotalMagic() {
-        return mBaseMagic + mMagicBonus;
-    }
-
     public ArrayList<Skill> getSkills() {
         return sSkills;
     }
@@ -621,8 +257,182 @@ public class Player {
     public float getY() {
         return mPosY;
     }
+    
+    // ===========================================================
+    // Inherited Methods
+    // ===========================================================
+    
+    // ===========================================================
+    // Methods
+    // ===========================================================
+    
+    /**
+     * Initializes player combat combo skills
+     */
+    private void loadSkills() {
+        // TODO: Move these to XML?
+        ArrayList<Skill> skills = new ArrayList<Skill>();
+        skills.add(new Skill("Stab", new ArrayList<SkillDirection>(Arrays.asList(
+                SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_UP))));
+        skills.add(new Skill("Slash", new ArrayList<SkillDirection>(Arrays.asList(
+                SkillDirection.DIRECTION_DOWN_LEFT, SkillDirection.DIRECTION_DOWN_RIGHT))));
+        skills.add(new Skill("Stab", new ArrayList<SkillDirection>(Arrays.asList(
+                SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_UP,
+                SkillDirection.DIRECTION_DOWN, SkillDirection.DIRECTION_UP_RIGHT))));
+        skills.add(new Skill("Lunge", new ArrayList<SkillDirection>(Arrays.asList(
+                SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_DOWN,
+                SkillDirection.DIRECTION_RIGHT))));
+        skills.add(new Skill("Flurry", new ArrayList<SkillDirection>(Arrays.asList(
+                SkillDirection.DIRECTION_UP, SkillDirection.DIRECTION_DOWN,
+                SkillDirection.DIRECTION_LEFT, SkillDirection.DIRECTION_RIGHT))));
+        setSkills(skills);
+    }
+
+    /**
+     * Handles the movement of the player on the game map.
+     * 
+     * @param elapsed the time elapsed since last update
+     * 
+     * @return the event state of a room
+     */
+    public Event update(float elapsed) {
+        Event result = Event.EVENT_NO_EVENT;
+        if (mMoving) {
+
+            float move = MOVE_SPEED * elapsed;
+            mMoveDistance -= move;
+
+            if (mMoveDistance <= 0) {
+                move += mMoveDistance;
+                mMoveDistance = 0;
+                mMoving = false;
+                mSprite.stopAnimation(mDirection.getValue() * 4 + 1);
+                result = Event.EVENT_NEW_ROOM;
+                mPlayerState = PlayerState.IDLE;
+                Minimap.updateMinimap();
+            }
+
+            switch (mDirection) {
+                case DIRECTION_UP:
+                    mPosY -= move;
+                    break;
+                case DIRECTION_RIGHT:
+                    mPosX += move;
+                    break;
+                case DIRECTION_DOWN:
+                    mPosY += move;
+                    break;
+                case DIRECTION_LEFT:
+                    mPosX -= move;
+                    break;
+            }
+            mSprite.setPosition(mPosX, mPosY);
+            Minimap.setCenter(mPosX, mPosY);
+        }
+        return result;
+    }
+
+    /**
+     * Animates and moves the player sprite
+     * 
+     * @param direction the direction to move
+     * @param distance how many total pixels to move
+     */
+    public void move(Direction direction, float distance) {
+        if (mPlayerState == PlayerState.IDLE) {
+            face(direction);
+            boolean canMove = mParentMap.getRoomAccess(mRoomX, mRoomY, direction);
+            if (canMove) {
+                mPlayerState = PlayerState.MOVING;
+                mMoving = true;
+                mDirection = direction;
+                mMoveDistance = distance * mScaleX;
+
+                switch (direction) {
+                    case DIRECTION_UP:
+                        mSprite.animate(ANIMATE_FRAME_DURATION, 0, 3, true);
+                        mRoomY--;
+                        break;
+                    case DIRECTION_RIGHT:
+                        mSprite.animate(ANIMATE_FRAME_DURATION, 4, 7, true);
+                        mRoomX++;
+                        break;
+                    case DIRECTION_DOWN:
+                        mSprite.animate(ANIMATE_FRAME_DURATION, 8, 11, true);
+                        mRoomY++;
+                        break;
+                    case DIRECTION_LEFT:
+                        mSprite.animate(ANIMATE_FRAME_DURATION, 12, 15, true);
+                        mRoomX--;
+                        break;
+                }
+                mParentMap.occupyRoom(mRoomX, mRoomY);
+            }
+        }
+    }
+
+    /**
+     * Sets player sprite position based on current room. Used when teleporting.
+     */
+    public void updatePositionFromRoom() {
+        mPosX = ((mRoomX * DungeonManager.getRoomWidth()) + (DungeonManager.getRoomWidth() / 2))
+                * (mTileWidth * mScaleX);
+        mPosY = ((mRoomY * DungeonManager.getRoomHeight()) + (DungeonManager.getRoomHeight() / 2))
+                * (mTileHeight * mScaleY);
+        mSprite.setPosition(mPosX, mPosY);
+    }
+
+    /**
+     * Sets player sprite facing.
+     * 
+     * @param direction the direction to face
+     */
+    public void face(Direction direction) {
+        mSprite.setCurrentTileIndex(direction.getValue() * 4 + 1);
+    }
+    
+
+    /**
+     * Consumes a potion to recover HP
+     */
+    public void usePotion() {
+        Random rand = new Random(System.currentTimeMillis());
+        if (mInventory.getNumPotions() >= 0) {
+            mStats.increaseCurHP(rand.nextInt(25) + 50);
+            mInventory.changePotions(-1);
+        }
+    }
+    
+    /**
+     * Unequips an item and returns it to the player inventory.
+     * 
+     * @param item the item to unequip
+     */
+    private void unequip(Item item) {
+        // TODO: Check if equipped in the first place!
+        mStats.unequip(item);
+        mInventory.unequip(item);
+    }
+
+    public void equipWeapon(Item weapon) {
+        mStats.equip(weapon);
+        mInventory.equipWeapon(weapon);
+    }
+
+    public void equipArmour(Item armour) {
+        mStats.equip(armour);
+        mInventory.equipArmour(armour);
+    }
+
+    public void addItem(Item item) {
+        mInventory.addItem(item); 
+    }
 
     public static void end() {
         sSkills = null;
     }
+
+    // ===========================================================
+    // Inner and Anonymous Classes
+    // ===========================================================
 }
