@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Christopher Burrows
+ * Copyright (c) 2012-2013, Christopher Burrows
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,25 @@
 package com.cdburrows.android.roguelike;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Random;
+
+import org.anddev.andengine.engine.Engine;
+import org.anddev.andengine.engine.camera.BoundCamera;
+import org.anddev.andengine.engine.options.EngineOptions;
+import org.anddev.andengine.engine.options.EngineOptions.ScreenOrientation;
+import org.anddev.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
+import org.anddev.andengine.entity.scene.Scene;
+import org.anddev.andengine.entity.scene.Scene.IOnSceneTouchListener;
+import org.anddev.andengine.entity.util.FPSLogger;
+import org.anddev.andengine.input.touch.TouchEvent;
+import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
+import org.anddev.andengine.ui.activity.BaseGameActivity;
 
 import android.view.Display;
 import android.widget.Toast;
-import org.anddev.andengine.engine.Engine;
-import org.anddev.andengine.engine.camera.BoundCamera;
-import org.anddev.andengine.entity.scene.Scene;
-import org.anddev.andengine.entity.scene.Scene.IOnSceneTouchListener;
-import org.anddev.andengine.input.touch.TouchEvent;
-import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
+
 import com.cdburrows.android.roguelike.audio.Audio;
 import com.cdburrows.android.roguelike.graphics.Graphics;
 import com.cdburrows.android.roguelike.item.ItemFactory;
@@ -46,6 +53,7 @@ import com.cdburrows.android.roguelike.map.GameMap;
 import com.cdburrows.android.roguelike.player.Player;
 import com.cdburrows.android.roguelike.scene.BaseScene;
 import com.cdburrows.android.roguelike.scene.BattleScene;
+import com.cdburrows.android.roguelike.scene.LoadingScene;
 import com.cdburrows.android.roguelike.scene.MainScene;
 import com.cdburrows.android.roguelike.scene.SceneManager;
 import com.cdburrows.android.roguelike.scene.StatusScene;
@@ -53,57 +61,50 @@ import com.cdburrows.android.roguelike.scene.StatusScene;
 /**
  * Loads assets and initializes objects necessary to start game.
  */
-public class RoguelikeActivity extends LoadingGameActivity implements
-    IOnSceneTouchListener {
-    
+public class RoguelikeActivity extends BaseGameActivity implements IOnSceneTouchListener {
+
     // ===========================================================
     // Constants
     // ===========================================================
-    
+
     public static final int DESIRED_WIDTH = 320;
+
     public static final int DESIRED_HEIGHT = 240;
-    
-    // The index of each icon image in the icons bitmap
-    // TODO: Find a better way of handling this besides hardcoding right here
-    public static final int ICON_STATUS_UP = 0;
-    public static final int ICON_STATUS_DOWN = 1;
-    public static final int ICON_MINIMAP_UP = 2;
-    public static final int ICON_MINIMAP_DOWN = 3;
-    public static final int ICON_BACK_UP = 4;
-    public static final int ICON_BACK_DOWN = 5;
-    public static final int ICON_POTION_UP = 6;
-    public static final int ICON_POTION_DOWN = 7;
-    public static final int ICON_WEAPON_UP = 8;
-    public static final int ICON_WEAPON_DOWN = 9;
-    public static final int ICON_ARMOUR_UP = 10;
-    public static final int ICON_ARMOUR_DOWN = 11;
-    public static final int ICON_SKILL_UP = 12;
-    public static final int ICON_SKILL_DOWN = 13;
 
     // ===========================================================
     // Fields
     // ===========================================================
 
     public static float sScaleX;
+
     public static float sScaleY;
-    
+
     public static int sCameraWidth;
+
     public static int sCameraHeight;
-    
+
     private static RoguelikeActivity sContext;
-    
+
     public static BoundCamera sCamera;
-    
-    public static BaseScene sMainScene;
-    public static BaseScene sBattleScene;
-    public static BaseScene sStatusScene;
+
+    public static MainScene sMainScene;
+
+    public static BattleScene sBattleScene;
+
+    public static StatusScene sStatusScene;
+
     public static BaseScene sMinimapScene;
-    
+
     private static Player sPlayer;
-    
+
     public static boolean sMusicEnabled = false;
+
     public static boolean sSoundEnabled = false;
-    
+
+    private static Engine sEngine;
+
+    private static Random sRand; // All random numbers generated here
+
     // ===========================================================
     // Constructors
     // ===========================================================
@@ -112,98 +113,81 @@ public class RoguelikeActivity extends LoadingGameActivity implements
     // Getter & Setter
     // ===========================================================
 
-    public static RoguelikeActivity getContext() { return sContext; }
-    
-    public static BoundCamera getCamera() { return sCamera; }
-    
-    public static Player getPlayer() { return sPlayer; }
-    
-    public static void setPlayer(Player player) { sPlayer = player; }
-    
+    public static RoguelikeActivity getContext() {
+        return sContext;
+    }
+
+    public static BoundCamera getCamera() {
+        return sCamera;
+    }
+
+    public static Player getPlayer() {
+        return sPlayer;
+    }
+
     public static Display getDisplay() {
         return sContext.getWindowManager().getDefaultDisplay();
     }
-    
+
+    public static GameMap getCurrentGameMap() {
+        return DungeonManager.getGameMap();
+    }
+
+    public static BattleScene getBattleScene() {
+        return (BattleScene)sBattleScene;
+    }
+
+    private static void setPlayer(Player player) {
+        sPlayer = player;
+    }
+
     // ===========================================================
     // Inherited Methods
     // ===========================================================
-    
+
     public Engine onLoadEngine() {
-        return super.onLoadEngine();
+        final Display display = getWindowManager().getDefaultDisplay();
+
+        sCameraWidth = display.getWidth();
+        sCameraHeight = display.getHeight();
+        sScaleX = display.getWidth() / (float)RoguelikeActivity.DESIRED_WIDTH;
+        sScaleY = display.getHeight() / (float)RoguelikeActivity.DESIRED_HEIGHT;
+
+        sCamera = new BoundCamera(0, 0, display.getWidth(), display.getHeight());
+
+        sEngine = new Engine(new EngineOptions(true, ScreenOrientation.LANDSCAPE,
+                new RatioResolutionPolicy(display.getWidth(), display.getHeight()),
+                RoguelikeActivity.sCamera));
+        sEngine.registerUpdateHandler(new FPSLogger());
+
+        return sEngine;
     }
-   
+
     public void onLoadResources() {
-        super.onLoadResources();
+        sContext = this;
+
+        Graphics.initialize(this, DESIRED_WIDTH, DESIRED_HEIGHT);
+        Audio.initialize();
+        SceneManager.initialize();
+
+        sRand = new Random(); // set global game seed here
     }
-   
+
     public Scene onLoadScene() {
-        return super.onLoadScene();
-    }
-        
-    public void onLoadComplete() {
-        // Leave empty
-    }
-    
-    /**
-     * Displays MainScene when assets have loaded
-     */
-    @Override
-    protected Scene onAssetsLoaded() {
-        SceneManager.pushScene(sMainScene);
+        ILoadingTask[] tasks = {
+                loadDungeonManager, loadItems, loadPlayer, loadScenes, startGame
+        };
+        SceneManager.pushScene(new LoadingScene(tasks));
         return SceneManager.getTopScene();
     }
 
-    /**
-     * Prepares game by initializing graphics and audio, setting up
-     * dungeon and player, and loading the scenes into memory
-     */
-    @Override
-    protected void assetsToLoad() {
-        sContext = this;
-        
-        LoadingGameActivity.setLoadingText("Graphics");
-        Graphics.initialize(this, DESIRED_WIDTH, DESIRED_HEIGHT);
-        
-        LoadingGameActivity.setLoadingText("Audio");
-        Audio.initialize();
-        
-        // Load the dungeon from definition file
-        LoadingGameActivity.setLoadingText("Dungeon definition");
-        DungeonManager.initialize("xml/dungeon_definition.xml");
-        
-        // Prepare our item factory by loading all the assets from
-        // which every item is created
-        LoadingGameActivity.setLoadingText("Items");
-        ItemFactory.loadResources();
+    public void onLoadComplete() {
+    }
 
-        // Prepare the player
-        Graphics.beginLoad("gfx/", 256, 512);
-        LoadingGameActivity.setLoadingText("Player");
-        sPlayer = new Player(Graphics.createAnimatedSprite("hero.png", 4, 4));
-        Graphics.endLoad();
-        sPlayer.equipWeapon(ItemFactory.createRandomWeapon(2));
-        sPlayer.equipArmour(ItemFactory.createRandomArmour(2));
-        
-        // Setup all of the main panels used in the game
-        LoadingGameActivity.setLoadingText("Battle scene");
-        sBattleScene = new BattleScene();
-        sBattleScene.loadResources();
-        
-        LoadingGameActivity.setLoadingText("Status scene");
-        sStatusScene = new StatusScene();
-        sStatusScene.loadResources();
-        
-        LoadingGameActivity.setLoadingText("Main scene");
-        sMainScene = new MainScene();
-        sMainScene.loadResources();
-        
-        LoadingGameActivity.setLoadingText("Done!");
-    }   
-    
     public void onBackPressed() {
         endScene();
     }
-    
+
     /**
      * Refuses to handle touch events
      */
@@ -215,69 +199,146 @@ public class RoguelikeActivity extends LoadingGameActivity implements
     // Methods
     // ===========================================================
 
-    public static void restart() {
-    }
-    
-    public static void destroy() {
+    public static void end() {
         Audio.stop();
+
+        Graphics.end();
+        Audio.end();
+        DungeonManager.end();
+        ItemFactory.end();
+        Player.end();
+
+        sCamera = null;
+        sPlayer = null;
+
         sMainScene = null;
         sBattleScene = null;
-        getContext().finish();    
-    }
-    
-    public static void openCombat() {
-        SceneManager.pushScene(sBattleScene);
-    }    
-    
-    public static void openStatus() {
-        SceneManager.pushScene(sStatusScene);
-    }
-    
-    public static void openMinimap() {
-        SceneManager.pushScene(sMinimapScene);
-    }
-    
-    public static void endScene() {
-        SceneManager.popScene();
+        sStatusScene = null;
+        sMinimapScene = null;
+
+        getContext().finish();
     }
 
-    public static void gameToast(final String msg, final int duration) {
-        sContext.runOnUiThread(new Runnable() {
-            public void run() {
-               Toast.makeText(sContext, msg, duration).show();
-            }
-        });
-    }
-
-    public static void loadTexture(BitmapTextureAtlas atlas) {
-        getContext().getEngine().getTextureManager().loadTexture(atlas);
-    }
-
-    public static GameMap getCurrentGameMap() {
-        return DungeonManager.getGameMap();
+    public static void restart() {
     }
 
     public static void pause() {
         SceneManager.pauseScene();
-        
+
     }
 
     public static void resume() {
         SceneManager.resumeScene();
     }
 
-    public static void reloadUI() {
-        // TODO Auto-generated method stub
-        
+    // Game logic
+
+    public static void openCombat() {
+        SceneManager.pushScene(sBattleScene);
     }
 
-    public static FileOutputStream getOutputStream(String filePath) throws IOException {
+    public static void openStatus() {
+        SceneManager.pushScene(sStatusScene);
+    }
+
+    public static void openMinimap() {
+        SceneManager.pushScene(sMinimapScene);
+    }
+    
+    public static void reloadBattleBackground() {
+        if (sBattleScene == null)
+            return;
+
+        sBattleScene.reloadBattleBackground();
+    }
+    
+    public static void endScene() {
+        SceneManager.popScene();
+    }
+
+    // Aux functions
+
+    public static void loadTexture(final BitmapTextureAtlas atlas) {
+        getContext().getEngine().getTextureManager().loadTexture(atlas);
+    }
+
+    public static void gameToast(final String msg, final int duration) {
+        sContext.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(sContext, msg, duration).show();
+            }
+        });
+    }
+
+    // IO functions
+
+    public static FileOutputStream getOutputStream(final String filePath) throws IOException {
         RoguelikeActivity.getContext();
         return sContext.openFileOutput(filePath, RoguelikeActivity.MODE_PRIVATE);
     }
 
-    public static FileInputStream getInputStream(String filePath) throws IOException {
+    public static FileInputStream getInputStream(final String filePath) throws IOException {
         RoguelikeActivity.getContext();
         return sContext.openFileInput(filePath);
     }
+
+    // Random number functions
+
+    public static int nextInt(int i) {
+        return sRand.nextInt(i);
+    }
+
+    public static float nextFloat() {
+        return sRand.nextFloat();
+    }
+
+    // ===========================================================
+    // Inner and Anonymous Classes
+    // ===========================================================
+
+    final static ILoadingTask loadDungeonManager = new ILoadingTask() {
+        public boolean Load() {
+            DungeonManager.initialize("xml/dungeon_definition.xml");
+            return true;
+        }
+    };
+
+    final static ILoadingTask loadItems = new ILoadingTask() {
+        public boolean Load() {
+            ItemFactory.loadResources();
+            return true;
+        }
+    };
+
+    final static ILoadingTask loadPlayer = new ILoadingTask() {
+        public boolean Load() {
+            Graphics.beginLoad("gfx/", 256, 512);
+            Player p = new Player(Graphics.createAnimatedSprite("hero.png", 4, 4));
+            Graphics.endLoad();
+            setPlayer(p);
+            return true;
+        }
+    };
+
+    final static ILoadingTask loadScenes = new ILoadingTask() {
+        public boolean Load() {
+            sBattleScene = new BattleScene();
+            sBattleScene.loadResources();
+
+            sStatusScene = new StatusScene();
+            sStatusScene.loadResources();
+
+            sMainScene = new MainScene();
+            sMainScene.loadResources();
+
+            return true;
+        }
+    };
+
+    final static ILoadingTask startGame = new ILoadingTask() {
+        public boolean Load() {
+            SceneManager.pushScene(sMainScene);
+            return true;
+        }
+    };
 }

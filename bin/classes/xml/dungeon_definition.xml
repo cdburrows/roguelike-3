@@ -12,7 +12,7 @@
         floor="8" roof="1" wall="7" feature_start="0" feature_end="0" stairs_up="12" stairs_down="13"/>
     
     <floor tileset="forest_tiles" depth="0" num_rooms="10" room_width="11" room_height="9" room_padding="2"
-        battle_bg="forest_bg_320.png" has_walls="false" monster_spawn_rate = "0.10f" chest_spawn_rate = "0.20f" feature_rate="0.5f"
+        battle_bg="forest_bg_320.png" has_walls="false" monster_spawn_rate = "0.50f" chest_spawn_rate = "0.00f" feature_rate="0.5f"
         min_v_path="1" max_v_path="3" min_h_path="1" max_h_path="3" erode="0.35f">
       
         <rarity id="0" rate="20"/>
@@ -24,8 +24,8 @@
         <monster id="Slime" rate="50" sprite_path="slime.png">
             <min_level>1</min_level>
             <max_level>2</max_level>
-            <min_hp>90</min_hp>
-            <max_hp>140</max_hp>
+            <min_hp>9</min_hp>
+            <max_hp>14</max_hp>
             <min_attack>6</min_attack>
             <max_attack>10</max_attack>
             <min_defense>2</min_defense>
@@ -37,8 +37,8 @@
         <monster id="Bat" rate="50" sprite_path="bat.png">
             <min_level>1</min_level>
             <max_level>2</max_level>
-            <min_hp>75</min_hp>
-            <max_hp>115</max_hp>
+            <min_hp>7</min_hp>
+            <max_hp>11</max_hp>
             <min_attack>4</min_attack>
             <max_attack>8</max_attack>
             <min_defense>2</min_defense>

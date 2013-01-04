@@ -1,3 +1,4 @@
+
 package net.bytten.metazelda;
 
 /**
@@ -9,7 +10,7 @@ package net.bytten.metazelda;
 public class Coords implements Comparable<Coords> {
 
     public final int x, y;
-    
+
     /**
      * Create coordinates at the given X and Y position.
      * 
@@ -20,7 +21,7 @@ public class Coords implements Comparable<Coords> {
         this.x = x;
         this.y = y;
     }
-    
+
     /**
      * Gets the coordinates of the next space in the given direction
      * 
@@ -29,18 +30,18 @@ public class Coords implements Comparable<Coords> {
     public Coords nextInDirection(Direction d) {
         return new Coords(x + d.x, y + d.y);
     }
-    
+
     @Override
     public boolean equals(Object other) {
-         if (other instanceof Coords) {
-             Coords o = (Coords)other;
-             return this.x == o.x && this.y == o.y;
-         } else {
-             return super.equals(other);
-         }
+        if (other instanceof Coords) {
+            Coords o = (Coords)other;
+            return this.x == o.x && this.y == o.y;
+        } else {
+            return super.equals(other);
+        }
     }
 
-    //@Override
+    // @Override
     public int compareTo(Coords other) {
         // For Dungeon's TreeMap
         int d = this.x - other.x;
@@ -49,7 +50,7 @@ public class Coords implements Comparable<Coords> {
         }
         return d;
     }
-    
+
     /**
      * Determines whether this Coords and another Coords are next to each other.
      * 
@@ -57,8 +58,7 @@ public class Coords implements Comparable<Coords> {
      * @return whether they are adjacent
      */
     public boolean isAdjacent(Coords other) {
-        int dx = Math.abs(x - other.x),
-            dy = Math.abs(y - other.y);
+        int dx = Math.abs(x - other.x), dy = Math.abs(y - other.y);
         return (dx == 1 && dy == 0) || (dx == 0 && dy == 1);
     }
 
@@ -68,21 +68,23 @@ public class Coords implements Comparable<Coords> {
      * @param other the other Coords
      * @return the direction the other Coords is in
      * @throws RuntimeException if the direction to the other Coords cannot be
-     *                          described with compass directions, e.g. if it's
-     *                          diagonal
+     *             described with compass directions, e.g. if it's diagonal
      */
     public Direction getDirectionTo(Coords other) {
-        int dx = x - other.x,
-            dy = y - other.y;
+        int dx = x - other.x, dy = y - other.y;
         assert dx == 0 || dy == 0;
-        if (dx < 0) return Direction.E;
-        if (dx > 0) return Direction.W;
-        if (dy < 0) return Direction.S;
-        if (dy > 0) return Direction.N;
+        if (dx < 0)
+            return Direction.E;
+        if (dx > 0)
+            return Direction.W;
+        if (dy < 0)
+            return Direction.S;
+        if (dy > 0)
+            return Direction.N;
         throw new RuntimeException("Coords do not align in one dimension, or are equal");
     }
-    
+
     public String toString() {
-        return x+","+y;
+        return x + "," + y;
     }
 }

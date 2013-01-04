@@ -1,3 +1,4 @@
+
 package net.bytten.metazelda.constraints;
 
 import java.util.Arrays;
@@ -15,47 +16,47 @@ import net.bytten.metazelda.IDungeon;
 public class CountConstraints implements IDungeonConstraints {
 
     protected int maxSpaces, maxKeys, maxSwitches;
-    
+
     public CountConstraints(int maxSpaces, int maxKeys, int maxSwitches) {
         this.maxSpaces = maxSpaces;
         this.maxKeys = maxKeys;
         this.maxSwitches = maxSwitches;
     }
-    
-    //@Override
+
+    // @Override
     public int getMaxSpaces() {
         return maxSpaces;
     }
-    
+
     public void setMaxSpaces(int maxSpaces) {
         this.maxSpaces = maxSpaces;
     }
-    
-    //@Override
+
+    // @Override
     public boolean validRoomCoords(Coords c) {
         return c != null && c.y <= 0;
     }
 
-    //@Override
+    // @Override
     public Collection<Coords> initialCoords() {
-        return Arrays.asList(new Coords(0,0));
+        return Arrays.asList(new Coords(0, 0));
     }
 
-    //@Override
+    // @Override
     public int getMaxKeys() {
         return maxKeys;
     }
-    
+
     public void setMaxKeys(int maxKeys) {
         this.maxKeys = maxKeys;
     }
-    
-    //@Override
+
+    // @Override
     public boolean isAcceptable(IDungeon dungeon) {
         return true;
     }
 
-    //@Override
+    // @Override
     public int getMaxSwitches() {
         return maxSwitches;
     }

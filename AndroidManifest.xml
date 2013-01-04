@@ -13,30 +13,24 @@
         android:label="@string/app_name" >
         <activity
             android:name="com.cdburrows.android.roguelike.MainMenuActivity"
-            android:label="@string/title_activity_main_menu"
+            android:label="@string/app_name"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" android:launchMode="standard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.cdburrows.android.roguelike.RoguelikeActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        
         <activity
             android:name="com.cdburrows.android.roguelike.OptionsActivity"
             android:label="@string/title_activity_options" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" android:screenOrientation="landscape">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cdburrows.android.roguelike.MainMenuActivity" />
+            
+        </activity><activity android:name="com.cdburrows.android.roguelike.RoguelikeActivity" android:label="@string/app_name">
         </activity>
     </application>
 

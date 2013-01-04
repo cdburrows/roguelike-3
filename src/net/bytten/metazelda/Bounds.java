@@ -1,3 +1,4 @@
+
 package net.bytten.metazelda;
 
 /**
@@ -10,22 +11,22 @@ package net.bytten.metazelda;
 public class Bounds {
 
     public final int left, top, right, bottom;
-    
+
     /**
      * Create a Bounds object with given coordinates.
      * 
-     * @param x         the X coordinate of the left side of the rectangle
-     * @param y         the Y coordinate of the top side of the rectangle
-     * @param right     the X coordinate of the right side of the rectangle
-     * @param bottom    the Y coordinate of the bottom side of the rectangle
-     */ 
+     * @param x the X coordinate of the left side of the rectangle
+     * @param y the Y coordinate of the top side of the rectangle
+     * @param right the X coordinate of the right side of the rectangle
+     * @param bottom the Y coordinate of the bottom side of the rectangle
+     */
     public Bounds(int x, int y, int right, int bottom) {
         this.left = x;
         this.top = y;
         this.right = right;
         this.bottom = bottom;
     }
-    
+
     /**
      * Gets the width of the rectangle.
      * 
@@ -34,7 +35,7 @@ public class Bounds {
     public int width() {
         return right - left + 1;
     }
-    
+
     /**
      * Gets the height of the rectangle.
      * 
@@ -43,8 +44,8 @@ public class Bounds {
     public int height() {
         return bottom - top + 1;
     }
-    
+
     public String toString() {
-        return "Bounds("+left+","+top+","+right+","+bottom+")";
+        return "Bounds(" + left + "," + top + "," + right + "," + bottom + ")";
     }
 }

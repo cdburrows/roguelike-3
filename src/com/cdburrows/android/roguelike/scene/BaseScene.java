@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Christopher Burrows
+ * Copyright (c) 2012-2013, Christopher Burrows
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@ package com.cdburrows.android.roguelike.scene;
 import javax.microedition.khronos.opengles.GL10;
 
 import org.anddev.andengine.engine.camera.BoundCamera;
+import org.anddev.andengine.engine.camera.Camera;
 import org.anddev.andengine.entity.IEntity;
 import org.anddev.andengine.entity.modifier.AlphaModifier;
 import org.anddev.andengine.entity.modifier.DurationEntityModifier;
@@ -44,91 +45,126 @@ import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.util.modifier.IModifier;
 import org.anddev.andengine.util.modifier.ease.EaseLinear;
 
+import android.util.Log;
+
 import com.cdburrows.android.roguelike.RoguelikeActivity;
 
-
-import android.util.Log;
-import android.view.Display;
-
 /**
- * All scenes must extend this class. Provides simple
- * fade in/out and shaking operations.
+ * All scenes must extend this class. Provides simple fade in/out and shaking
+ * operations.
  */
 public abstract class BaseScene extends Scene {
-    
+
     // ===========================================================
     // Constants
     // ===========================================================
-    
+
     // ===========================================================
     // Fields
     // ===========================================================
-    
+
     protected BoundCamera mCamera;
-    
+
     protected int mCameraWidth;
+
     protected int mCameraHeight;
-    
+
     protected boolean mLoaded;
+
     protected boolean mPrepared;
+
     protected boolean mTransitioning;
+
+    protected boolean mFragile;
+
     protected static boolean mPaused;
-    
+
     private BitmapTextureAtlas mBitmapTextureAtlas;
+
     private TextureRegion mFadeTextureRegion;
+
     private Sprite fadeSprite;
-    
+
     // ===========================================================
     // Constructors
     // ===========================================================
-    
-    public BaseScene() { 
+
+    public BaseScene() {
+        this(false);
+    }
+
+    public BaseScene(boolean fragile) {
         mCamera = RoguelikeActivity.getCamera();
-        
+
         mCameraWidth = RoguelikeActivity.getDisplay().getWidth();
         mCameraHeight = RoguelikeActivity.getDisplay().getHeight();
-        
+
+        mFragile = fragile;
+
         setupFade();
-        fadeSprite = new Sprite(mCamera.getMinX(), mCamera.getMinY(), mCameraWidth, mCameraHeight, mFadeTextureRegion);
+        fadeSprite = new Sprite(mCamera.getMinX(), mCamera.getMinY(), mCameraWidth, mCameraHeight,
+                mFadeTextureRegion);
         fadeSprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
     }
-    
+
     // ===========================================================
     // Getter & Setter
     // ===========================================================
-    
-    public int getWidth() { return mCameraWidth; }
-    
-    public int getHeight() { return mCameraHeight; }
-    
-    public float getCenterX() { return mCameraWidth / 2; }
-    
-    public float getCenterY() { return mCameraHeight / 2; }
-    
-    protected void setTransitioning(boolean value) { mTransitioning = value; Log.d("SCENE", "Transitioning: " + value); }
-    
+
+    public Camera getCamera() {
+        return mCamera;
+    }
+
+    public boolean isFragile() {
+        return mFragile;
+    }
+
+    public int getWidth() {
+        return mCameraWidth;
+    }
+
+    public int getHeight() {
+        return mCameraHeight;
+    }
+
+    public float getCenterX() {
+        return mCameraWidth / 2;
+    }
+
+    public float getCenterY() {
+        return mCameraHeight / 2;
+    }
+
+    protected void setTransitioning(boolean value) {
+        mTransitioning = value;
+    }
+
     // ===========================================================
     // Inherited Methods
     // ===========================================================
-    
+
     public abstract void loadResources();
-    
+
     public abstract void prepare(IEntityModifierListener preparedListener);
-    
+
     public abstract void pause();
-    
+
     public abstract void resume();
-    
+
     public abstract void destroy();
-    
+
     // ===========================================================
     // Methods
     // ===========================================================
-    
-    public boolean isLoaded() { return mLoaded; }
-    
-    public boolean isPrepared() { return mPrepared; }
-    
+
+    public boolean isLoaded() {
+        return mLoaded;
+    }
+
+    public boolean isPrepared() {
+        return mPrepared;
+    }
+
     /**
      * Fades a scene out
      */
@@ -137,47 +173,55 @@ public abstract class BaseScene extends Scene {
             Log.d("SCENE", "ERROR: Fade out canceled!");
             return;
         }
-        
+
         Log.d("SCENE", "FADE OUT CALLED");
-        
+
         setTransitioning(true);
-        
+
         mCamera.updateChaseEntity();
         fadeSprite.setPosition(mCamera.getMinX(), mCamera.getMinY());
-        
+
         IEntityModifierListener fadeListener = new IEntityModifierListener() {
             public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
-                if (listener != null) listener.onModifierStarted(pModifier, pItem);
+                if (listener != null)
+                    listener.onModifierStarted(pModifier, pItem);
                 Log.d("SCENE", "FADE OUT STARTED");
             }
+
             public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
-                if (listener != null)  listener.onModifierFinished(pModifier, pItem);
+                if (listener != null)
+                    listener.onModifierFinished(pModifier, pItem);
                 Log.d("SCENE", "FADE OUT FINISHED");
                 setTransitioning(false);
             }
         };
-        
-        AlphaModifier prFadeOutModifier = new FadeInModifier(duration, fadeListener, EaseLinear.getInstance());
+
+        AlphaModifier prFadeOutModifier = new FadeInModifier(duration, fadeListener,
+                EaseLinear.getInstance());
         prFadeOutModifier.setRemoveWhenFinished(true);
-        
+
         fadeSprite.setAlpha(0.0f);
-        if (!fadeSprite.hasParent()) this.attachChild(fadeSprite);
+        if (!fadeSprite.hasParent())
+            this.attachChild(fadeSprite);
         fadeSprite.registerEntityModifier(prFadeOutModifier);
     }
-    
+
     IEntityModifierListener fadeInListener = new IEntityModifierListener() {
         public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
             Log.d("SCENE", "FADE IN STARTED");
-            //if (listener != null) listener.onModifierStarted(pModifier, pItem);
+            // if (listener != null) listener.onModifierStarted(pModifier,
+            // pItem);
         }
+
         public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
             Log.d("SCENE", "FADE IN FINISHED");
-            //if (listener != null)  listener.onModifierFinished(pModifier, pItem);
+            // if (listener != null) listener.onModifierFinished(pModifier,
+            // pItem);
             setTransitioning(false);
-            //listener.onModifierFinished(null, null);
+            // listener.onModifierFinished(null, null);
         }
     };
-    
+
     /**
      * Fades a scene in
      */
@@ -186,27 +230,29 @@ public abstract class BaseScene extends Scene {
             Log.d("SCENE", "ERROR: Fade in canceled!");
             return;
         }
-        
+
         setTransitioning(true);
-        
+
         mCamera.updateChaseEntity();
         fadeSprite.setPosition(mCamera.getMinX(), mCamera.getMinY());
-        
-        Log.d("SCENE", "FADE IN START");
-        
 
-        AlphaModifier prFadeOutModifier = new FadeOutModifier(duration, fadeInListener, EaseLinear.getInstance());
+        Log.d("SCENE", "FADE IN START");
+
+        AlphaModifier prFadeOutModifier = new FadeOutModifier(duration, fadeInListener,
+                EaseLinear.getInstance());
         prFadeOutModifier.setRemoveWhenFinished(true);
-        
+
         fadeSprite.setAlpha(1.0f);
-        if (!fadeSprite.hasParent()) attachChild(fadeSprite);
+        if (!fadeSprite.hasParent())
+            attachChild(fadeSprite);
         fadeSprite.registerEntityModifier(prFadeOutModifier);
-        
+
         Log.d("SCENE", "FADE IN EXIT");
     }
-    
+
     /**
      * Dims a scene
+     * 
      * @param duration
      * @param from
      * @param to
@@ -218,59 +264,67 @@ public abstract class BaseScene extends Scene {
         fadeModifier.setRemoveWhenFinished(true);
         fadeSprite.registerEntityModifier(fadeModifier);
     }
-    
+
     /**
      * Shakes the camera left and right
      */
     public void shake(final float duration, final float intensity) {
         final float x = mCamera.getCenterX();
         final float y = mCamera.getCenterY();
-        
-        this.registerEntityModifier(new DurationEntityModifier(duration, 
+
+        this.registerEntityModifier(new DurationEntityModifier(duration,
                 new IEntityModifierListener() {
-                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {}
+                    public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+                    }
+
                     public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
                         // reset the camera after modifier is done
                         mCamera.setCenter(x, y);
                     }
                 }) {
-                        public EntityModifier deepCopy() throws DeepCopyNotSupportedException { return null; }
-                        
-                        @Override
-                        protected void onManagedUpdate(float pSecondsElapsed, IEntity pItem) {
-                            // Just shake left and right
-                            int sentitX =   1;
-                            //int sentitY =   1;
-                            if(Math.random() < 0.5) sentitX = -1;
-                            //if(Math.random() < 0.5) sentitY = -1;
-                            mCamera.setCenter( (float)(x + Math.random()*intensity*sentitX*RoguelikeActivity.sScaleX),
-                                                            (float)(y));
-                        }
-                        
-                        @Override
-                        protected void onManagedInitialize(IEntity pItem) {}
-                    });
+            public EntityModifier deepCopy() throws DeepCopyNotSupportedException {
+                return null;
+            }
+
+            @Override
+            protected void onManagedUpdate(float pSecondsElapsed, IEntity pItem) {
+                // Just shake left and right
+                int sentitX = 1;
+                // int sentitY = 1;
+                if (Math.random() < 0.5)
+                    sentitX = -1;
+                // if(Math.random() < 0.5) sentitY = -1;
+                mCamera.setCenter((float)(x + Math.random() * intensity * sentitX
+                        * RoguelikeActivity.sScaleX), (float)(y));
+            }
+
+            @Override
+            protected void onManagedInitialize(IEntity pItem) {
+            }
+        });
     }
-    
+
     /**
-     * Loads assets. 
+     * Loads assets.
      */
     private void setupFade() {
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-        if (mBitmapTextureAtlas == null) { 
-            mBitmapTextureAtlas = new BitmapTextureAtlas(32, 32, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        if (mBitmapTextureAtlas == null) {
+            mBitmapTextureAtlas = new BitmapTextureAtlas(32, 32,
+                    TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         }
 
         if (mFadeTextureRegion == null) {
-        mFadeTextureRegion = BitmapTextureAtlasTextureRegionFactory
-                .createFromAsset(mBitmapTextureAtlas, RoguelikeActivity.getContext(), "fade.png", 0, 0);  
+            mFadeTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+                    mBitmapTextureAtlas, RoguelikeActivity.getContext(), "fade.png", 0, 0);
         }
-        RoguelikeActivity.getContext().getEngine().getTextureManager().loadTexture(mBitmapTextureAtlas);
+        RoguelikeActivity.getContext().getEngine().getTextureManager()
+                .loadTexture(mBitmapTextureAtlas);
     }
-    
+
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
-    
+
 }

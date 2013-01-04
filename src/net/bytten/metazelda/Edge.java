@@ -1,3 +1,4 @@
+
 package net.bytten.metazelda;
 
 /**
@@ -15,39 +16,39 @@ package net.bytten.metazelda;
 public class Edge {
 
     protected Symbol symbol;
-   
+
     /**
      * Creates an unconditional Edge.
      */
     public Edge() {
         symbol = null;
     }
-    
+
     /**
      * Creates an Edge that requires a particular Symbol to be collected before
      * it may be used by the player to travel between the Rooms.
      * 
-     * @param symbol    the symbol that must be obtained
+     * @param symbol the symbol that must be obtained
      */
     public Edge(Symbol symbol) {
         this.symbol = symbol;
     }
-    
+
     /**
-     * @return  whether the Edge is conditional
+     * @return whether the Edge is conditional
      */
     public boolean hasSymbol() {
         return symbol != null;
     }
-    
+
     /**
-     * @return  the symbol that must be obtained to pass along this edge or null
-     *          if there are no required symbols
+     * @return the symbol that must be obtained to pass along this edge or null
+     *         if there are no required symbols
      */
     public Symbol getSymbol() {
         return symbol;
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof Edge) {
@@ -57,5 +58,5 @@ public class Edge {
             return super.equals(other);
         }
     }
-    
+
 }

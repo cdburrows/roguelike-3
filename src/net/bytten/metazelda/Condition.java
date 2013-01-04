@@ -1,3 +1,4 @@
+
 package net.bytten.metazelda;
 
 /**
@@ -5,8 +6,8 @@ package net.bytten.metazelda;
  * <p>
  * A Room's precondition can be considered the set of Symbols from the other
  * Rooms that the player must have collected to be able to reach this room. For
- * instance, if the Room is behind a locked door, the precondition for the
- * Room includes the key for that lock.
+ * instance, if the Room is behind a locked door, the precondition for the Room
+ * includes the key for that lock.
  * <p>
  * In practice, since there is always a time ordering on the collection of keys,
  * this can be implemented as a count of the number of keys the player must have
@@ -41,42 +42,44 @@ public class Condition {
          * The switch must be on.
          */
         ON;
-        
+
         /**
          * Convert this SwitchState to a {@link Symbol}.
          * 
-         * @return  a symbol representing the required state of the switch or
-         *          null if the switch may be in any state
+         * @return a symbol representing the required state of the switch or
+         *         null if the switch may be in any state
          */
         public Symbol toSymbol() {
             switch (this) {
-            case OFF:
-                return new Symbol(Symbol.SWITCH_OFF);
-            case ON:
-                return new Symbol(Symbol.SWITCH_ON);
-            default:
-                return null;
+                case OFF:
+                    return new Symbol(Symbol.SWITCH_OFF);
+                case ON:
+                    return new Symbol(Symbol.SWITCH_ON);
+                default:
+                    return null;
             }
         }
-        
+
         /**
          * Invert the required state of the switch.
          * 
-         * @return  a SwitchState with the opposite required switch state or
-         *          this SwitchState if no particular state is required
+         * @return a SwitchState with the opposite required switch state or this
+         *         SwitchState if no particular state is required
          */
         public SwitchState invert() {
             switch (this) {
-            case OFF: return ON;
-            case ON: return OFF;
-            default:
-                return this;
+                case OFF:
+                    return ON;
+                case ON:
+                    return OFF;
+                default:
+                    return this;
             }
         }
     };
-    
+
     protected int keyLevel;
-    
+
     protected SwitchState switchState;
 
     /**
@@ -86,13 +89,13 @@ public class Condition {
         keyLevel = 0;
         switchState = SwitchState.EITHER;
     }
-    
+
     /**
      * Creates a Condition that requires the player to have a particular
      * {@link Symbol}.
      * 
      * @param e the symbol that the player must have for the Condition to be
-     *          satisfied
+     *            satisfied
      */
     public Condition(Symbol e) {
         if (e.getValue() == Symbol.SWITCH_OFF) {
@@ -102,11 +105,11 @@ public class Condition {
             keyLevel = 0;
             switchState = SwitchState.ON;
         } else {
-            keyLevel = e.getValue()+1;
+            keyLevel = e.getValue() + 1;
             switchState = SwitchState.EITHER;
         }
     }
-    
+
     /**
      * Creates a Condition from another Condition (copy it).
      * 
@@ -116,17 +119,17 @@ public class Condition {
         keyLevel = other.keyLevel;
         switchState = other.switchState;
     }
-    
+
     /**
      * Creates a Condition that requires the switch to be in a particular state.
      * 
-     * @param switchState   the required state for the switch to be in
+     * @param switchState the required state for the switch to be in
      */
     public Condition(SwitchState switchState) {
         keyLevel = 0;
         this.switchState = switchState;
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof Condition) {
@@ -136,7 +139,7 @@ public class Condition {
             return super.equals(other);
         }
     }
-    
+
     private void add(Symbol sym) {
         if (sym.getValue() == Symbol.SWITCH_OFF) {
             assert switchState == null;
@@ -145,9 +148,10 @@ public class Condition {
             assert switchState == null;
             switchState = SwitchState.ON;
         } else {
-            keyLevel = Math.max(keyLevel, sym.getValue()+1);
+            keyLevel = Math.max(keyLevel, sym.getValue() + 1);
         }
     }
+
     private void add(Condition cond) {
         if (switchState == SwitchState.EITHER) {
             switchState = cond.switchState;
@@ -156,57 +160,58 @@ public class Condition {
         }
         keyLevel = Math.max(keyLevel, cond.keyLevel);
     }
-    
+
     /**
      * Creates a new Condition that requires this Condition to be satisfied and
      * requires another {@link Symbol} to be obtained as well.
      * 
-     * @param sym   the added symbol the player must have for the new Condition
-     *              to be satisfied
-     * @return      the new Condition
+     * @param sym the added symbol the player must have for the new Condition to
+     *            be satisfied
+     * @return the new Condition
      */
     public Condition and(Symbol sym) {
         Condition result = new Condition(this);
         result.add(sym);
         return result;
     }
-    
+
     /**
      * Creates a new Condition that requires this Condition and another
      * Condition to both be satisfied.
      * 
      * @param other the other Condition that must be satisfied.
-     * @return      the new Condition
+     * @return the new Condition
      */
     public Condition and(Condition other) {
-        if (other == null) return this;
+        if (other == null)
+            return this;
         Condition result = new Condition(this);
         result.add(other);
         return result;
     }
-    
+
     /**
      * Determines whether another Condition is necessarily true if this one is.
      * 
      * @param other the other Condition
-     * @return  whether the other Condition is implied by this one
+     * @return whether the other Condition is implied by this one
      */
     public boolean implies(Condition other) {
-        return keyLevel >= other.keyLevel &&
-                (switchState == other.switchState ||
-                other.switchState == SwitchState.EITHER);
+        return keyLevel >= other.keyLevel
+                && (switchState == other.switchState || other.switchState == SwitchState.EITHER);
     }
+
     /**
      * Determines whether this Condition implies that a particular
      * {@link Symbol} has been obtained.
      * 
      * @param s the Symbol
-     * @return  whether the Symbol is implied by this Condition
+     * @return whether the Symbol is implied by this Condition
      */
     public boolean implies(Symbol s) {
         return implies(new Condition(s));
     }
-    
+
     /**
      * Gets the single {@link Symbol} needed to make this Condition and another
      * Condition identical.
@@ -215,50 +220,49 @@ public class Condition {
      * each other.
      * 
      * @param other the other Condition
-     * @return  the Symbol needed to make the Conditions identical, or null if
-     *          there is no single Symbol that would make them identical or if
-     *          they are already identical.
+     * @return the Symbol needed to make the Conditions identical, or null if
+     *         there is no single Symbol that would make them identical or if
+     *         they are already identical.
      */
     public Symbol singleSymbolDifference(Condition other) {
         // If the difference between this and other can be made up by obtaining
         // a single new symbol, this returns the symbol. If multiple or no
         // symbols are required, returns null.
-        
-        if (this.equals(other)) return null;
+
+        if (this.equals(other))
+            return null;
         if (switchState == other.switchState) {
-            return new Symbol(Math.max(keyLevel, other.keyLevel)-1);
+            return new Symbol(Math.max(keyLevel, other.keyLevel) - 1);
         } else {
-            if (keyLevel != other.keyLevel) return null;
-            // Multiple symbols needed        ^^^
-            
-            assert switchState != other.switchState;
-            if (switchState != SwitchState.EITHER &&
-                    other.switchState != SwitchState.EITHER)
+            if (keyLevel != other.keyLevel)
                 return null;
-            
-            SwitchState nonEither = switchState != SwitchState.EITHER
-                    ? switchState
+            // Multiple symbols needed ^^^
+
+            assert switchState != other.switchState;
+            if (switchState != SwitchState.EITHER && other.switchState != SwitchState.EITHER)
+                return null;
+
+            SwitchState nonEither = switchState != SwitchState.EITHER ? switchState
                     : other.switchState;
-            
-            return new Symbol(nonEither == SwitchState.ON
-                    ? Symbol.SWITCH_ON
-                    : Symbol.SWITCH_OFF);
+
+            return new Symbol(nonEither == SwitchState.ON ? Symbol.SWITCH_ON : Symbol.SWITCH_OFF);
         }
     }
-    
+
     @Override
     public String toString() {
         String result = "";
         if (keyLevel != 0) {
-            result += new Symbol(keyLevel-1).toString();
+            result += new Symbol(keyLevel - 1).toString();
         }
         if (switchState != SwitchState.EITHER) {
-            if (!result.equals("")) result += ",";
+            if (!result.equals(""))
+                result += ",";
             result += switchState.toSymbol().toString();
         }
         return result;
     }
-    
+
     /**
      * Get the number of keys that need to have been obtained for this Condition
      * to be satisfied.
@@ -268,7 +272,7 @@ public class Condition {
     public int getKeyLevel() {
         return keyLevel;
     }
-    
+
     /**
      * Get the state the switch is required to be in for this Condition to be
      * satisfied.
@@ -276,5 +280,5 @@ public class Condition {
     public SwitchState getSwitchState() {
         return switchState;
     }
-    
+
 }

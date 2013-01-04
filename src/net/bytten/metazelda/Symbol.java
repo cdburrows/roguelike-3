@@ -1,3 +1,4 @@
+
 package net.bytten.metazelda;
 
 /**
@@ -21,23 +22,24 @@ public class Symbol {
      * player may choose to either
      * <ul>
      * <li>lose the SWITCH_OFF symbol (if they have it), and gain the SWITCH_ON
-     *      symbol; or
+     * symbol; or
      * <li>lose the SWITCH_ON symbol (if they have it), and gain the SWITCH_OFF
-     *      symbol.
+     * symbol.
      * <ul>
      * <p>
      */
-    public static final int
-        START = -1,
-        GOAL = -2,
-        BOSS = -3,
-        SWITCH_ON = -4,     // used as a condition (lock)
-        SWITCH_OFF = -5,    // used as a condition (lock)
-        SWITCH = -6;        // used as an item (key) within a room
+    public static final int START = -1, GOAL = -2, BOSS = -3, SWITCH_ON = -4, // used
+                                                                              // as
+                                                                              // a
+                                                                              // condition
+                                                                              // (lock)
+            SWITCH_OFF = -5, // used as a condition (lock)
+            SWITCH = -6; // used as an item (key) within a room
 
     protected final int value;
+
     protected final String name;
-    
+
     /**
      * Creates a Symbol with the given value.
      * 
@@ -45,7 +47,7 @@ public class Symbol {
      */
     public Symbol(int value) {
         this.value = value;
-        
+
         if (value == START)
             name = "Start";
         else if (value == GOAL)
@@ -63,7 +65,7 @@ public class Symbol {
         else
             name = Integer.toString(value);
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof Symbol) {
@@ -72,57 +74,57 @@ public class Symbol {
             return super.equals(other);
         }
     }
-    
+
     @Override
     public int hashCode() {
         return value;
     }
-    
+
     /**
      * @return the value of the Symbol
      */
     public int getValue() {
         return value;
     }
-    
+
     /**
      * @return whether the symbol is the special START symbol
      */
     public boolean isStart() {
         return value == START;
     }
-    
+
     /**
      * @return whether the symbol is the special GOAL symbol
      */
     public boolean isGoal() {
         return value == GOAL;
     }
-    
+
     /**
      * @return whether the symbol is the special BOSS symbol
      */
     public boolean isBoss() {
         return value == BOSS;
     }
-    
+
     /**
      * @return whether the symbol is the special SWITCH symbol
      */
     public boolean isSwitch() {
         return value == SWITCH;
     }
-    
+
     /**
      * @return whether the symbol is one of the special SWITCH_{ON,OFF} symbols
      */
     public boolean isSwitchState() {
         return value == SWITCH_ON || value == SWITCH_OFF;
     }
-    
+
     @Override
     public String toString() {
         return name;
     }
-    
+
 }
